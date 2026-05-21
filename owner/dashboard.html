@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>S.F WORKS HUB - Owner Panel</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f4f6fb;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:260px;
+    height:100%;
+    background:#0f172a;
+    color:#fff;
+    padding:20px;
+    overflow:auto;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+    text-align:center;
+    padding:10px;
+    color:#22c55e;
+    margin-bottom:10px;
+}
+
+.sidebar a{
+    display:block;
+    padding:12px;
+    color:#cbd5e1;
+    text-decoration:none;
+    border-radius:10px;
+    margin-bottom:8px;
+}
+
+.sidebar a:hover{
+    background:#2563eb;
+    color:#fff;
+}
+
+/* ================= MAIN ================= */
+.main{
+    margin-left:260px;
+    padding:20px;
+}
+
+/* ================= TOPBAR ================= */
+.topbar{
+    background:#fff;
+    padding:15px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom:15px;
+}
+
+.topbar h2{
+    margin:0;
+    font-size:22px;
+    color:#111827;
+}
+
+/* ================= SEARCH ================= */
+.search-bar{
+    background:#fff;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:15px;
+    display:flex;
+    gap:10px;
+}
+
+.search-bar input{
+    flex:1;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+/* ================= CARDS ================= */
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.card-box{
+    background:#fff;
+    padding:15px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card-box h3{
+    font-size:14px;
+    color:#6b7280;
+}
+
+.card-box h2{
+    font-size:28px;
+}
+
+/* ================= CONTROL PANEL ================= */
+.control-panel{
+    background:#fff;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+.control-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.control-buttons button{
+    padding:10px 14px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.btn-all{background:#6b7280;color:#fff;}
+.btn-pending{background:#f59e0b;color:#fff;}
+.btn-approved{background:#16a34a;color:#fff;}
+.btn-rejected{background:#dc2626;color:#fff;}
+.btn-deleted{background:#111827;color:#fff;}
+
+/* ================= WORK SECTION ================= */
+#workSection{
+    margin-top:20px;
+}
+
+/* ================= USER MENU ================= */
+.user-menu{
+    margin-top:30px;
+    border-top:1px solid #334155;
+    padding-top:10px;
+}
+
+@media(max-width:900px){
+    .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+    }
+    .main{
+        margin-left:0;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+
+    <div class="logo">
+        👑 S.F WORKS HUB
+    </div>
+
+    <a href="/owner/dashboard"><i class="fa fa-chart-line"></i> Dashboard</a>
+
+    <a href="#" onclick="loadWorksSection('all')">
+        <i class="fa fa-list"></i> Work Control
+    </a>
+
+    <a href="{{ url_for('booking.owner_bookings') }}">
+        <i class="fa fa-calendar"></i> Booking Control
+    </a>
+
+    <a href="/logout">
+        <i class="fa fa-right-from-bracket"></i> Logout
+    </a>
+
+    <!-- USER OPTIONS -->
+    <div class="user-menu">
+
+        <a href="/admin/users"><i class="fa fa-users"></i> Users</a>
+        <a href="/admin/works"><i class="fa fa-briefcase"></i> Works</a>
+
+    </div>
+
+</div>
+
+<!-- ================= MAIN ================= -->
+<div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <h2>🚀 S.F WORKS HUB - OWNER CONTROL</h2>
+        <button class="btn btn-danger btn-sm" onclick="window.location='/logout'">
+            Logout
+        </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <input type="text" id="workSearch" placeholder="Search works...">
+        <button class="btn btn-primary" onclick="loadWorksSection('')">Search</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="cards">
+
+        <div class="card-box">
+            <h3>Total Users</h3>
+            <h2>{{ total_users }}</h2>
+        </div>
+
+        <div class="card-box">
+            <h3>Total Works</h3>
+            <h2>{{ total_works }}</h2>
+        </div>
+
+        <div class="card-box">
+            <h3>Approved</h3>
+            <h2>{{ approved_works }}</h2>
+        </div>
+
+        <div class="card-box">
+            <h3>Pending</h3>
+            <h2>{{ pending_works }}</h2>
+        </div>
+
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+
+        <h5>⚙ Work Controls</h5>
+
+        <div class="control-buttons">
+
+            <button class="btn-all" onclick="loadWorksSection('')">All</button>
+            <button class="btn-pending" onclick="loadWorksSection('pending')">Pending</button>
+            <button class="btn-approved" onclick="loadWorksSection('approved')">Approved</button>
+            <button class="btn-rejected" onclick="loadWorksSection('rejected')">Rejected</button>
+            <button class="btn-deleted" onclick="loadWorksSection('deleted')">Deleted</button>
+
+        </div>
+
+    </div>
+
+    <!-- WORK SECTION -->
+    <div id="workSection">
+        <!-- AJAX LOAD HERE -->
+    </div>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+
+function loadWorksSection(status = "") {
+
+    let url = "/owner/works/partial";
+    if(status) url += "?status=" + status;
+
+    fetch(url)
+    .then(res => res.text())
+    .then(html => {
+
+        document.getElementById("workSection").innerHTML = html;
+
+    })
+    .catch(err => console.log(err));
+
+}
+
+window.onload = () => loadWorksSection('');
+
+</script>
+
+</body>
+</html>
