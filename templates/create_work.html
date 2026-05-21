@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Work Post | S.F Works Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    background:
+    linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #111827 40%,
+        #1e293b 100%
+    );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+/* ================= BACKGROUND GLOW ================= */
+
+.bg-glow{
+    position:fixed;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:rgba(37,99,235,0.15);
+    filter:blur(120px);
+    z-index:0;
+}
+
+.glow1{
+    top:-150px;
+    left:-100px;
+}
+
+.glow2{
+    bottom:-150px;
+    right:-100px;
+}
+
+/* ================= CARD ================= */
+
+.container{
+    width:100%;
+    max-width:680px;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:28px;
+    padding:35px;
+    position:relative;
+    z-index:2;
+    box-shadow:
+    0 10px 40px rgba(0,0,0,0.35);
+}
+
+/* ================= HEADER ================= */
+
+.logo{
+    width:70px;
+    height:70px;
+    border-radius:20px;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #60a5fa
+    );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+    font-size:28px;
+    font-weight:800;
+    color:white;
+    box-shadow:0 10px 25px rgba(37,99,235,0.45);
+}
+
+h2{
+    margin-top:20px;
+    text-align:center;
+    color:white;
+    font-size:30px;
+    font-weight:800;
+}
+
+.subtitle{
+    text-align:center;
+    color:#94a3b8;
+    margin-top:10px;
+    margin-bottom:30px;
+    line-height:1.6;
+    font-size:14px;
+}
+
+/* ================= FORM ================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+
+.full{
+    grid-column:1 / -1;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:600;
+    color:#e2e8f0;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    border:none;
+    outline:none;
+    padding:14px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.08);
+    color:white;
+    font-size:14px;
+    border:1px solid transparent;
+    transition:0.3s;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color:#94a3b8;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#3b82f6;
+    background:rgba(255,255,255,0.12);
+    box-shadow:0 0 0 4px rgba(59,130,246,0.15);
+}
+
+textarea{
+    resize:none;
+    min-height:120px;
+}
+
+/* ================= BUTTON ================= */
+
+.submit-btn{
+    margin-top:25px;
+    width:100%;
+    border:none;
+    padding:16px;
+    border-radius:16px;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:0 10px 25px rgba(37,99,235,0.35);
+}
+
+.submit-btn:hover{
+    transform:translateY(-2px);
+    background:linear-gradient(
+        135deg,
+        #1d4ed8,
+        #2563eb
+    );
+}
+
+/* ================= FOOT NOTE ================= */
+
+.note{
+    margin-top:18px;
+    text-align:center;
+    color:#94a3b8;
+    font-size:13px;
+    line-height:1.6;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:700px){
+
+    .container{
+        padding:25px;
+        border-radius:22px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    h2{
+        font-size:25px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-glow glow1"></div>
+<div class="bg-glow glow2"></div>
+
+<!-- MAIN CARD -->
+<div class="container">
+
+    <!-- LOGO -->
+    <div class="logo">
+        SF
+    </div>
+
+    <!-- TITLE -->
+    <h2>Create Work Post</h2>
+
+    <div class="subtitle">
+        Submit your work requirement professionally.<br>
+        Your post will become visible after owner approval.
+    </div>
+
+    <!-- FORM -->
+    <form method="POST" action="/user/post_work">
+
+        <div class="form-grid">
+
+            <!-- TITLE -->
+            <div class="form-group full">
+
+                <label>Work Title</label>
+
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="e.g. Need 10 Rajmistri for construction work"
+                    required
+                >
+
+            </div>
+
+            <!-- WORKERS -->
+            <div class="form-group">
+
+                <label>Workers Needed</label>
+
+                <input
+                    type="number"
+                    name="workers"
+                    placeholder="e.g. 10"
+                    required
+                >
+
+            </div>
+
+            <!-- SALARY -->
+            <div class="form-group">
+
+                <label>Salary / Payment</label>
+
+                <input
+                    type="text"
+                    name="salary"
+                    placeholder="e.g. ₹900/day"
+                    required
+                >
+
+            </div>
+
+            <!-- DATE -->
+            <div class="form-group">
+
+                <label>Work Date</label>
+
+                <input
+                    type="date"
+                    name="date"
+                    required
+                >
+
+            </div>
+
+            <!-- TIME -->
+            <div class="form-group">
+
+                <label>Work Time</label>
+
+                <input
+                    type="time"
+                    name="time"
+                    required
+                >
+
+            </div>
+
+            <!-- MOBILE -->
+            <div class="form-group full">
+
+                <label>Mobile Number</label>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Enter your mobile number"
+                    required
+                >
+
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="form-group full">
+
+                <label>Work Description</label>
+
+                <textarea
+                    name="description"
+                    placeholder="Describe your work requirement, location, skills needed, timing, etc."
+                    required
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit" class="submit-btn">
+            🚀 Submit Work Post
+        </button>
+
+    </form>
+
+    <!-- NOTE -->
+    <div class="note">
+        By posting work, you agree to follow the platform rules and policies.
+    </div>
+
+</div>
+
+</body>
+</html>

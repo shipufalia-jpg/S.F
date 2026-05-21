@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S.F Works Hub - Signup</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.container{
+    background:#fff;
+    padding:35px;
+    width:100%;
+    max-width:400px;
+    border-radius:18px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    text-align:center;
+    animation:fadeIn .5s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.logo{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:#203a43;
+}
+
+.subtitle{
+    font-size:14px;
+    color:#777;
+    margin-bottom:25px;
+}
+
+form{
+    width:100%;
+}
+
+input,
+select{
+    width:100%;
+    padding:13px;
+    margin:10px 0;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:14px;
+    background:#fafafa;
+    transition:.3s;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#2c5364;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(44,83,100,0.1);
+}
+
+button{
+    width:100%;
+    padding:14px;
+    background:#2c5364;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:12px;
+    transition:.3s;
+}
+
+button:hover{
+    background:#203a43;
+    transform:translateY(-1px);
+}
+
+.footer{
+    margin-top:18px;
+    font-size:13px;
+    color:#666;
+}
+
+.footer a{
+    color:#2c5364;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.footer a:hover{
+    text-decoration:underline;
+}
+
+.role-title{
+    text-align:left;
+    font-size:13px;
+    margin-top:10px;
+    color:#555;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">🚀 S.F Works Hub</div>
+    <div class="subtitle">
+        Create your account and start working
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.signup') }}">
+
+        <input 
+            type="text" 
+            name="name" 
+            placeholder="👤 Full Name"
+            required
+        >
+
+        <input 
+            type="text" 
+            name="phone" 
+            placeholder="📱 Phone Number"
+            required
+        >
+
+        <input 
+            type="password" 
+            name="password" 
+            placeholder="🔒 Password"
+            required
+        >
+
+        <!-- Role -->
+        <div class="role-title">Select Account Type</div>
+
+        <select name="role" required>
+            <option value="">Choose Role</option>
+            <option value="user">👷 User</option>
+            <option value="admin">🛡️ Admin</option>
+            <option value="super_admin">⚡ Super Admin</option>
+        </select>
+
+        <!-- Referral -->
+        <input 
+            type="text" 
+            name="ref_id" 
+            placeholder="🎯 Referral ID (Optional)"
+        >
+
+        <button type="submit">
+            Sign Up
+        </button>
+
+    </form>
+
+    <div class="footer">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">
+            Login
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

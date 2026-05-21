@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{{ work.title }} | S.F Works Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#0f172a;
+    color:white;
+    min-height:100vh;
+    padding:20px;
+}
+
+/* ================= CONTAINER ================= */
+
+.container{
+    max-width:850px;
+    margin:auto;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    gap:10px;
+}
+
+.back-btn{
+    text-decoration:none;
+    background:#1e293b;
+    color:white;
+    padding:10px 16px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.back-btn:hover{
+    background:#334155;
+}
+
+/* ================= CARD ================= */
+
+.card{
+    background:#111827;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 10px 35px rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    padding:28px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:30px;
+    background:rgba(255,255,255,0.18);
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:14px;
+}
+
+.title{
+    font-size:30px;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.owner{
+    font-size:14px;
+    opacity:0.9;
+}
+
+/* ================= BODY ================= */
+
+.body{
+    padding:28px;
+}
+
+/* ================= GRID ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    margin-bottom:24px;
+}
+
+/* ================= INFO BOX ================= */
+
+.info-box{
+    background:#1e293b;
+    border-radius:18px;
+    padding:18px;
+    border:1px solid rgba(255,255,255,0.04);
+}
+
+.info-label{
+    font-size:12px;
+    color:#94a3b8;
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.info-value{
+    font-size:17px;
+    font-weight:700;
+}
+
+/* ================= DESCRIPTION ================= */
+
+.description-box{
+    background:#1e293b;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:24px;
+}
+
+.description-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:14px;
+}
+
+.description{
+    color:#cbd5e1;
+    line-height:1.8;
+    font-size:15px;
+}
+
+/* ================= APPLY BUTTON ================= */
+
+.apply-form{
+    margin-top:20px;
+}
+
+.apply-btn{
+    width:100%;
+    border:none;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:white;
+    padding:18px;
+    border-radius:16px;
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.apply-btn:hover{
+    transform:translateY(-2px);
+    opacity:0.95;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+    margin-top:18px;
+    text-align:center;
+    color:#94a3b8;
+    font-size:13px;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+    .title{
+        font-size:24px;
+    }
+
+    .body{
+        padding:20px;
+    }
+
+    .header{
+        padding:22px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+
+        <a href="/user/dashboard" class="back-btn">
+            ← Back Dashboard
+        </a>
+
+    </div>
+
+    <!-- CARD -->
+    <div class="card">
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <div class="badge">
+                ✅ S.F APPROVED WORK
+            </div>
+
+            <div class="title">
+                {{ work.title }}
+            </div>
+
+            <div class="owner">
+                Posted by {{ owner.name if owner else 'S.F User' }}
+            </div>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="body">
+
+            <!-- GRID -->
+            <div class="grid">
+
+                <div class="info-box">
+                    <div class="info-label">
+                        Salary
+                    </div>
+                    <div class="info-value">
+                        💰 {{ work.salary }}
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">
+                        Workers Needed
+                    </div>
+                    <div class="info-value">
+                        👷 {{ work.workers }}
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">
+                        Work Date
+                    </div>
+                    <div class="info-value">
+                        📅 {{ work.date }}
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">
+                        Work Time
+                    </div>
+                    <div class="info-value">
+                        ⏰ {{ work.time }}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="description-box">
+
+                <div class="description-title">
+                    📝 Work Description
+                </div>
+
+                <div class="description">
+                    {{ work.description }}
+                </div>
+
+            </div>
+
+            <!-- CONTACT -->
+            <div class="description-box">
+
+                <div class="description-title">
+                    📞 Contact Number
+                </div>
+
+                <div class="description">
+                    {{ work.mobile }}
+                </div>
+
+            </div>
+
+            <!-- APPLY -->
+            <form
+               method="POST"
+               action="{{ url_for('work.apply_work', id=work.id) }}"
+               class="apply-form"
+             >
+
+             <button type="submit" class="apply-btn">
+        🚀 Apply For This Work
+         </button>
+
+            </form>
+
+            <div class="footer">
+                S.F Works Hub • Trusted Work Platform
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+  </html>

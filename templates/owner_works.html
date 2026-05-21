@@ -1,0 +1,200 @@
+<div class="container-fluid">
+
+<!-- ================= HEADER BAR ================= -->
+<div class="card p-3 mb-3 shadow-sm">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+        <h4 class="mb-0 fw-bold">📋 Owner Work Control</h4>
+
+        <!-- SEARCH -->
+        <input
+            type="text"
+            id="workSearch"
+            class="form-control"
+            placeholder="🔍 Search works..."
+            style="max-width:280px;"
+        >
+
+    </div>
+
+    <!-- FILTER -->
+    <div class="mt-3 d-flex flex-wrap gap-2">
+
+        <button class="btn btn-outline-secondary btn-sm" onclick="loadWorks()">All</button>
+        <button class="btn btn-outline-warning btn-sm" onclick="filterWorks('pending')">Pending</button>
+        <button class="btn btn-outline-success btn-sm" onclick="filterWorks('approved')">Approved</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="filterWorks('rejected')">Rejected</button>
+        <button class="btn btn-outline-dark btn-sm" onclick="filterWorks('deleted')">Deleted</button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= EMPTY STATE ================= -->
+{% if works|length == 0 %}
+<div class="text-center p-5 bg-light rounded shadow-sm">
+    <h4>😕 No works found</h4>
+    <p class="text-muted">Try changing filter or search</p>
+</div>
+{% endif %}
+
+
+<!-- ================= WORK GRID ================= -->
+<div class="row" id="worksContainer">
+
+{% for w in works %}
+
+<div class="col-lg-6 col-md-12 mb-4 work-card">
+
+    <div class="card border-0 shadow-sm work-box">
+
+        <!-- TOP -->
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1">{{ w.title }}</h5>
+
+                    <div class="small text-muted">
+                        👷 {{ w.workers_needed }} workers<br>
+                        💰 {{ w.salary }}<br>
+                        📅 {{ w.date }} ⏰ {{ w.time }}<br>
+                        📞 {{ w.phone }}
+                    </div>
+
+                </div>
+
+                <!-- STATUS BADGE -->
+                <div>
+
+                    {% if w.status == "pending" %}
+                        <span class="badge bg-warning text-dark">PENDING</span>
+                    {% elif w.status == "approved" %}
+                        <span class="badge bg-success">APPROVED</span>
+                    {% elif w.status == "rejected" %}
+                        <span class="badge bg-danger">REJECTED</span>
+                    {% elif w.status == "deleted" %}
+                        <span class="badge bg-dark">DELETED</span>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- ACTION BUTTONS -->
+            <div class="d-flex flex-wrap gap-2">
+
+                {% if w.status not in ['approved', 'deleted'] %}
+                <a href="/owner/work/approve/{{ w.id }}"
+                   class="btn btn-success btn-sm action-btn">
+                    ✔ Approve
+                </a>
+                {% endif %}
+
+                {% if w.status not in ['rejected', 'deleted'] %}
+                <a href="/owner/work/reject/{{ w.id }}"
+                   class="btn btn-danger btn-sm action-btn">
+                    ❌ Reject
+                </a>
+                {% endif %}
+
+                <a href="/owner/work/edit/{{ w.id }}"
+                   class="btn btn-primary btn-sm action-btn">
+                    ✏ Edit
+                </a>
+
+                <a href="/owner/work/delete/{{ w.id }}"
+                   class="btn btn-dark btn-sm action-btn"
+                   onclick="return confirm('Delete this work?')">
+                    🗑 Delete
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+
+<!-- ================= STYLE UPGRADE ================= -->
+<style>
+
+.work-box{
+    transition:0.25s;
+    border-radius:14px;
+}
+
+.work-box:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.12);
+}
+
+.action-btn{
+    border-radius:10px;
+    font-size:13px;
+    padding:6px 12px;
+}
+
+</style>
+
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+// 🔍 SEARCH (SMOOTH FILTER)
+document.getElementById("workSearch").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+
+    document.querySelectorAll(".work-card").forEach(card => {
+
+        card.style.display =
+            card.innerText.toLowerCase().includes(value)
+            ? "block"
+            : "none";
+
+    });
+
+});
+
+
+// 📂 FILTER (SAFE AJAX)
+function filterWorks(status){
+
+    fetch(`/owner/works?status=${status}`)
+    .then(res => res.text())
+    .then(html => {
+
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const newCards = doc.querySelector("#worksContainer");
+
+        if(newCards){
+            document.querySelector("#worksContainer").innerHTML = newCards.innerHTML;
+        }
+
+    });
+
+}
+
+
+// 🔄 FULL RESET
+function loadWorks(){
+    window.location.href = "/owner/works";
+}
+
+</script>

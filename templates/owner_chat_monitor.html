@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Owner Chat Control Panel</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            background:#eef2f7;
+            margin:0;
+            padding:20px;
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:25px;
+            color:#222;
+        }
+
+        .container{
+            max-width:1100px;
+            margin:auto;
+        }
+
+        /* CHAT CARD */
+        .chat-card{
+            background:white;
+            padding:16px;
+            margin-bottom:14px;
+            border-radius:14px;
+            box-shadow:0 6px 18px rgba(0,0,0,0.08);
+            border-left:6px solid #007bff;
+            transition:0.2s;
+        }
+
+        .chat-card:hover{
+            transform:scale(1.01);
+        }
+
+        .top{
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+
+        .meta{
+            font-size:13px;
+            color:#666;
+            margin:3px 0;
+        }
+
+        .message{
+            margin-top:10px;
+            font-size:15px;
+            color:#222;
+            background:#f8f9fa;
+            padding:10px;
+            border-radius:8px;
+        }
+
+        /* STATUS BADGES */
+        .badge{
+            padding:5px 12px;
+            border-radius:20px;
+            font-size:12px;
+            font-weight:bold;
+            display:inline-block;
+        }
+
+        .active{background:#d4edda;color:#155724;}
+        .blocked{background:#ffe0b2;color:#e65100;}
+        .deleted{background:#e0e0e0;color:#333;}
+
+        /* ONLINE DOT */
+        .dot{
+            height:10px;
+            width:10px;
+            border-radius:50%;
+            display:inline-block;
+            margin-right:6px;
+        }
+
+        .online{background:green;}
+        .offline{background:red;}
+
+        /* ACTION BUTTONS */
+        .actions{
+            margin-top:12px;
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .btn{
+            padding:7px 12px;
+            border-radius:8px;
+            border:none;
+            color:white;
+            font-size:12px;
+            cursor:pointer;
+            text-decoration:none;
+            transition:0.2s;
+        }
+
+        .btn:hover{
+            opacity:0.85;
+        }
+
+        .block{background:#dc3545;}
+        .unblock{background:#17a2b8;}
+        .delete{background:#6c757d;}
+
+        /* OWNER LABEL */
+        .owner-tag{
+            background:#343a40;
+            color:white;
+            padding:3px 10px;
+            font-size:11px;
+            border-radius:20px;
+            display:inline-block;
+            margin-bottom:8px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h2>👑 OWNER CHAT CONTROL DASHBOARD</h2>
+
+<div class="container">
+
+{% for c in chats %}
+
+<div class="chat-card">
+
+    <div class="owner-tag">OWNER CONTROL PANEL</div>
+
+    <div class="top">
+
+        <div>
+            <div class="meta">
+                👤 From: {{ c.sender.name if c.sender else c.sender_id }}
+            </div>
+
+            <div class="meta">
+                👤 To: {{ c.receiver.name if c.receiver else c.receiver_id }}
+            </div>
+
+            <div class="meta">
+                🕒 {{ c.created_at }}
+            </div>
+
+            <div class="meta">
+                {% if c.sender.is_online %}
+                    <span class="dot online"></span> Online
+                {% else %}
+                    <span class="dot offline"></span> Offline
+                {% endif %}
+            </div>
+        </div>
+
+        <div>
+            {% if c.is_blocked %}
+                <span class="badge blocked">BLOCKED</span>
+            {% elif c.is_deleted %}
+                <span class="badge deleted">DELETED</span>
+            {% else %}
+                <span class="badge active">ACTIVE</span>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="message">
+        💬 {{ c.message }}
+    </div>
+
+    <!-- ACTIONS (OWNER ONLY CONTROL) -->
+    <div class="actions">
+
+        {% if not c.is_blocked %}
+        <a class="btn block"
+           href="/owner/chat/block/{{ c.id }}"
+           onclick="return confirm('OWNER: Block this chat permanently?')">
+           🚫 Block
+        </a>
+        {% endif %}
+
+        {% if c.is_blocked %}
+        <a class="btn unblock"
+           href="/owner/chat/unblock/{{ c.id }}"
+           onclick="return confirm('OWNER: Unblock this chat?')">
+           🔄 Unblock
+        </a>
+        {% endif %}
+
+        {% if not c.is_deleted %}
+        <a class="btn delete"
+           href="/owner/chat/delete/{{ c.id }}"
+           onclick="return confirm('OWNER: Delete this chat permanently?')">
+           🗑 Delete
+        </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+          </html>
