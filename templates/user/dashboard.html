@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>S.F Works Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ================= RESET ================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#0f172a;
+    color:white;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:70px;
+    background:rgba(15,23,42,0.95);
+    backdrop-filter:blur(12px);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    z-index:1000;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.menu-btn{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    background:#1e293b;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.logo-box{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+}
+
+.right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.notif{
+    width:42px;
+    height:42px;
+    border-radius:10px;
+    background:#1e293b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#1e293b;
+    padding:6px 10px;
+    border-radius:12px;
+    cursor:pointer;
+    position:relative;
+}
+
+.profile img{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #3b82f6;
+}
+
+.online-dot{
+    width:9px;
+    height:9px;
+    background:#22c55e;
+    border-radius:50%;
+    position:absolute;
+    top:6px;
+    left:6px;
+}
+
+/* ================= SEARCH ================= */
+
+.search-bar{
+    margin-top:70px;
+    padding:15px;
+    display:flex;
+    gap:10px;
+    justify-content:center;
+}
+
+.search-bar input{
+    width:70%;
+    max-width:500px;
+    height:45px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    padding:0 14px;
+    background:#1e293b;
+    color:white;
+    font-size:14px;
+}
+
+.search-btn{
+    width:45px;
+    height:45px;
+    border-radius:12px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-280px;
+    width:260px;
+    height:100%;
+    background:#111827;
+    transition:0.3s;
+    z-index:2000;
+    padding-top:20px;
+    overflow-y:auto;
+}
+
+.sidebar.active{
+    left:0;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px;
+    color:white;
+    text-decoration:none;
+    transition:0.3s;
+}
+
+.sidebar a:hover{
+    background:#1e293b;
+}
+
+/* ================= OVERLAY ================= */
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    z-index:1500;
+}
+
+.overlay.active{
+    display:block;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    padding:20px;
+}
+
+/* ================= WORK GRID ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:15px;
+}
+
+/* ================= CARD ================= */
+
+.card{
+    background:#111827;
+    border-radius:18px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    padding:15px;
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.card h3{
+    font-size:16px;
+}
+
+.card p{
+    font-size:13px;
+    color:#94a3b8;
+    margin-top:5px;
+}
+
+/* ================= BADGE ================= */
+
+.badge{
+    display:inline-block;
+    margin-top:10px;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:11px;
+    background:#1e293b;
+    color:#38bdf8;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+    display:inline-block;
+    margin-top:10px;
+    padding:8px 12px;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    font-size:12px;
+}
+
+/* ================= EMPTY ================= */
+
+.empty{
+    text-align:center;
+    margin-top:50px;
+    color:#94a3b8;
+}
+
+/* ================= USERS SECTION ================= */
+
+.users-section{
+    margin-top:50px;
+}
+
+.section-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.section-header h2{
+    font-size:24px;
+    font-weight:700;
+}
+
+.user-count{
+    background:#1e293b;
+    color:#38bdf8;
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.users-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:20px;
+}
+
+.user-card{
+    background:#111827;
+    border-radius:24px;
+    overflow:hidden;
+    position:relative;
+    border:1px solid rgba(255,255,255,0.05);
+    transition:0.3s;
+    box-shadow:0 10px 25px rgba(0,0,0,0.25);
+}
+
+.user-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+.user-cover{
+    height:90px;
+    background:linear-gradient(135deg,#2563eb,#38bdf8,#6366f1);
+}
+
+.user-profile{
+    position:relative;
+    margin-top:-40px;
+    display:flex;
+    justify-content:center;
+}
+
+.user-profile img{
+    width:85px;
+    height:85px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #111827;
+    background:#1e293b;
+}
+
+.online-status{
+    width:16px;
+    height:16px;
+    background:#22c55e;
+    border-radius:50%;
+    position:absolute;
+    bottom:6px;
+    right:calc(50% - 40px);
+    border:2px solid #111827;
+}
+
+.user-info{
+    text-align:center;
+    padding:15px;
+}
+
+.user-info h3{
+    font-size:20px;
+    margin-bottom:6px;
+}
+
+.user-email{
+    color:#94a3b8;
+    font-size:13px;
+    word-break:break-word;
+}
+
+.user-badges{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:12px;
+    flex-wrap:wrap;
+}
+
+.role-badge{
+    background:#1e3a8a;
+    color:#93c5fd;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.active-badge{
+    background:#14532d;
+    color:#86efac;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.user-stats{
+    display:flex;
+    justify-content:space-around;
+    padding:18px;
+    border-top:1px solid rgba(255,255,255,0.05);
+    border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.stat-box{
+    text-align:center;
+}
+
+.stat-box b{
+    display:block;
+    font-size:18px;
+    margin-bottom:4px;
+}
+
+.stat-box small{
+    color:#94a3b8;
+    font-size:12px;
+}
+
+.user-actions{
+    display:flex;
+    gap:10px;
+    padding:18px;
+}
+
+.profile-btn,
+.message-btn{
+    flex:1;
+    text-align:center;
+    padding:11px;
+    border-radius:12px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.profile-btn{
+    background:#2563eb;
+    color:white;
+}
+
+.profile-btn:hover{
+    background:#1d4ed8;
+}
+
+.message-btn{
+    background:#1e293b;
+    color:white;
+}
+
+.message-btn:hover{
+    background:#334155;
+}
+
+.empty-users{
+    text-align:center;
+    margin-top:50px;
+    padding:40px 20px;
+    background:#111827;
+    border-radius:24px;
+}
+
+.empty-icon{
+    font-size:55px;
+    margin-bottom:15px;
+}
+
+.empty-users h3{
+    margin-bottom:8px;
+}
+
+.empty-users p{
+    color:#94a3b8;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .users-grid{
+        grid-template-columns:1fr;
+    }
+
+    .user-actions{
+        flex-direction:column;
+    }
+
+    .search-bar input{
+        width:100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================= OVERLAY ================= -->
+
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar" id="sidebar">
+
+    <a href="/user/dashboard">🏠 Dashboard</a>
+    <a href="/profile">👤 My Profile</a>
+    <a href="/gallery">🖼️ Gallery</a>
+    <a href="/user/post_work">➕ Create Work Post</a>
+    <a href="{{ url_for('work.work_list') }}">
+    ✅ Work Approval List
+    </a>
+    <div class="dashboard-card">
+
+    <h3>Bookings</h3>
+
+    <a href="{{ url_for('booking.my_bookings') }}" class="btn primary-btn">
+        📅 View My Bookings
+    </a>
+
+    </div>
+    <a href="/referral">🔗 Referral</a>
+    <a href="/help-line">☎️ Help Line</a>
+    <a href="/settings">⚙️ Settings</a>
+    <a href="/auth/logout">🚪 Logout</a>
+
+</div>
+
+<!-- ================= TOPBAR ================= -->
+
+<div class="topbar">
+
+    <div class="left">
+
+        <button class="menu-btn" onclick="openMenu()">☰</button>
+
+        <div class="logo">
+
+            <div class="logo-box">SF</div>
+
+            <b>S.F Hub</b>
+
+        </div>
+
+    </div>
+
+    <div class="right">
+
+        <div class="notif">🔔</div>
+
+        <div class="profile" onclick="window.location.href='/profile'">
+
+            <span class="online-dot"></span>
+
+            <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">
+
+            <small>
+                {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= SEARCH ================= -->
+
+<div class="search-bar">
+
+    <input id="searchInput" type="text" placeholder="Search works & users...">
+
+    <button class="search-btn" onclick="filterWorks()">🔍</button>
+
+</div>
+
+<!-- ================= MAIN ================= -->
+
+<div class="main">
+
+    <!-- ================= WORKS ================= -->
+
+    {% if works and works|length > 0 %}
+
+    <div class="grid">
+
+        {% for w in works %}
+
+        <div class="card work">
+
+            <h3>{{ w.title }}</h3>
+
+            <p>{{ w.description }}</p>
+
+            <p>📱 {{ w.mobile }}</p>
+
+            <span class="badge">{{ w.status }}</span>
+
+            <br>
+
+            <a class="btn" href="/work/{{ w.id }}">
+                View Details
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty">
+
+        <h3>No Work Found</h3>
+
+        <p>Create a work post to get started</p>
+
+    </div>
+
+    {% endif %}
+
+    <!-- ================= USERS SECTION ================= -->
+
+    <div class="users-section">
+
+        <div class="section-header">
+
+            <h2>👥 Community Members</h2>
+
+            <span class="user-count">
+                {{ profiles|length if profiles else 0 }} Users
+            </span>
+
+        </div>
+
+        {% if profiles and profiles|length > 0 %}
+
+        <div class="users-grid">
+
+            {% for p in profiles %}
+
+            <div class="user-card">
+
+                <div class="user-cover"></div>
+
+                <div class="user-profile">
+
+                    <img src="{{ p.profile_img if p.profile_img else '/static/default.png' }}">
+
+                    <span class="online-status"></span>
+
+                </div>
+
+                <div class="user-info">
+
+                    <h3>
+                        {{ p.name if p.name else 'User' }}
+                    </h3>
+
+                    <p class="user-email">
+                        {{ p.user.email if p.user and p.user.email else 'No Email' }}
+                    </p>
+
+                    <div class="user-badges">
+
+                        <span class="role-badge">
+                            {{ p.user.role if p.user and p.user.role else 'user' }}
+                        </span>
+
+                        <span class="active-badge">
+                            Active
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="user-stats">
+
+                    <div class="stat-box">
+
+                        <b>
+                            {{ p.user.works|length if p.user and p.user.works else 0 }}
+                        </b>
+
+                        <small>Works</small>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <b>
+                            {{ p.user.bookings|length if p.user and p.user.bookings else 0 }}
+                        </b>
+
+                        <small>Bookings</small>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <b>ID</b>
+
+                        <small>
+                            #{{ p.user.id if p.user else 0 }}
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <div class="user-actions">
+
+                    <a href="/profile/{{ p.user.id if p.user else 0 }}" class="profile-btn">
+                        👤 View Profile
+                    </a>
+
+                    <a href="/user/chat/{{ p.user.id if p.user else 0 }}" class="message-btn">
+                        💬 Message
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-users">
+
+            <div class="empty-icon">👤</div>
+
+            <h3>No Users Found</h3>
+
+            <p>No community members available right now</p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+/* ================= MENU ================= */
+
+function openMenu(){
+
+    document.getElementById("sidebar").classList.add("active");
+
+    document.getElementById("overlay").classList.add("active");
+
+}
+
+function closeMenu(){
+
+    document.getElementById("sidebar").classList.remove("active");
+
+    document.getElementById("overlay").classList.remove("active");
+
+}
+
+/* ================= SEARCH ================= */
+
+function filterWorks(){
+
+    let input = document.getElementById("searchInput").value.toLowerCase();
+
+    /* WORK SEARCH */
+
+    let works = document.querySelectorAll(".work");
+
+    works.forEach(w => {
+
+        let title = w.querySelector("h3").innerText.toLowerCase();
+
+        let desc = w.querySelectorAll("p")[0].innerText.toLowerCase();
+
+        if(title.includes(input) || desc.includes(input)){
+
+            w.style.display = "block";
+
+        }else{
+
+            w.style.display = "none";
+
+        }
+
+    });
+
+    /* USER SEARCH */
+
+    let users = document.querySelectorAll(".user-card");
+
+    users.forEach(u => {
+
+        let name = u.querySelector("h3").innerText.toLowerCase();
+
+        let email = u.querySelector(".user-email").innerText.toLowerCase();
+
+        if(name.includes(input) || email.includes(input)){
+
+            u.style.display = "block";
+
+        }else{
+
+            u.style.display = "none";
+
+        }
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>
