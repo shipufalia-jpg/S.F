@@ -42,6 +42,7 @@ login_manager.login_view = "auth.login"
 
 # ================= DB FIX FUNCTION =================
 
+
 def fix_db(app):
 
     with app.app_context():
@@ -72,42 +73,6 @@ def fix_db(app):
                 ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
             """))
 
-            # ================= EDIT COUNT =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS edit_count INTEGER DEFAULT 0;
-            """))
-
-            # ================= APPROVED BY =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS approved_by INTEGER;
-            """))
-
-            # ================= REJECTED BY =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS rejected_by INTEGER;
-            """))
-
-            # ================= EDITED BY =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS edited_by INTEGER;
-            """))
-
-            # ================= CREATED =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();
-            """))
-
-            # ================= UPDATED =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
-            """))
-
             # ================= BOOKINGS =================
             db.session.execute(text("""
                 ALTER TABLE bookings
@@ -125,34 +90,40 @@ def fix_db(app):
 
             # ================= CREATE DEFAULT OWNER =================
 
-existing_owner = User.query.filter_by(
-    phone="999999999"
-).first()
+            existing_owner = User.query.filter_by(
+                phone="999999999"
+            ).first()
 
-if not existing_owner:
+            if not existing_owner:
 
-    owner_user = User(
+                owner_user = User(
 
-        name="Owner",
+                    name="Owner",
 
-        phone="999999999",
+                    phone="999999999",
 
-        password=generate_password_hash(
-            "Owner123"
-        ),
+                    password=generate_password_hash(
+                        "Owner123"
+                    ),
 
-        role="owner"
-    )
+                    role="owner"
+                )
 
-    db.session.add(owner_user)
+                db.session.add(owner_user)
 
-    db.session.commit()
+                db.session.commit()
 
-    print("✅ Default owner created")
+                print("✅ Default owner created")
 
-else:
+            else:
 
-    print("✅ Owner already exists")
+                print("✅ Owner already exists")
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            print("DB FIX ERROR:", e)
 # ================= APP FACTORY =================
 def create_app():
 
