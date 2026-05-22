@@ -125,12 +125,6 @@ def fix_db(app):
 
             # ================= CREATE DEFAULT OWNER =================
 
-            existing_owner = User.query.filter_by(
-                phone="999999999"
-            ).first()
-
-            if not existing_owner:
-
                 owner_user = User(
 
                     username="owner",
