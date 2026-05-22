@@ -46,25 +46,26 @@ def fix_db(app):
     with app.app_context():
 
         try:
-
-            def add_mobile_column():
-
-        # সব column বের করো
-        result = db.session.execute(text("PRAGMA table_info(works);"))
+ def add_mobile_column():
+     try:
+        result = db.session.execute(
+            text("PRAGMA table_info(works);")
+        )
 
         columns = [row[1] for row in result]
 
-        # mobile column না থাকলে add করো
         if "mobile" not in columns:
             db.session.execute(
-                text("ALTER TABLE works ADD COLUMN mobile VARCHAR(15);")
+                text(
+                    "ALTER TABLE works ADD COLUMN mobile VARCHAR(15);"
+                )
             )
-            db.session.commit()
 
+            db.session.commit()
             print("✅ mobile column added")
 
         else:
-            print("✅ mobile column already exists")
+            print("✅ mobile already exists")
 
     except Exception as e:
         print("DB FIX ERROR:", e)
