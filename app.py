@@ -48,7 +48,7 @@ def fix_db(app):
         try:
 
             def add_mobile_column():
-    try:
+
         # সব column বের করো
         result = db.session.execute(text("PRAGMA table_info(works);"))
 
