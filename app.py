@@ -30,6 +30,7 @@ from routes.work_routes import work
 from routes.booking import booking
 from routes.profile import profile_bp
 from routes.admin_tools import admin_tools
+from werkzeug.security import generate_password_hash
 
 import cloudinary
 
