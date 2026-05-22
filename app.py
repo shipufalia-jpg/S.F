@@ -136,30 +136,6 @@ def create_app():
 
 app = create_app()
 
-# ================= CREATE OWNER ROUTE =================
-    @app.route("/create-owner")
-    def create_owner():
-
-        existing_owner = User.query.filter_by(phone="999999999").first()
-
-        if existing_owner:
-            return jsonify({"status": "exists"})
-
-        owner = User(
-            name="Owner",
-            phone="999999999",
-            password=generate_password_hash("Owner123"),
-            role="owner"
-        )
-
-        db.session.add(owner)
-        db.session.commit()
-
-        return jsonify({"status": "created"})
-
-    return app
-
-
 # ================= DB INIT =================
 with app.app_context():
     db.create_all()
