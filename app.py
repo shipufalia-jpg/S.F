@@ -125,34 +125,34 @@ def fix_db(app):
 
             # ================= CREATE DEFAULT OWNER =================
 
-                owner_user = User(
+existing_owner = User.query.filter_by(
+    phone="999999999"
+).first()
 
-                    username="owner",
+if not existing_owner:
 
-                    phone="999999999",
+    owner_user = User(
 
-                    password=generate_password_hash(
-                        "Owner123"
-                    ),
+        name="Owner",
 
-                    role="owner"
-                )
+        phone="999999999",
 
-                db.session.add(owner_user)
+        password=generate_password_hash(
+            "Owner123"
+        ),
 
-                db.session.commit()
+        role="owner"
+    )
 
-                print("✅ Default owner created")
+    db.session.add(owner_user)
 
-            else:
+    db.session.commit()
 
-                print("✅ Owner already exists")
+    print("✅ Default owner created")
 
-        except Exception as e:
+else:
 
-            db.session.rollback()
-
-            print("DB FIX ERROR:", e)
+    print("✅ Owner already exists")
 # ================= APP FACTORY =================
 def create_app():
 
