@@ -107,60 +107,57 @@ def fix_db(app):
                 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
             """))
 
+            # ================= BOOKINGS =================
             db.session.execute(text("""
-            ALTER TABLE bookings
-            ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+                ALTER TABLE bookings
+                ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
             """))
 
             db.session.execute(text("""
-            ALTER TABLE bookings
-            ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
+                ALTER TABLE bookings
+                ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
             """))
-
-            
-    # ================= CREATE DEFAULT OWNER =================
-
-    existing_owner = User.query.filter_by(
-        phone="999999999"
-    ).first()
-
-    if not existing_owner:
-
-        owner_user = User(
-
-            username="owner",
-
-            phone="999999999",
-
-            password=generate_password_hash(
-                "Owner123"
-            ),
-
-            role="owner"
-        )
-
-        db.session.add(owner_user)
-
-        db.session.commit()
-
-        print("✅ Default owner created")
-
-    else:
-
-        print("✅ Owner already exists")
-
 
             db.session.commit()
 
-            print("DB FIXED SUCCESSFULLY")
+            print("✅ DB FIXED SUCCESSFULLY")
+
+            # ================= CREATE DEFAULT OWNER =================
+
+            existing_owner = User.query.filter_by(
+                phone="999999999"
+            ).first()
+
+            if not existing_owner:
+
+                owner_user = User(
+
+                    username="owner",
+
+                    phone="999999999",
+
+                    password=generate_password_hash(
+                        "Owner123"
+                    ),
+
+                    role="owner"
+                )
+
+                db.session.add(owner_user)
+
+                db.session.commit()
+
+                print("✅ Default owner created")
+
+            else:
+
+                print("✅ Owner already exists")
 
         except Exception as e:
 
             db.session.rollback()
 
             print("DB FIX ERROR:", e)
-            print("DDL Auto Fix Error:", e)
-        
 # ================= APP FACTORY =================
 def create_app():
 
