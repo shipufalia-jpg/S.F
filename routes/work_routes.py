@@ -21,7 +21,7 @@ work = Blueprint("work", __name__)
 # =====================================================
 # CREATE WORK
 # =====================================================
-@work.route('/create', methods=['GET', 'POST'])
+@work.route('/user/post_work', methods=['GET', 'POST'])
 def create_work_route():
 
     # LOGIN CHECK
