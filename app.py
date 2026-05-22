@@ -49,31 +49,28 @@ def fix_db(app):
 
         try:
 
-            # ================= MOBILE =================
+            # ================= WORKS TABLE FIX =================
             db.session.execute(text("""
                 ALTER TABLE works
                 ADD COLUMN IF NOT EXISTS mobile VARCHAR(15);
             """))
 
-            # ================= STATUS =================
             db.session.execute(text("""
                 ALTER TABLE works
                 ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending';
             """))
 
-            # ================= ACTIVE =================
             db.session.execute(text("""
                 ALTER TABLE works
                 ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT FALSE;
             """))
 
-            # ================= SOFT DELETE =================
             db.session.execute(text("""
                 ALTER TABLE works
                 ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
             """))
 
-            # ================= BOOKINGS =================
+            # ================= BOOKINGS TABLE FIX =================
             db.session.execute(text("""
                 ALTER TABLE bookings
                 ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
@@ -90,19 +87,33 @@ def fix_db(app):
 
             # ================= CREATE DEFAULT OWNER =================
 
-            with app.app_context():
+            existing_owner = User.query.filter_by(
+                phone="999999999"
+            ).first()
 
-    user = User(
-        name="Owner",
-        phone="999999999",
-        password=generate_password_hash("Owner123"),
-        role="owner"
-    )
+            if not existing_owner:
 
-    db.session.add(user)
-    db.session.commit()
+                owner = User(
+                    name="Owner",
+                    phone="999999999",
+                    password=generate_password_hash("Owner123"),
+                    role="owner"
+                )
 
-    print("owner created")
+                db.session.add(owner)
+                db.session.commit()
+
+                print("✅ Owner created")
+
+            else:
+
+                print("✅ Owner already exists")
+
+        except Exception as e:
+
+            db.session.rollback()
+            print("DB FIX ERROR:", e)
+
 # ================= APP FACTORY =================
 def create_app():
 
