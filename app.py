@@ -42,7 +42,6 @@ login_manager.login_view = "auth.login"
 
 # ================= DB FIX FUNCTION =================
 
-
 def fix_db(app):
 
     with app.app_context():
@@ -84,30 +83,6 @@ def fix_db(app):
             db.session.commit()
 
             print("✅ DB FIXED SUCCESSFULLY")
-
-            # ================= CREATE DEFAULT OWNER =================
-
-            existing_owner = User.query.filter_by(
-                phone="999999999"
-            ).first()
-
-            if not existing_owner:
-
-                owner = User(
-                    name="Owner",
-                    phone="999999999",
-                    password=generate_password_hash("Owner123"),
-                    role="owner"
-                )
-
-                db.session.add(owner)
-                db.session.commit()
-
-                print("✅ Owner created")
-
-            else:
-
-                print("✅ Owner already exists")
 
         except Exception as e:
 
@@ -239,6 +214,33 @@ def send_message(data):
 
     except Exception as e:
         print("Chat Error:", e)
+
+@app.route("/create-owner")
+    def create_owner():
+        existing_owner = User.query.filter_by(phone="999999999").first()
+
+        if existing_owner:
+            return jsonify({
+                "status": "exists",
+                "message": "Owner already exists"
+            })
+
+        owner = User(
+            name="Owner",
+            phone="999999999",
+            password=generate_password_hash("Owner123"),
+            role="owner"
+        )
+
+        db.session.add(owner)
+        db.session.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Owner created successfully"
+        })
+
+    return app
 
 
 # ================= RUN =================
