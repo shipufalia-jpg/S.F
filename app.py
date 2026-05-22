@@ -94,9 +94,9 @@ def create_app():
 
     # CLOUDINARY
     cloudinary.config(
-        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME", "dion15zps"),
-        api_key=os.getenv("CLOUDINARY_API_KEY", "136556886157942"),
-        api_secret=os.getenv("CLOUDINARY_API_SECRET", "MBvKiT2EFaCzm9BGB9K1itfmiDU"),
+        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME", "dbasxrygb"),
+        api_key=os.getenv("CLOUDINARY_API_KEY", "618897129349859"),
+        api_secret=os.getenv("CLOUDINARY_API_SECRET", "5Q0-0gFHzhU48-CO6U1uPFnFiXQ"),
         secure=True
     )
 
