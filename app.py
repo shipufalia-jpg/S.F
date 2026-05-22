@@ -47,88 +47,27 @@ def fix_db(app):
 
         try:
 
-            # ================= MOBILE =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS mobile VARCHAR(15);
-            """))
+            def add_mobile_column():
+    try:
+        # সব column বের করো
+        result = db.session.execute(text("PRAGMA table_info(works);"))
 
-            # ================= STATUS =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending';
-            """))
+        columns = [row[1] for row in result]
 
-            # ================= ACTIVE =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT FALSE;
-            """))
-
-            # ================= SOFT DELETE =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
-            """))
-
-            # ================= EDIT COUNT =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS edit_count INTEGER DEFAULT 0;
-            """))
-
-            # ================= APPROVED BY =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS approved_by INTEGER;
-            """))
-
-            # ================= REJECTED BY =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS rejected_by INTEGER;
-            """))
-
-            # ================= EDITED BY =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS edited_by INTEGER;
-            """))
-
-            # ================= CREATED =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();
-            """))
-
-            # ================= UPDATED =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
-            """))
-
-            db.session.execute(text("""
-            ALTER TABLE bookings
-            ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
-            """))
-
-            db.session.execute(text("""
-            ALTER TABLE bookings
-            ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
-            """))
-
-
+        # mobile column না থাকলে add করো
+        if "mobile" not in columns:
+            db.session.execute(
+                text("ALTER TABLE works ADD COLUMN mobile VARCHAR(15);")
+            )
             db.session.commit()
 
-            print("DB FIXED SUCCESSFULLY")
+            print("✅ mobile column added")
 
-        except Exception as e:
+        else:
+            print("✅ mobile column already exists")
 
-            db.session.rollback()
-
-            print("DB FIX ERROR:", e)
-            print("DDL Auto Fix Error:", e)
-        
+    except Exception as e:
+        print("DB FIX ERROR:", e)
 # ================= APP FACTORY =================
 def create_app():
 
