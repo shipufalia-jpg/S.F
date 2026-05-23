@@ -32,6 +32,7 @@ from routes.profile import profile_bp
 from routes.admin_tools import admin_tools
 from werkzeug.security import generate_password_hash
 from routes.owner_tools import owner_tools
+from routes.application_routes import application_bp
 import cloudinary
 
 
@@ -155,6 +156,7 @@ def create_app():
     app.register_blueprint(profile_bp)
     app.register_blueprint(admin_tools)
     app.register_blueprint(owner_tools)
+    app.register_blueprint(application_bp)
 
     return app
 
