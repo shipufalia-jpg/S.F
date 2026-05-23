@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>S.F WORKS HUB - OWNER CONTROL</title>
+<title>Owner Control Dashboard</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
@@ -28,16 +27,15 @@ body{
     background:#0f172a;
     color:#fff;
     padding:20px;
-    overflow:auto;
+    overflow-y:auto;
 }
 
 .logo{
     font-size:20px;
     font-weight:bold;
     text-align:center;
-    padding:10px;
     color:#22c55e;
-    margin-bottom:10px;
+    margin-bottom:20px;
 }
 
 .sidebar a{
@@ -60,7 +58,7 @@ body{
     padding:20px;
 }
 
-/* ================= TOPBAR ================= */
+/* ================= TOP BAR ================= */
 .topbar{
     background:#fff;
     padding:15px;
@@ -68,13 +66,15 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    margin-bottom:15px;
 }
 
 /* ================= CARDS ================= */
 .cards{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
     gap:15px;
+    margin-bottom:20px;
 }
 
 .card-box{
@@ -84,49 +84,46 @@ body{
     text-align:center;
 }
 
-/* ================= SECTION BUTTONS ================= */
-.tab-buttons{
-    display:flex;
-    gap:10px;
-    margin:20px 0;
+/* ================= USER CARDS ================= */
+.user-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:15px;
 }
 
-.tab-buttons button{
-    padding:10px 15px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-}
-
-.active-tab{background:#2563eb;color:#fff;}
-
-/* ================= USER CARD ================= */
 .user-card{
     background:#fff;
     padding:15px;
     border-radius:12px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
-.user-info h5{
-    margin:0;
+.badge-role{
+    background:#2563eb;
+    color:#fff;
+    padding:3px 8px;
+    border-radius:6px;
+    font-size:12px;
 }
 
-.badge-active{background:green;color:#fff;padding:5px 10px;border-radius:8px;}
-.badge-blocked{background:red;color:#fff;padding:5px 10px;border-radius:8px;}
-.badge-pending{background:orange;color:#fff;padding:5px 10px;border-radius:8px;}
-
-.action-buttons button{
-    margin-left:5px;
+/* ================= BUTTONS ================= */
+.btn-small{
+    font-size:12px;
+    padding:5px 8px;
+    margin:2px;
+    border:none;
+    border-radius:6px;
 }
 
-/* ================= MOBILE ================= */
+/* ================= RESPONSIVE ================= */
 @media(max-width:900px){
-    .sidebar{width:100%;position:relative;}
-    .main{margin-left:0;}
+    .sidebar{
+        width:100%;
+        position:relative;
+    }
+    .main{
+        margin-left:0;
+    }
 }
 
 </style>
@@ -137,13 +134,17 @@ body{
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
 
-<div class="logo">👑 OWNER PANEL</div>
+    <div class="logo">👑 OWNER PANEL</div>
 
-<a href="/owner/dashboard"><i class="fa fa-chart-line"></i> Dashboard</a>
-<a href="#" onclick="loadTab('works')"><i class="fa fa-briefcase"></i> Works</a>
-<a href="#" onclick="loadTab('users')"><i class="fa fa-users"></i> Users</a>
-<a href="#" onclick="loadTab('approvals')"><i class="fa fa-check"></i> Approvals</a>
-<a href="/logout"><i class="fa fa-right-from-bracket"></i> Logout</a>
+    <a href="/owner/dashboard"><i class="fa fa-chart-line"></i> Dashboard</a>
+
+    <a href="#" onclick="loadSection('users')"><i class="fa fa-users"></i> User Control</a>
+
+    <a href="#" onclick="loadSection('approvals')"><i class="fa fa-check"></i> Admin Approval</a>
+
+    <a href="#" onclick="loadWorksSection('')"><i class="fa fa-briefcase"></i> Work Control</a>
+
+    <a href="/logout"><i class="fa fa-right-from-bracket"></i> Logout</a>
 
 </div>
 
@@ -152,103 +153,138 @@ body{
 
 <!-- TOPBAR -->
 <div class="topbar">
-<h3>🚀 S.F WORKS HUB - OWNER CONTROL</h3>
+    <h3>Owner Control Dashboard</h3>
 </div>
 
-<!-- STATS -->
-<div class="cards mt-3">
+<!-- ================= STATS ================= -->
+<div class="cards">
 
-<div class="card-box">
-<h5>Total Users</h5>
-<h3>{{ total_users }}</h3>
-</div>
+    <div class="card-box">
+        <h5>Total Users</h5>
+        <h3>{{ total_users }}</h3>
+    </div>
 
-<div class="card-box">
-<h5>Active Users</h5>
-<h3>{{ active_users }}</h3>
-</div>
+    <div class="card-box">
+        <h5>Total Works</h5>
+        <h3>{{ total_works }}</h3>
+    </div>
 
-<div class="card-box">
-<h5>Blocked Users</h5>
-<h3>{{ blocked_users }}</h3>
-</div>
+    <div class="card-box">
+        <h5>Approved Works</h5>
+        <h3>{{ approved_works }}</h3>
+    </div>
 
-<div class="card-box">
-<h5>Pending Works</h5>
-<h3>{{ pending_works }}</h3>
-</div>
-
-</div>
-
-<!-- TAB BUTTONS -->
-<div class="tab-buttons">
-
-<button class="active-tab" onclick="loadTab('users')">Users</button>
-<button onclick="loadTab('works')">Works</button>
-<button onclick="loadTab('approvals')">Admin Approvals</button>
-<button onclick="loadTab('analytics')">Analytics</button>
+    <div class="card-box">
+        <h5>Pending Works</h5>
+        <h3>{{ pending_works }}</h3>
+    </div>
 
 </div>
 
-<!-- ================= CONTENT AREA ================= -->
-<div id="contentArea">
+<!-- ================= ADMIN APPROVAL ================= -->
+<div id="approvalSection" style="display:none;">
 
-<!-- DEFAULT USERS LIST -->
-{% for u in latest_users %}
+    <h4>Admin & Super Admin Approval</h4>
 
-<div class="user-card">
+    <div class="user-grid">
 
-<div class="user-info">
-<h5>{{ u.name }}</h5>
-<p>{{ u.phone }}</p>
+        {% for user in pending_admins %}
+        <div class="user-card">
 
-{% if u.status == 'active' %}
-<span class="badge-active">Active</span>
-{% elif u.status == 'blocked' %}
-<span class="badge-blocked">Blocked</span>
-{% else %}
-<span class="badge-pending">Pending</span>
-{% endif %}
+            <h5>{{ user.name }}</h5>
+            <span class="badge-role">{{ user.role }}</span>
+
+            <p>{{ user.phone }}</p>
+
+            <form method="POST" action="/owner/approve/{{ user.id }}">
+                <button class="btn btn-success btn-sm">Approve</button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- ================= USER CONTROL ================= -->
+<div id="userSection">
+
+    <h4>User Management</h4>
+
+    <div class="user-grid">
+
+        {% for user in latest_users %}
+
+        <div class="user-card">
+
+            <h5>{{ user.name }}</h5>
+            <p>{{ user.phone }}</p>
+            <span class="badge-role">{{ user.role }}</span>
+
+            <hr>
+
+            <!-- BLOCK / UNBLOCK -->
+            <button class="btn-small btn btn-danger">Block</button>
+            <button class="btn-small btn btn-success">Unblock</button>
+
+            <!-- EDIT -->
+            <button class="btn-small btn btn-primary">Edit</button>
+
+            <!-- DELETE -->
+            <button class="btn-small btn btn-dark">Delete</button>
+
+            <!-- TRANSFER -->
+            <button class="btn-small btn btn-warning">Transfer</button>
+
+            <!-- PROFILE -->
+            <button class="btn-small btn btn-info">View Profile</button>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
 
 </div>
 
-<div class="action-buttons">
-
-<a href="/owner/user/block/{{ u.id }}" class="btn btn-sm btn-danger">Block</a>
-<a href="/owner/user/unblock/{{ u.id }}" class="btn btn-sm btn-success">Unblock</a>
-<a href="/owner/user/delete/{{ u.id }}" class="btn btn-sm btn-dark">Delete</a>
-
-<form action="/owner/user/transfer" method="POST" style="display:inline;">
-<input type="hidden" name="user_id" value="{{ u.id }}">
-<select name="role">
-<option value="user">User</option>
-<option value="admin">Admin</option>
-<option value="super_admin">Super Admin</option>
-</select>
-<button class="btn btn-sm btn-primary">Transfer</button>
-</form>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
+<!-- ================= WORK SECTION ================= -->
+<div id="workSection"></div>
 
 </div>
 
 <!-- ================= SCRIPT ================= -->
 <script>
 
-function loadTab(tab){
+function loadSection(type){
 
-fetch("/owner/" + tab)
-.then(res => res.text())
-.then(html => {
-document.getElementById("contentArea").innerHTML = html;
-});
+    document.getElementById("userSection").style.display = "none";
+    document.getElementById("approvalSection").style.display = "none";
+    document.getElementById("workSection").innerHTML = "";
+
+    if(type === "users"){
+        document.getElementById("userSection").style.display = "block";
+    }
+
+    if(type === "approvals"){
+        document.getElementById("approvalSection").style.display = "block";
+    }
 }
+
+/* KEEP YOUR WORK SYSTEM */
+function loadWorksSection(status=""){
+
+    let url = "/owner/works/partial";
+    if(status) url += "?status=" + status;
+
+    fetch(url)
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById("workSection").innerHTML = html;
+    });
+
+}
+
+window.onload = () => loadWorksSection();
 
 </script>
 
