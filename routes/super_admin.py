@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import func
 from models.user import User
 from models.work_model import Work
-from models.work_application_model import WorkApplication
+from models.work_application import WorkApplication
 from models.booking import Booking
 from models.activity_log import ActivityLog
 from extensions import db
