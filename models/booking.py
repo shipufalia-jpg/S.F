@@ -33,7 +33,7 @@ class Booking(db.Model):
     # =========================================
     work_id = db.Column(
         db.Integer,
-        db.ForeignKey("works.id"),
+        db.ForeignKey("work.id"),
         nullable=False,
         index=True
     )
