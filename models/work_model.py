@@ -23,11 +23,6 @@ class Work(db.Model):
         nullable=False
     )
 
-    mobile = db.Column(
-        db.String(15),
-        nullable=False
-    )
-
     # ================= EXTRA WORK INFO =================
     workers = db.Column(
         db.String(100)
