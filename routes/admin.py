@@ -3,7 +3,7 @@ from functools import wraps
 from models.user import User
 from models.booking import Booking
 from models.work_model import Work
-from models.work_application_model import WorkApplication
+from models.work_application import WorkApplication
 from extensions import db
 from sqlalchemy.orm import load_only
 from utils.decorators import admin_required
