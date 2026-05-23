@@ -234,7 +234,31 @@ body{
             <button class="btn-small btn btn-dark">Delete</button>
 
             <!-- TRANSFER -->
-            <button class="btn-small btn btn-warning">Transfer</button>
+            <form method="POST" action="/owner/transfer">
+
+    <input type="hidden" name="user_id" value="{{ user.id }}">
+
+    <select name="new_controller" class="form-select mb-2">
+
+        {% for admin in latest_users %}
+
+            {% if admin.role in ['admin', 'super_admin'] %}
+
+                <option value="{{ admin.id }}">
+                    {{ admin.name }} ({{ admin.role }})
+                </option>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </select>
+
+    <button type="submit" class="btn btn-warning btn-sm">
+        🔁 Transfer
+    </button>
+
+            </form>
 
             <!-- PROFILE -->
             <button class="btn-small btn btn-info">View Profile</button>
