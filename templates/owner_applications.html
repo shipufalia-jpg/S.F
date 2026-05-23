@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Owner Applications</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+    padding:20px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.badge{
+    background:#334155;
+    padding:6px 12px;
+    border-radius:8px;
+}
+
+/* CARD */
+.card{
+    background:#111827;
+    padding:16px;
+    border-radius:16px;
+    margin-bottom:12px;
+    border:1px solid #1f2937;
+}
+
+/* ROW */
+.row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:12px;
+}
+
+/* BUTTONS */
+.btn{
+    padding:8px 12px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:bold;
+    display:inline-block;
+}
+
+.approve{background:#16a34a;color:white;}
+.reject{background:#dc2626;color:white;}
+.view{background:#2563eb;color:white;}
+.delete{background:#374151;color:white;}
+
+.small{
+    font-size:13px;
+    color:#cbd5e1;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>📋 Work Applications</h2>
+        <div class="badge">Total: {{ applications|length }}</div>
+    </div>
+
+    {% for app in applications %}
+
+    <div class="card">
+
+        <h3>{{ app.name }} → Work ID #{{ app.work_id }}</h3>
+
+        <div class="row small">
+
+            <div>📞 {{ app.phone }}</div>
+            <div>📍 {{ app.address }}</div>
+            <div>💰 {{ app.expected_salary }}</div>
+            <div>⭐ Exp: {{ app.experience_years }} years</div>
+            <div>📌 Status: {{ app.status }}</div>
+
+        </div>
+
+        <p class="small">{{ app.message }}</p>
+
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+
+            <a class="view" href="/owner/application/{{ app.id }}">View</a>
+
+            {% if app.status == "applied" %}
+                <a class="approve" href="/owner/application/approve/{{ app.id }}">Approve</a>
+                <a class="reject" href="/owner/application/reject/{{ app.id }}">Reject</a>
+            {% endif %}
+
+            <a class="delete" href="/owner/application/delete/{{ app.id }}">Delete</a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</body>
+          </html>
