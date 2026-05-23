@@ -84,24 +84,38 @@ def transfer_user():
 
 
 # =================================================
-# 📋 ALL WORKS (FILTER SUPPORT)
+# 📋 ALL WORKS
 # =================================================
 @owner.route('/owner/works')
 @owner_only
 def all_works():
 
-    status = request.args.get("status")
+    # ================= GET FILTER =================
+    status = request.args.get("status", "").strip()
 
+    # ================= BASE QUERY =================
     query = Work.query.filter(
-        Work.status != "deleted"
+        Work.is_deleted == False
     )
 
-    if status:
-        query = query.filter_by(status=status)
+    # ================= STATUS FILTER =================
+    if status and status != "all":
 
-    works = query.order_by(Work.id.desc()).all()
+        query = query.filter(
+            Work.status == status
+        )
 
-    return render_template("owner_works.html", works=works)
+    # ================= LATEST FIRST =================
+    works = query.order_by(
+        Work.id.desc()
+    ).all()
+
+    # ================= RENDER =================
+    return render_template(
+        "owner_works.html",
+        works=works,
+        current_status=status
+    )
 
 
 # =================================================
@@ -113,11 +127,42 @@ def approve_work(id):
 
     work = Work.query.get_or_404(id)
 
+    # ================= ALREADY APPROVED =================
+    if work.status == "approved":
+
+        flash("Work already approved", "info")
+
+        return redirect('/owner/dashboard')
+
+    # ================= APPROVE =================
     work.status = "approved"
+
+    work.is_active = True
+
+    work.is_deleted = False
+
+    work.approved_by = session.get("user_id")
+
+    work.updated_at = datetime.utcnow()
 
     db.session.commit()
 
-    return redirect('/owner/works')
+    # ================= REALTIME SOCKET =================
+    socketio.emit("work_update", {
+
+        "type": "approved",
+
+        "work_id": work.id,
+
+        "title": work.title,
+
+        "message": f"{work.title} approved successfully"
+
+    })
+
+    flash("Work approved successfully", "success")
+
+    return redirect('/owner/dashboard')
 
 
 # =================================================
@@ -129,15 +174,44 @@ def reject_work(id):
 
     work = Work.query.get_or_404(id)
 
+    # ================= ALREADY REJECTED =================
+    if work.status == "rejected":
+
+        flash("Work already rejected", "info")
+
+        return redirect('/owner/dashboard')
+
+    # ================= REJECT =================
     work.status = "rejected"
+
+    work.is_active = False
+
+    work.rejected_by = session.get("user_id")
+
+    work.updated_at = datetime.utcnow()
 
     db.session.commit()
 
-    return redirect('/owner/works')
+    # ================= SOCKET =================
+    socketio.emit("work_update", {
+
+        "type": "rejected",
+
+        "work_id": work.id,
+
+        "title": work.title,
+
+        "message": f"{work.title} rejected"
+
+    })
+
+    flash("Work rejected successfully", "warning")
+
+    return redirect('/owner/dashboard')
 
 
 # =================================================
-# ✏️ EDIT WORK (FIXED FOR WORK_MODEL)
+# ✏️ EDIT WORK
 # =================================================
 @owner.route('/owner/work/edit/<int:id>', methods=['GET', 'POST'])
 @owner_only
@@ -145,19 +219,69 @@ def edit_work(id):
 
     work = Work.query.get_or_404(id)
 
+    # ================= UPDATE =================
     if request.method == "POST":
 
-        work.title = request.form['title']
-        work.description = request.form['description']
-        work.mobile = request.form['mobile']
+        title = request.form.get('title')
+        description = request.form.get('description')
+        mobile = request.form.get('mobile')
 
-        work.status = "pending"  # re-verify after edit
+        # ================= VALIDATION =================
+        if not title or not description or not mobile:
+
+            flash("All fields required", "danger")
+
+            return redirect(
+                url_for(
+                    'owner.edit_work',
+                    id=id
+                )
+            )
+
+        # ================= SAVE =================
+        work.title = title
+
+        work.description = description
+
+        work.mobile = mobile
+
+        # RE-VERIFY AFTER EDIT
+        work.status = "pending"
+
+        work.is_active = False
+
+        work.edited_by = session.get("user_id")
+
+        work.edit_count += 1
+
+        work.updated_at = datetime.utcnow()
 
         db.session.commit()
 
-        return redirect('/owner/works')
+        # ================= SOCKET =================
+        socketio.emit("work_update", {
 
-    return render_template("edit_work.html", work=work)
+            "type": "edited",
+
+            "work_id": work.id,
+
+            "title": work.title,
+
+            "message": f"{work.title} edited"
+
+        })
+
+        flash(
+            "Work updated and moved to pending review",
+            "success"
+        )
+
+        return redirect('/owner/dashboard')
+
+    return render_template(
+        "edit_work.html",
+        work=work
+    )
 
 
 # =================================================
@@ -169,11 +293,68 @@ def delete_work(id):
 
     work = Work.query.get_or_404(id)
 
+    # ================= ALREADY DELETED =================
+    if work.is_deleted:
+
+        flash("Work already deleted", "info")
+
+        return redirect('/owner/dashboard')
+
+    # ================= DELETE =================
     work.status = "deleted"
+
+    work.is_deleted = True
+
+    work.is_active = False
+
+    work.updated_at = datetime.utcnow()
 
     db.session.commit()
 
-    return redirect('/owner/works')
+    # ================= SOCKET =================
+    socketio.emit("work_update", {
+
+        "type": "deleted",
+
+        "work_id": work.id,
+
+        "title": work.title,
+
+        "message": f"{work.title} deleted"
+
+    })
+
+    flash("Work deleted successfully", "danger")
+
+    return redirect('/owner/dashboard')
+
+
+# =================================================
+# ♻️ RESTORE DELETED WORK
+# =================================================
+@owner.route('/owner/work/restore/<int:id>')
+@owner_only
+def restore_work(id):
+
+    work = Work.query.get_or_404(id)
+
+    # ================= RESTORE =================
+    work.status = "pending"
+
+    work.is_deleted = False
+
+    work.is_active = False
+
+    work.updated_at = datetime.utcnow()
+
+    db.session.commit()
+
+    flash(
+        "Work restored and pending approval",
+        "success"
+    )
+
+    return redirect('/owner/dashboard')
 
 # =================================================
 # 👤 BLOCK USER
