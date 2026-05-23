@@ -175,6 +175,203 @@ def delete_work(id):
 
     return redirect('/owner/works')
 
+# =================================================
+# 👤 BLOCK USER
+# =================================================
+@owner.route('/owner/user/block/<int:id>')
+@owner_only
+def block_user(id):
+
+    user = User.query.get_or_404(id)
+
+    # OWNER নিজেকে block করতে পারবে না
+    if user.role == "owner":
+        flash("Owner account cannot be blocked", "danger")
+        return redirect('/owner/dashboard')
+
+    user.status = "blocked"
+
+    db.session.commit()
+
+    socketio.emit("notify", {
+        "type": "warning",
+        "message": f"{user.name} has been blocked 🚫"
+    })
+
+    flash("User blocked successfully", "success")
+
+    return redirect('/owner/dashboard')
+
+
+# =================================================
+# 👤 UNBLOCK USER
+# =================================================
+@owner.route('/owner/user/unblock/<int:id>')
+@owner_only
+def unblock_user(id):
+
+    user = User.query.get_or_404(id)
+
+    user.status = "active"
+
+    db.session.commit()
+
+    socketio.emit("notify", {
+        "type": "success",
+        "message": f"{user.name} has been unblocked ✅"
+    })
+
+    flash("User unblocked successfully", "success")
+
+    return redirect('/owner/dashboard')
+
+
+# =================================================
+# 🗑 SOFT DELETE USER
+# =================================================
+@owner.route('/owner/user/delete/<int:id>')
+@owner_only
+def delete_user(id):
+
+    user = User.query.get_or_404(id)
+
+    # OWNER SAFE
+    if user.role == "owner":
+        flash("Owner account cannot be deleted", "danger")
+        return redirect('/owner/dashboard')
+
+    # SOFT DELETE
+    user.status = "deleted"
+
+    # OPTIONAL
+    if hasattr(user, "is_deleted"):
+        user.is_deleted = True
+
+    db.session.commit()
+
+    socketio.emit("notify", {
+        "type": "danger",
+        "message": f"{user.name} deleted successfully 🗑"
+    })
+
+    flash("User deleted successfully", "success")
+
+    return redirect('/owner/dashboard')
+
+
+# =================================================
+# 👁 ADVANCED USER PROFILE VIEW
+# =================================================
+@owner.route('/owner/user/<int:id>')
+@owner_only
+def user_profile(id):
+
+    user = User.query.get_or_404(id)
+
+    # USER WORKS
+    works = Work.query.filter_by(
+        user_id=user.id
+    ).order_by(
+        Work.id.desc()
+    ).all()
+
+    # TOTAL COUNTS
+    total_works = Work.query.filter_by(user_id=user.id).count()
+
+    approved_works = Work.query.filter_by(
+        user_id=user.id,
+        status="approved"
+    ).count()
+
+    pending_works = Work.query.filter_by(
+        user_id=user.id,
+        status="pending"
+    ).count()
+
+    rejected_works = Work.query.filter_by(
+        user_id=user.id,
+        status="rejected"
+    ).count()
+
+    # APPLICATIONS COUNT
+    total_applications = WorkApplication.query.filter_by(
+        user_id=user.id
+    ).count()
+
+    return render_template(
+        "owner/user_profile.html",
+
+        user=user,
+
+        works=works,
+
+        total_works=total_works,
+
+        approved_works=approved_works,
+
+        pending_works=pending_works,
+
+        rejected_works=rejected_works,
+
+        total_applications=total_applications
+    )
+
+
+# =================================================
+# ✏️ ADVANCED EDIT USER
+# =================================================
+@owner.route('/owner/user/edit/<int:id>', methods=["GET", "POST"])
+@owner_only
+def edit_user(id):
+
+    user = User.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        try:
+
+            # ================= BASIC =================
+            user.name = request.form.get("name")
+            user.phone = request.form.get("phone")
+            user.role = request.form.get("role")
+            user.status = request.form.get("status")
+
+            # ================= OPTIONAL =================
+            if hasattr(user, "email"):
+                user.email = request.form.get("email")
+
+            if hasattr(user, "address"):
+                user.address = request.form.get("address")
+
+            if hasattr(user, "bio"):
+                user.bio = request.form.get("bio")
+
+            # ================= SAVE =================
+            db.session.commit()
+
+            socketio.emit("notify", {
+                "type": "info",
+                "message": f"{user.name} updated successfully ✏️"
+            })
+
+            flash("User updated successfully", "success")
+
+            return redirect('/owner/dashboard')
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            flash(f"Error: {str(e)}", "danger")
+
+            return redirect(f'/owner/user/edit/{id}')
+
+    return render_template(
+        "owner/edit_user.html",
+        user=user
+    )
+
+
 
 # =================================================
 # 📊 OWNER ANALYTICS API
