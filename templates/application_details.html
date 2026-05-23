@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Application Details</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+    padding:20px;
+}
+
+.card{
+    max-width:700px;
+    margin:auto;
+    background:#111827;
+    padding:20px;
+    border-radius:16px;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:8px;
+    background:#2563eb;
+    font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>{{ app.name }}</h2>
+
+    <p class="badge">{{ app.status }}</p>
+
+    <p>📞 {{ app.phone }}</p>
+    <p>📍 {{ app.address }}</p>
+    <p>💰 {{ app.expected_salary }}</p>
+    <p>⭐ Experience: {{ app.experience_years }} years</p>
+
+    <hr>
+
+    <p>{{ app.message }}</p>
+
+    <a href="/owner/applications" style="color:#38bdf8;">⬅ Back</a>
+
+</div>
+
+</body>
+</html>
