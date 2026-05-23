@@ -77,4 +77,4 @@ class WorkApplication(db.Model):
             'user_id',
             name='unique_work_application'
         ),
-  )
+    )
