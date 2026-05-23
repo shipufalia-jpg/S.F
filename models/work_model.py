@@ -2,7 +2,6 @@ from datetime import datetime
 from extensions import db
 
 
-
 class Work(db.Model):
 
     __tablename__ = "works"
@@ -27,6 +26,27 @@ class Work(db.Model):
     mobile = db.Column(
         db.String(15),
         nullable=False
+    )
+
+    # ================= EXTRA WORK INFO =================
+    workers = db.Column(
+        db.String(100)
+    )
+
+    salary = db.Column(
+        db.String(100)
+    )
+
+    date = db.Column(
+        db.String(100)
+    )
+
+    time = db.Column(
+        db.String(100)
+    )
+
+    phone = db.Column(
+        db.String(20)
     )
 
     # ================= USER =================
