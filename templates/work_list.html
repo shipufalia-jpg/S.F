@@ -544,16 +544,18 @@ body{
             <div class="actions">
 
                 <form method="POST"
-                      action="{{ url_for('user.apply_work', work_id=w.id) }}"
+                      action="{{ url_for('work.apply_work', id=w.id) }}">
 
               <button type="submit">
                       Apply Now
                 </button>
 
                 </form>
+                <a href="{{ url_for('work.work_details', id=w.id) }}"
+                   class="btn details-btn">
 
-                href="{{ url_for('work.work_details', id=w.id) }}"
-                  View Details
+                    View Details
+
                 </a>
 
             </div>
