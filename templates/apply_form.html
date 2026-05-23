@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Apply Work • S.F Works Hub</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+
+/* CARD */
+.card{
+    max-width: 650px;
+    margin: auto;
+    background: #111827;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* TITLE */
+h2{
+    margin-bottom: 5px;
+}
+
+.sub{
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* INPUT */
+input, textarea{
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #0f172a;
+    color: white;
+    outline: none;
+}
+
+textarea{
+    min-height: 120px;
+    resize: none;
+}
+
+/* BUTTON */
+button{
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+button:hover{
+    background: #1d4ed8;
+}
+
+/* FOOTER */
+.footer{
+    text-align:center;
+    margin-top:15px;
+    font-size:12px;
+    color:#94a3b8;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>🚀 Apply for Work #{{ work.id }}</h2>
+    <div class="sub">Fill up your details carefully before submitting</div>
+
+    <form method="POST" action="{{ url_for('application.apply_work', work_id=work.id) }}">
+
+        <textarea name="message" placeholder="Write your message..."></textarea>
+
+        <input type="number" name="experience_years" placeholder="Experience years">
+
+        <input type="text" name="expected_salary" placeholder="Expected salary">
+
+        <button type="submit">Submit Application</button>
+
+    </form>
+
+    <div class="footer">
+        S.F Works Hub • Trusted Work Platform
+    </div>
+
+</div>
+
+</body>
+</html>
