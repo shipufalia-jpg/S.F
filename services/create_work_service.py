@@ -18,7 +18,7 @@ def create_work(data, user_id):
             salary=data.get("salary"),
             date=data.get("date"),
             time=data.get("time"),
-            mobile=data.get("phone"),
+            phone=data.get("phone"),
             user_id=user_id,
             status="pending"
         )
