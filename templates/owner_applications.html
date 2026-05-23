@@ -3,12 +3,14 @@
 
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Owner Applications</title>
 
 <style>
 
 body{
-    font-family:Arial;
+    font-family: Arial, sans-serif;
     background:#0f172a;
     color:white;
     padding:20px;
@@ -42,11 +44,16 @@ body{
     border:1px solid #1f2937;
 }
 
-/* ROW */
+/* GRID */
 .row{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:12px;
+}
+
+.small{
+    font-size:13px;
+    color:#cbd5e1;
 }
 
 /* BUTTONS */
@@ -64,10 +71,18 @@ body{
 .view{background:#2563eb;color:white;}
 .delete{background:#374151;color:white;}
 
-.small{
-    font-size:13px;
-    color:#cbd5e1;
+.status{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:12px;
+    text-transform:uppercase;
 }
+
+.status-applied{background:#2563eb;}
+.status-approved{background:#16a34a;}
+.status-rejected{background:#dc2626;}
+.status-cancelled{background:#6b7280;}
 
 </style>
 
@@ -77,10 +92,15 @@ body{
 
 <div class="container">
 
+    <!-- HEADER -->
     <div class="header">
         <h2>📋 Work Applications</h2>
         <div class="badge">Total: {{ applications|length }}</div>
     </div>
+
+    {% if applications|length == 0 %}
+        <p>No applications found.</p>
+    {% endif %}
 
     {% for app in applications %}
 
@@ -91,25 +111,48 @@ body{
         <div class="row small">
 
             <div>📞 {{ app.phone }}</div>
-            <div>📍 {{ app.address }}</div>
-            <div>💰 {{ app.expected_salary }}</div>
-            <div>⭐ Exp: {{ app.experience_years }} years</div>
-            <div>📌 Status: {{ app.status }}</div>
+            <div>📍 {{ app.address or 'N/A' }}</div>
+            <div>💰 {{ app.expected_salary or 'Not set' }}</div>
+            <div>⭐ Exp: {{ app.experience_years or 0 }} years</div>
+
+            <div>
+                📌 Status:
+                <span class="status status-{{ app.status }}">
+                    {{ app.status }}
+                </span>
+            </div>
 
         </div>
 
-        <p class="small">{{ app.message }}</p>
+        <p class="small">
+            {{ app.message or 'No message provided' }}
+        </p>
 
         <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
 
-            <a class="view" href="/owner/application/{{ app.id }}">View</a>
+            <a class="btn view"
+               href="{{ url_for('application.application_details', id=app.id) }}">
+               View
+            </a>
 
             {% if app.status == "applied" %}
-                <a class="approve" href="/owner/application/approve/{{ app.id }}">Approve</a>
-                <a class="reject" href="/owner/application/reject/{{ app.id }}">Reject</a>
+
+                <a class="btn approve"
+                   href="{{ url_for('application.approve_application', id=app.id) }}">
+                   Approve
+                </a>
+
+                <a class="btn reject"
+                   href="{{ url_for('application.reject_application', id=app.id) }}">
+                   Reject
+                </a>
+
             {% endif %}
 
-            <a class="delete" href="/owner/application/delete/{{ app.id }}">Delete</a>
+            <a class="btn delete"
+               href="{{ url_for('application.delete_application', id=app.id) }}">
+               Delete
+            </a>
 
         </div>
 
@@ -120,4 +163,4 @@ body{
 </div>
 
 </body>
-          </html>
+</html>
