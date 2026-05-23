@@ -25,6 +25,7 @@ def apply_form(work_id):
 # =================================================
 # 🟢 APPLY SUBMIT (POST)
 # =================================================
+
 @application_bp.route('/apply_work/<int:work_id>', methods=['POST'])
 def apply_work(work_id):
 
@@ -36,7 +37,6 @@ def apply_work(work_id):
 
     work = Work.query.get_or_404(work_id)
 
-    # duplicate check
     existing = WorkApplication.query.filter_by(
         work_id=work_id,
         user_id=user_id
@@ -50,12 +50,13 @@ def apply_work(work_id):
         work_id=work_id,
         user_id=user_id,
 
-        name=session.get("name"),
-        phone=session.get("phone"),
-        address=session.get("address"),
+        # 🔥 SAFE fallback (important fix)
+        name=session.get("name") or "Unknown",
+        phone=session.get("phone") or "N/A",
+        address=session.get("address") or "N/A",
 
         message=request.form.get("message"),
-        experience_years=request.form.get("experience_years") or 0,
+        experience_years=int(request.form.get("experience_years") or 0),
         expected_salary=request.form.get("expected_salary"),
 
         applied_ip=request.remote_addr
@@ -64,10 +65,10 @@ def apply_work(work_id):
     db.session.add(application)
     db.session.commit()
 
+    print("✅ SAVED APPLICATION ID:", application.id)
+
     flash("Application submitted successfully", "success")
     return redirect('/works')
-
-
 # =================================================
 # 📋 OWNER - ALL APPLICATIONS
 # =================================================
@@ -76,19 +77,20 @@ def owner_applications():
 
     status = request.args.get("status")
 
-    query = WorkApplication.query.filter_by(is_deleted=False)
+    query = WorkApplication.query
 
     if status and status != "all":
         query = query.filter_by(status=status)
 
-    applications = query.order_by(WorkApplication.id.desc()).all()
+    applications = query.order_by(
+        WorkApplication.id.desc()
+    ).all()
 
     return render_template(
         "owner_applications.html",
         applications=applications,
         status=status
     )
-
 
 # =================================================
 # 👁 MARK SEEN
