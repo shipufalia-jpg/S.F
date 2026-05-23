@@ -12,7 +12,7 @@ from flask import current_app
 from sqlalchemy.orm import joinedload
 from extensions import db
 from models.work_model import Work
-from models.work_application_model import WorkApplication
+from models.work_application import WorkApplication
 from services.create_work_service import create_work as create_work_service
 
 work = Blueprint("work", __name__)
