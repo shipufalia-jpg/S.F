@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, flash, session, render_template, jsonify
 from datetime import datetime
 
-from models.work import Work
+from models.work_model import Work
 from models.work_application import WorkApplication
 from extensions import db
 
