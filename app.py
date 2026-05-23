@@ -79,6 +79,30 @@ def fix_db(app):
                 ALTER TABLE bookings
                 ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
             """))
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS workers VARCHAR(100)
+           """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS salary VARCHAR(100)
+           """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS date VARCHAR(100)
+           """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS time VARCHAR(100)
+           """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS phone VARCHAR(20)
+           """))
 
             db.session.commit()
 
