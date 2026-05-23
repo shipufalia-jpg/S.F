@@ -4,7 +4,7 @@ from extensions import db
 
 class Work(db.Model):
 
-    __tablename__ = "works"
+    __tablename__ = "work"
 
     # ================= PRIMARY KEY =================
     id = db.Column(
