@@ -313,27 +313,24 @@ body{
             </div>
 
             <!-- APPLY -->
-            <form
-               method="POST"
-               action="{{ url_for('application.apply_work', work_id=work.id) }}"
-               class="apply-form"
-             >
+            <div class="apply-section">
 
-             <button type="submit" class="apply-btn">
+    <!-- APPLY BUTTON (GOES TO FORM PAGE) -->
+    <a href="{{ url_for('application.apply_form', work_id=work.id) }}" class="apply-btn">
         🚀 Apply For This Work
-         </button>
+    </a>
 
-            </form>
+</div>
 
-            <div class="footer">
-                S.F Works Hub • Trusted Work Platform
-            </div>
+<div class="footer">
+    S.F Works Hub • Trusted Work Platform
+</div>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
 </div>
 
 </body>
-  </html>
+</html>
