@@ -17,7 +17,7 @@ from flask_migrate import Migrate
 from models.user import User
 from models.chat import Chat
 from models.work_model import Work
-from models.work_application_model import WorkApplication
+from models.work_application import WorkApplication
 
 from routes.auth import auth
 from routes.owner import owner
