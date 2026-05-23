@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Apply Work • S.F Works Hub</title>
+<title>Apply Work</title>
 
 <style>
 
@@ -17,7 +17,6 @@ body{
     padding: 20px;
 }
 
-/* CARD */
 .card{
     max-width: 650px;
     margin: auto;
@@ -27,7 +26,6 @@ body{
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-/* TITLE */
 h2{
     margin-bottom: 5px;
 }
@@ -38,7 +36,6 @@ h2{
     margin-bottom: 20px;
 }
 
-/* INPUT */
 input, textarea{
     width: 100%;
     margin: 10px 0;
@@ -55,7 +52,6 @@ textarea{
     resize: none;
 }
 
-/* BUTTON */
 button{
     width: 100%;
     padding: 12px;
@@ -63,16 +59,14 @@ button{
     color: white;
     border: none;
     border-radius: 10px;
-    cursor: pointer;
     font-weight: bold;
-    margin-top: 10px;
+    cursor: pointer;
 }
 
 button:hover{
     background: #1d4ed8;
 }
 
-/* FOOTER */
 .footer{
     text-align:center;
     margin-top:15px;
@@ -89,13 +83,21 @@ button:hover{
 <div class="card">
 
     <h2>🚀 Apply for Work #{{ work.id }}</h2>
-    <div class="sub">Fill up your details carefully before submitting</div>
+    <div class="sub">{{ work.title if work.title else "Fill all details carefully" }}</div>
 
     <form method="POST" action="{{ url_for('application.apply_work', work_id=work.id) }}">
 
+        <!-- USER INFO -->
+        <input type="text" name="name" placeholder="Your Name" required>
+
+        <input type="text" name="phone" placeholder="Phone Number" required>
+
+        <textarea name="address" placeholder="Your Address" required></textarea>
+
+        <!-- APPLICATION INFO -->
         <textarea name="message" placeholder="Write your message..."></textarea>
 
-        <input type="number" name="experience_years" placeholder="Experience years">
+        <input type="number" name="experience_years" placeholder="Experience years" min="0">
 
         <input type="text" name="expected_salary" placeholder="Expected salary">
 
