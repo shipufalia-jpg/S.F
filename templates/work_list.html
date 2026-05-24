@@ -544,7 +544,7 @@ body{
             <div class="actions">
 
                 <form method="POST"
-                      action="{{ url_for('work.apply_work', id=w.id) }}">
+                      action="{{ url_for('application.apply_form', work_id=w.id) }}"
 
               <button type="submit">
                       Apply Now
