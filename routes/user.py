@@ -138,3 +138,61 @@ def chat(user_id):
         messages=messages,
         current_user_id=current_user_id
 )
+
+@user.route("/inbox")
+def inbox():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/auth/login")
+
+    user_id = int(user_id)
+
+    # শুধু latest message per user আনতে হবে
+    subquery = db.session.query(
+        Chat,
+        func.max(Chat.created_at).label("last_time")
+    ).filter(
+        or_(
+            Chat.sender_id == user_id,
+            Chat.receiver_id == user_id
+        )
+    ).group_by(
+        Chat.sender_id,
+        Chat.receiver_id
+    ).order_by(Chat.created_at.desc()).all()
+
+    inbox_data = {}
+
+    for chat, _ in subquery:
+
+        other_user_id = chat.receiver_id if chat.sender_id == user_id else chat.sender_id
+
+        if other_user_id not in inbox_data:
+            inbox_data[other_user_id] = {
+                "user_id": other_user_id,
+                "last_message": chat.message,
+                "time": chat.created_at,
+                "unread": 0
+            }
+
+        if chat.receiver_id == user_id and not chat.is_read:
+            inbox_data[other_user_id]["unread"] += 1
+
+    return render_template("inbox.html", inbox=list(inbox_data.values()))
+
+@user.route("/chat/<int:user_id>")
+def chat(user_id):
+
+    current_user_id = int(session.get("user_id"))
+
+    Chat.query.filter_by(
+        sender_id=user_id,
+        receiver_id=current_user_id,
+        is_read=False
+    ).update({"is_read": True})
+
+    db.session.commit()
+
+    # তারপর normal chat load
