@@ -195,21 +195,28 @@ def controlled_users():
             "status": u.status,
             "controller_id": u.controller_id,
 
+            # =================================================
+            # REAL PROFILE IMAGE ONLY
+            # =================================================
+
             "profile_image":
                 u.profile.image
-                if hasattr(u, "profile") and u.profile
+                if hasattr(u, "profile")
+                and u.profile
                 and getattr(u.profile, "image", None)
-                else "https://i.pravatar.cc/150?img=12",
+                else None,
 
             "address":
                 u.profile.address
-                if hasattr(u, "profile") and u.profile
+                if hasattr(u, "profile")
+                and u.profile
                 and getattr(u.profile, "address", None)
                 else "Not Added",
 
             "bio":
                 u.profile.bio
-                if hasattr(u, "profile") and u.profile
+                if hasattr(u, "profile")
+                and u.profile
                 and getattr(u.profile, "bio", None)
                 else "No bio",
 
