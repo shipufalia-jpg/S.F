@@ -598,76 +598,39 @@ body{
 </div>
 <!-- ================= TOPBAR ================= -->
 
-<div class="left">    
+<div class="left">  
 
-    <button class="menu-btn" onclick="openMenu()">☰</button>    
+    <button class="menu-btn" onclick="openMenu()">☰</button>  
 
-    <div class="logo">    
+    <div class="logo">  
 
-        <div class="logo-box">SF</div>    
+        <div class="logo-box">SF</div>  
 
-        <b>S.F Hub</b>    
+        <b>S.F Hub</b>  
 
-    </div>
+    </div>  
 
-</div>    
+</div>  
 
-<div class="right" style="display:flex; align-items:center; gap:10px;">    
+<div class="right">  
 
-    <div class="notif">🔔</div>    
+    <div class="notif">🔔</div>  
 
-    <!-- INBOX -->
-    <a href="/inbox" style="text-decoration:none;">
-        <div style="
-            width:42px;
-            height:42px;
-            border-radius:10px;
-            background:#1e293b;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:white;
-            font-size:18px;
-            cursor:pointer;
-            position:relative;
-        ">
-            📩
+    <div class="profile" onclick="window.location.href='/profile'">  
 
-            <!-- BADGE -->
-            <span style="
-                position:absolute;
-                top:-5px;
-                right:-5px;
-                background:red;
-                width:18px;
-                height:18px;
-                border-radius:50%;
-                font-size:11px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-            ">
-                0
-            </span>
+        <span class="online-dot"></span>  
 
-        </div>
-    </a>
+        <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">  
 
-    <!-- PROFILE -->
-    <div class="profile" onclick="window.location.href='/profile'">    
+        <small>  
+            {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}  
+        </small>  
 
-        <span class="online-dot"></span>    
-
-        <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">    
-
-        <small>    
-            {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}    
-        </small>    
-
-    </div>    
+    </div>  
 
 </div>
 
+</div>  
 <!-- ================= SEARCH ================= -->
 
 <div class="search-bar">
