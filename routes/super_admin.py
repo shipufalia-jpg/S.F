@@ -253,7 +253,7 @@ def applications():
 
 
 # =========================================================
-# APPROVE ADMIN
+# UPDATE ADMIN STATUS
 # =========================================================
 
 @super_admin.route('/admin/<int:id>/status', methods=["POST"])
@@ -270,25 +270,45 @@ def update_admin_status(id):
 
     action = data.get("action")
 
-    if action not in ["approve", "block", "unblock"]:
+    allowed = [
+        "approve",
+        "reject",
+        "block",
+        "unblock"
+    ]
+
+    if action not in allowed:
         return error("Invalid action")
 
     old_status = admin.status
 
-    if action == "block":
+    # =====================================================
+    # STATUS LOGIC
+    # =====================================================
+
+    if action == "approve":
+        admin.status = "active"
+
+    elif action == "reject":
+        admin.status = "rejected"
+
+    elif action == "block":
         admin.status = "blocked"
-    else:
+
+    elif action == "unblock":
         admin.status = "active"
 
     db.session.commit()
 
     # =====================================================
-    # SOCKET NOTIFICATION
+    # SOCKET
     # =====================================================
 
     socketio.emit(
         "notify",
-        {"message": f"Admin {action}"},
+        {
+            "message": f"Your account status: {admin.status}"
+        },
         room=f"user_{admin.id}"
     )
 
@@ -307,9 +327,9 @@ def update_admin_status(id):
         }
     )
 
-    return success(message=f"Admin {action} successful")
-
-
+    return success(
+        message=f"Admin {action} successful"
+    )
 # =========================================================
 # BULK ADMIN ACTION
 # =========================================================
