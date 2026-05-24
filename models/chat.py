@@ -1,13 +1,28 @@
 from extensions import db
 from datetime import datetime
+from sqlalchemy.sql import func
 
 
 class Chat(db.Model):
+    __tablename__ = "chat"
+
+    # 🆔 PRIMARY KEY
     id = db.Column(db.Integer, primary_key=True)
 
     # 👤 USERS
-    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    sender_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False,
+        index=True
+    )
+
+    receiver_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False,
+        index=True
+    )
 
     # 💬 MESSAGE
     message = db.Column(db.Text, nullable=False)
@@ -30,17 +45,35 @@ class Chat(db.Model):
     is_reported = db.Column(db.Boolean, default=False, index=True)
     report_reason = db.Column(db.Text, nullable=True)
 
-    # ⌨️ TYPING INDICATOR (NEW)
+    # ⌨️ TYPING INDICATOR
     is_typing = db.Column(db.Boolean, default=False, index=True)
     typing_at = db.Column(db.DateTime, nullable=True)
 
     # 🕒 TIMESTAMPS
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_at = db.Column(
+        db.DateTime,
+        default=func.now(),
+        index=True
+    )
+
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
 
     # 🔁 RELATIONSHIP
-    sender = db.relationship('User', foreign_keys=[sender_id])
-    receiver = db.relationship('User', foreign_keys=[receiver_id])
+    sender = db.relationship(
+        'User',
+        foreign_keys=[sender_id],
+        lazy=True
+    )
+
+    receiver = db.relationship(
+        'User',
+        foreign_keys=[receiver_id],
+        lazy=True
+    )
 
     # 📌 HELPERS
     def mark_read(self):
@@ -50,4 +83,3 @@ class Chat(db.Model):
     def set_typing(self, status=True):
         self.is_typing = status
         self.typing_at = datetime.utcnow()
-      
