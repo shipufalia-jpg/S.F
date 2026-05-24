@@ -807,6 +807,96 @@ body{
                     </small>
 
                 </div>
+<!-- ================= USERS SECTION ================= -->
+
+<div class="users-section">
+
+    <div class="section-header">
+
+        <h2>👥 Users</h2>
+
+        <span class="user-count">
+            {{ profiles|length if profiles else 0 }} Users
+        </span>
+
+    </div>
+
+    {% if profiles and profiles|length > 0 %}
+
+    <div class="users-grid">
+
+        {% for p in profiles %}
+
+        <div class="user-card">
+
+            <div class="user-cover"></div>
+
+            <div class="user-profile">
+
+                <img src="{{ p.profile_img if p.profile_img else '/static/default.png' }}">
+
+                <span class="online-status"></span>
+
+            </div>
+
+            <div class="user-info">
+
+                <h3>
+                    {{ p.name if p.name else 'User' }}
+                </h3>
+
+                <p class="user-email">
+                    {{ p.user.email if p.user and p.user.email else 'No Email' }}
+                </p>
+
+                <div class="user-badges">
+
+                    <span class="role-badge">
+                        {{ p.user.role if p.user and p.user.role else 'user' }}
+                    </span>
+
+                    <span class="active-badge">
+                        Active
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- ================= UPDATED STATS ================= -->
+
+            <div class="user-stats">
+
+                <!-- AREA -->
+                <div class="stat-box">
+
+                    <b>
+                        {{ p.address if p.address else 'No Area' }}
+                    </b>
+
+                    <small>Area</small>
+
+                </div>
+
+                <!-- SKILLS -->
+                <div class="stat-box">
+
+                    <b>
+                        {{ p.skills if p.skills else 'No Skills' }}
+                    </b>
+
+                    <small>Skills</small>
+
+                </div>
+
+                <!-- USER ID -->
+                <div class="stat-box">
+
+                    <b>#{{ p.user.id if p.user else 0 }}</b>
+
+                    <small>ID</small>
+
+                </div>
 
             </div>
 
@@ -843,7 +933,6 @@ body{
     {% endif %}
 
 </div>
-
 <!-- ================= SCRIPT ================= -->
 
 <script>
