@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -37,7 +38,7 @@ body{
 }
 
 .container{
-    max-width:1000px;
+    max-width:900px;
     margin:auto;
     padding:20px;
 }
@@ -46,8 +47,8 @@ body{
     background:#111827;
     border:1px solid rgba(255,255,255,0.06);
     border-radius:18px;
-    padding:20px;
-    margin-bottom:16px;
+    padding:18px;
+    margin-bottom:15px;
 }
 
 .title{
@@ -59,13 +60,15 @@ body{
 .label{
     color:#94a3b8;
     font-size:13px;
+    margin-top:6px;
 }
 
 .value{
     font-weight:600;
-    margin-bottom:10px;
+    margin-bottom:8px;
 }
 
+/* STATUS */
 .status{
     display:inline-block;
     padding:6px 12px;
@@ -75,16 +78,19 @@ body{
     margin-top:10px;
 }
 
-.pending{ background:rgba(245,158,11,0.15); color:#fbbf24; }
+/* COLORS */
+.applied{ background:rgba(245,158,11,0.15); color:#fbbf24; }
 .approved{ background:rgba(34,197,94,0.15); color:#4ade80; }
 .rejected{ background:rgba(239,68,68,0.15); color:#f87171; }
-.unknown{ background:rgba(148,163,184,0.15); color:#cbd5e1; }
+.cancelled{ background:rgba(148,163,184,0.15); color:#cbd5e1; }
+.unknown{ background:rgba(100,116,139,0.15); color:#e2e8f0; }
 
 .empty{
     text-align:center;
     margin-top:80px;
     color:#94a3b8;
 }
+
 </style>
 </head>
 
@@ -101,6 +107,8 @@ body{
 
     {% for a in apps %}
 
+    {% set status = (a.status or 'applied') | lower %}
+
     <div class="card">
 
         <div class="title">💼 Work ID: {{ a.work_id }}</div>
@@ -114,16 +122,17 @@ body{
         <div class="label">Applied IP</div>
         <div class="value">{{ a.applied_ip or "N/A" }}</div>
 
-        {% set status = (a.status or "pending") | lower %}
-
-        {% if status == "pending" %}
-            <div class="status pending">🟡 Pending</div>
+        {% if status == "applied" %}
+            <div class="status applied">🟡 Applied</div>
 
         {% elif status == "approved" %}
             <div class="status approved">🟢 Approved</div>
 
         {% elif status == "rejected" %}
             <div class="status rejected">🔴 Rejected</div>
+
+        {% elif status == "cancelled" %}
+            <div class="status cancelled">⚫ Cancelled</div>
 
         {% else %}
             <div class="status unknown">⚪ Unknown</div>
