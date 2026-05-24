@@ -176,7 +176,7 @@ def login():
 
     # SUPER ADMIN
     elif role == "super_admin":
-        return redirect("/super-admin/dashboard")
+        return redirect("/super/")
 
     # ADMIN
     elif role == "admin":
