@@ -91,8 +91,7 @@ def public_profile(user_id):
 # =================================================
 # 💬 CHAT SYSTEM
 # =================================================
-from flask import render_template, redirect, session
-from sqlalchemy import or_, and_
+
 
 @user.route("/chat/<int:user_id>")
 @role_required("user")
