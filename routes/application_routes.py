@@ -220,7 +220,7 @@ def admin_applications():
     ).all()
 
     return render_template(
-        "admin_applications.html",
+        "owner_applications.html",
         applications=applications,
         status=status
     )
