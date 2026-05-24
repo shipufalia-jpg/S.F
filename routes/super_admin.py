@@ -116,11 +116,42 @@ def view_admins():
     ).paginate(page=page, per_page=limit)
 
     return success({
+
         "admins": [{
+
             "id": a.id,
             "name": a.name,
             "phone": a.phone,
-            "status": a.status
+            "email": getattr(a, "email", ""),
+            "status": a.status,
+            "controller_id": a.controller_id,
+
+            "profile_image":
+                a.profile.image
+                if hasattr(a, "profile")
+                and a.profile
+                and getattr(a.profile, "image", None)
+                else "/static/images/default.png",
+
+            "address":
+                a.profile.address
+                if hasattr(a, "profile")
+                and a.profile
+                and getattr(a.profile, "address", None)
+                else "Not Added",
+
+            "bio":
+                a.profile.bio
+                if hasattr(a, "profile")
+                and a.profile
+                and getattr(a.profile, "bio", None)
+                else "No Bio",
+
+            "created_at":
+                a.created_at.strftime("%d %b %Y")
+                if a.created_at
+                else "N/A"
+
         } for a in admins.items],
 
         "pagination": {
@@ -128,7 +159,9 @@ def view_admins():
             "pages": admins.pages,
             "current": admins.page
         }
+
     })
+
 
 
 # =========================================================
