@@ -1,9 +1,10 @@
 from flask_socketio import emit, join_room
 from flask import session
-
 from extensions import socketio, db
 from models.chat import Chat
 
+
+# ================= JOIN ROOM =================
 @socketio.on("join")
 def handle_join(data):
 
@@ -12,17 +13,19 @@ def handle_join(data):
     if not user_id:
         return
 
-    join_room(f"user_{user_id}")
+    room = f"user_{user_id}"
+    join_room(room)
 
-    print(f"Joined: user_{user_id}")
+    print(f"Joined: {room}")
 
 
+# ================= SEND MESSAGE =================
 @socketio.on("send_message")
 def send_message(data):
 
     sender_id = session.get("user_id")
 
-    print("SESSION USER:", sender_id)  # DEBUG
+    print("SESSION USER:", sender_id)
 
     if not sender_id:
         return
@@ -46,10 +49,24 @@ def send_message(data):
 
     print("SAVED CHAT ID:", chat.id)
 
-    emit("receive_message", {
+    payload = {
         "id": chat.id,
         "sender_id": chat.sender_id,
-        "receiver_id": receiver_id,
+        "receiver_id": chat.receiver_id,
         "message": chat.message,
         "created_at": str(chat.created_at)
-    }, broadcast=True)
+    }
+
+    # 🔥 SEND TO RECEIVER ROOM
+    socketio.emit(
+        "receive_message",
+        payload,
+        room=f"user_{receiver_id}"
+    )
+
+    # 🔥 SEND TO SENDER ROOM
+    socketio.emit(
+        "receive_message",
+        payload,
+        room=f"user_{sender_id}"
+    )
