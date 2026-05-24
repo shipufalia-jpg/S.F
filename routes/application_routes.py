@@ -180,7 +180,12 @@ def my_applications():
         return redirect('/auth/login')
 
     apps = WorkApplication.query.filter_by(
-        user_id=user_id
+        user_id=user_id,
+        is_deleted=False
     ).order_by(WorkApplication.id.desc()).all()
+
+    # 🔥 DEBUG (VERY IMPORTANT)
+    for a in apps:
+        print("APP:", a.id, a.status)
 
     return render_template("my_applications.html", apps=apps)
