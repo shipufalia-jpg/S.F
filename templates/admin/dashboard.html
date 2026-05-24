@@ -2,220 +2,553 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>S.F Works Hub Admin</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard • S.F WORKS HUB</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
-/* ================= GLASS THEME ================= */
-:root {
-    --bg: #f4f6f9;
-    --card: rgba(255,255,255,0.8);
-    --text: #111;
-    --primary: #3b82f6;
-    --sidebar: #0f172a;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-body.dark {
-    --bg: #0b1220;
-    --card: rgba(17,24,39,0.85);
-    --text: #fff;
-}
-
-/* ================= GLOBAL ================= */
-body {
-    margin: 0;
-    font-family: Arial;
-    background: var(--bg);
-    color: var(--text);
-}
-
-/* ================= TOPBAR ================= */
-.topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 15px;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.logo {
-    font-weight: bold;
-    font-size: 18px;
-    color: #22c55e;
-}
-
-.search-box input {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    width: 250px;
+body{
+    font-family:'Inter',sans-serif;
+    background:#0f172a;
+    color:white;
+    display:flex;
 }
 
 /* ================= SIDEBAR ================= */
-.sidebar {
-    position: fixed;
-    top: 60px;
-    left: -260px;
-    width: 240px;
-    height: 100%;
-    background: var(--sidebar);
-    padding: 20px;
-    transition: 0.3s;
-    z-index: 999;
+
+.sidebar{
+    width:270px;
+    min-height:100vh;
+    background:#111827;
+    border-right:1px solid rgba(255,255,255,0.08);
+    padding:20px;
+    position:fixed;
+    left:0;
+    top:0;
+    overflow-y:auto;
 }
 
-.sidebar.open {
-    left: 0;
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:30px;
 }
 
-.sidebar a {
-    display: block;
-    color: #cbd5e1;
-    padding: 10px 0;
-    text-decoration: none;
+.logo-box{
+    width:50px;
+    height:50px;
+    border-radius:15px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:800;
+}
+
+.logo-text h2{
+    font-size:20px;
+    font-weight:800;
+}
+
+.logo-text p{
+    color:#94a3b8;
+    font-size:12px;
+}
+
+/* MENU */
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.menu a{
+    text-decoration:none;
+    color:white;
+    padding:14px 16px;
+    border-radius:14px;
+    transition:0.3s;
+    font-size:14px;
+    font-weight:600;
+    background:#1e293b;
+}
+
+.menu a:hover{
+    background:#2563eb;
+    transform:translateX(4px);
 }
 
 /* ================= MAIN ================= */
-.main {
-    margin-top: 70px;
-    padding: 20px;
+
+.main{
+    margin-left:270px;
+    width:100%;
+    padding:25px;
 }
 
-/* ================= BUTTON ================= */
-.btn {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+/* ================= SYSTEM BAR ================= */
+
+.system-bar{
+    width:100%;
+    background:linear-gradient(90deg,#2563eb,#7c3aed);
+    padding:12px 18px;
+    border-radius:18px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
 }
 
-.primary { background: var(--primary); color: white; }
-
-/* ================= CARDS ================= */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-top: 20px;
+.system-left{
+    font-size:14px;
+    font-weight:700;
 }
 
-.card-btn {
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    border-radius: 14px;
-    padding: 20px;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    transition: 0.2s;
+.system-right{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
 }
 
-.card-btn:hover {
-    transform: translateY(-4px);
+.live-badge{
+    background:rgba(255,255,255,0.14);
+    padding:7px 14px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:700;
 }
 
-/* ================= TABLE ================= */
-.table-box {
-    margin-top: 25px;
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    padding: 15px;
-    border-radius: 12px;
+/* ================= TOPBAR ================= */
+
+.topbar{
+    background:#111827;
+    padding:18px;
+    border-radius:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    border:1px solid rgba(255,255,255,0.06);
+    gap:20px;
+    flex-wrap:wrap;
 }
 
-/* ================= MODAL ================= */
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 9999;
+.search-box{
+    flex:1;
+    min-width:250px;
 }
 
-/* ================= USER MODAL (GLASS CLEAN UI) ================= */
-.user-modal {
-    width: 520px;
-    max-width: 95%;
-    margin: 6% auto;
-    background: var(--card);
-    backdrop-filter: blur(15px);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    animation: pop 0.2s ease;
+.search-box input{
+    width:100%;
+    padding:14px 16px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    background:#1e293b;
+    color:white;
+    font-size:14px;
 }
 
-@keyframes pop {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+.admin-info{
+    text-align:right;
 }
 
-/* HEADER */
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #3b82f6;
-    color: white;
-    padding: 12px 15px;
+.admin-info h3{
+    font-size:17px;
 }
 
-.close-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
+.admin-info p{
+    color:#94a3b8;
+    font-size:13px;
 }
 
-/* PROFILE GRID */
-.profile-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 15px;
+/* ================= PROFILE CARD ================= */
+
+.profile-card{
+    background:#111827;
+    border-radius:20px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.06);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+    gap:15px;
 }
 
-/* PROFILE BOX */
-.profile-box {
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+.profile-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-.profile-box h4 {
-    margin: 0;
-    font-size: 12px;
-    color: gray;
+.avatar{
+    width:75px;
+    height:75px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    font-weight:800;
 }
 
-.profile-box p {
-    margin: 5px 0 0;
-    font-size: 15px;
-    font-weight: bold;
+.profile-info h2{
+    font-size:24px;
+    margin-bottom:5px;
 }
 
-/* FULL WIDTH */
-.full {
-    grid-column: span 2;
+.profile-info p{
+    color:#94a3b8;
+    font-size:14px;
 }
 
-/* RESPONSIVE */
-@media(max-width: 900px){
-    .cards { grid-template-columns: 1fr 1fr; }
-    .search-box input { width: 140px; }
+.profile-btn{
+    padding:12px 18px;
+    border-radius:12px;
+    background:#2563eb;
+    text-decoration:none;
+    color:white;
+    font-weight:700;
+    transition:0.3s;
+}
+
+.profile-btn:hover{
+    background:#1d4ed8;
+}
+
+/* ================= STATS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:#111827;
+    padding:24px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.06);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    border-color:#2563eb;
+}
+
+.card h4{
+    color:#94a3b8;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.card h1{
+    font-size:34px;
+    font-weight:800;
+}
+
+.card p{
+    color:#64748b;
+    font-size:13px;
+    margin-top:8px;
+}
+
+/* ================= SECTION ================= */
+
+.section-title{
+    margin-bottom:16px;
+    font-size:24px;
+    font-weight:800;
+}
+
+/* ================= ACTIONS ================= */
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:18px;
+}
+
+.action-card{
+    background:#111827;
+    border-radius:20px;
+    padding:24px;
+    border:1px solid rgba(255,255,255,0.06);
+    transition:0.3s;
+}
+
+.action-card:hover{
+    transform:translateY(-5px);
+    border-color:#2563eb;
+}
+
+.action-icon{
+    font-size:40px;
+    margin-bottom:14px;
+}
+
+.action-card h3{
+    margin-bottom:10px;
+    font-size:20px;
+}
+
+.action-card p{
+    color:#94a3b8;
+    font-size:14px;
+    margin-bottom:18px;
+    line-height:1.6;
+}
+
+.btn{
+    display:inline-block;
+    padding:11px 18px;
+    border-radius:12px;
+    text-decoration:none;
+    background:#2563eb;
+    color:white;
+    font-weight:700;
+    font-size:14px;
+    transition:0.3s;
+}
+
+.btn:hover{
+    background:#1d4ed8;
+}
+
+/* ================= QUICK BUTTONS ================= */
+
+.quick-buttons{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-top:30px;
+}
+
+.quick-btn{
+    background:#111827;
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:18px;
+    padding:22px;
+    text-align:center;
+    text-decoration:none;
+    color:white;
+    transition:0.3s;
+}
+
+.quick-btn:hover{
+    transform:translateY(-5px);
+    background:#1e293b;
+}
+
+.quick-btn .icon{
+    font-size:38px;
+}
+
+.quick-btn h3{
+    margin-top:12px;
+    font-size:17px;
+}
+
+.quick-btn p{
+    color:#94a3b8;
+    font-size:13px;
+    margin-top:6px;
+}
+
+/* ================= USER PROFILE VIEW ================= */
+
+.user-view{
+    margin-top:35px;
+}
+
+.user-box{
+    background:#111827;
+    border-radius:20px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+.user-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 0;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+.user-item:last-child{
+    border-bottom:none;
+}
+
+.user-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.user-avatar{
+    width:55px;
+    height:55px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:18px;
+}
+
+.user-info h4{
+    font-size:16px;
+    margin-bottom:4px;
+}
+
+.user-info p{
+    color:#94a3b8;
+    font-size:13px;
+}
+
+.user-btn{
+    padding:10px 14px;
+    border-radius:10px;
+    text-decoration:none;
+    background:#2563eb;
+    color:white;
+    font-size:13px;
+    font-weight:700;
+}
+
+/* ================= ACTIVITY ================= */
+
+.activity-section{
+    margin-top:35px;
+}
+
+.activity-box{
+    background:#111827;
+    border-radius:20px;
+    padding:18px;
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+.activity-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 0;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+.activity-item:last-child{
+    border-bottom:none;
+}
+
+.activity-left h4{
+    font-size:15px;
+    margin-bottom:5px;
+}
+
+.activity-left p{
+    color:#94a3b8;
+    font-size:13px;
+}
+
+.activity-status{
+    padding:7px 14px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.success{
+    background:rgba(34,197,94,0.15);
+    color:#4ade80;
+}
+
+.warning{
+    background:rgba(245,158,11,0.15);
+    color:#fbbf24;
+}
+
+.danger{
+    background:rgba(239,68,68,0.15);
+    color:#f87171;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+    margin-top:45px;
+    text-align:center;
+    color:#64748b;
+    font-size:13px;
+    padding-bottom:30px;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:900px){
+
+    body{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        position:relative;
+        min-height:auto;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .admin-info{
+        text-align:left;
+    }
+
+    .search-box{
+        width:100%;
+    }
+
+    .profile-card{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .user-item{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
 }
 
 </style>
@@ -223,192 +556,395 @@ body {
 
 <body>
 
-<!-- ================= TOPBAR ================= -->
-<div class="topbar">
+<!-- ================= SIDEBAR ================= -->
 
-    <button class="btn primary" onclick="toggleSidebar()">☰</button>
+<div class="sidebar">
 
-    <div class="logo">S.F Works Hub</div>
+    <div class="logo">
 
-    <div class="search-box">
-        <input type="text" placeholder="Search users..." oninput="searchTable(this.value)">
+        <div class="logo-box">
+            SF
+        </div>
+
+        <div class="logo-text">
+            <h2>S.F WORKS HUB</h2>
+            <p>Production Panel</p>
+        </div>
+
     </div>
 
-    <button class="btn primary" onclick="toggleDark()">🌙</button>
-</div>
+    <div class="menu">
 
-<!-- ================= SIDEBAR ================= -->
-<div class="sidebar" id="sidebar">
-    <a href="/admin/">📊 Dashboard</a>
-    <a href="/admin/users-page">👥 Users</a>
-    <a
-    href="{{ url_for('booking.admin_bookings') }}"
-    class="btn btn-primary"
->
-    Open Booking Control
-    </a>
-    <a href="/admin/works">🧾 Works</a>
-    <a href="/admin/profiles">👤 Profiles</a>
+        <a href="/admin/">🏠 Dashboard</a>
+
+        <a href="/admin/users-page">👥 Users Control</a>
+
+        <a href="/owner/applications">📋 Application Approval</a>
+
+        <a href="/booking/admin">📅 Booking Control</a>
+
+        <a href="/admin/analytics">📊 Analytics</a>
+
+        <a href="/help-line">☎ Helpline</a>
+
+        <a href="/works">💼 Works</a>
+
+        <a href="/admin/settings">⚙ Settings</a>
+
+        <a href="/auth/logout">🚪 Logout</a>
+
+    </div>
+
 </div>
 
 <!-- ================= MAIN ================= -->
+
 <div class="main">
 
-    <h3>Welcome Admin</h3>
-    <small>User ID: {{ user_id }}</small>
+    <!-- SYSTEM BAR -->
 
-    <div class="cards">
+    <div class="system-bar">
 
-        <button class="card-btn">
+        <div class="system-left">
+            🚀 S.F WORKS HUB • Production Server Running
+        </div>
+
+        <div class="system-right">
+
+            <div class="live-badge">🟢 LIVE</div>
+
+            <div class="live-badge">🔒 Secure</div>
+
+            <div class="live-badge">⚡ Admin Access</div>
+
+        </div>
+
+    </div>
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+        <div class="search-box">
+            <input type="text" placeholder="Search users, works, bookings...">
+        </div>
+
+        <div class="admin-info">
+            <h3>🛡 Admin Control Panel</h3>
+            <p>Production Level Dashboard</p>
+        </div>
+
+    </div>
+
+    <!-- PROFILE -->
+
+    <div class="profile-card">
+
+        <div class="profile-left">
+
+            <div class="avatar">
+                A
+            </div>
+
+            <div class="profile-info">
+
+                <h2>Welcome Admin</h2>
+
+                <p>
+                    Manage users, applications, bookings and works.
+                </p>
+
+            </div>
+
+        </div>
+
+        <a href="/admin/settings" class="profile-btn">
+            ⚙ Open Settings
+        </a>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div class="card">
             <h4>Total Users</h4>
-            <h2>{{ total }}</h2>
-        </button>
+            <h1>{{ total }}</h1>
+            <p>Registered users</p>
+        </div>
 
-        <button class="card-btn">
-            <h4>Active</h4>
-            <h2>{{ active }}</h2>
-        </button>
+        <div class="card">
+            <h4>Active Users</h4>
+            <h1>{{ active }}</h1>
+            <p>Currently active users</p>
+        </div>
 
-        <button class="card-btn">
-            <h4>Blocked</h4>
-            <h2>{{ blocked }}</h2>
-        </button>
+        <div class="card">
+            <h4>Blocked Users</h4>
+            <h1>{{ blocked }}</h1>
+            <p>Security restricted users</p>
+        </div>
 
-        <button class="card-btn">
-            <h4>Bookings</h4>
-            <h2 id="bookingCount">--</h2>
-        </button>
+        <div class="card">
+            <h4>Applications</h4>
+            <h1>{{ total_applications or 0 }}</h1>
+            <p>Total work applications</p>
+        </div>
 
     </div>
 
-    <div class="table-box">
-        <h3>Users</h3>
+    <!-- QUICK ACTIONS -->
 
-        <table width="100%">
-            <thead>
-                <tr>
-                    <th>ID</th><th>Name</th><th>Status</th><th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="usersTable"></tbody>
-        </table>
+    <h2 class="section-title">
+        ⚡ Quick Controls
+    </h2>
+
+    <div class="actions">
+
+        <div class="action-card">
+
+            <div class="action-icon">📋</div>
+
+            <h3>Application Approval</h3>
+
+            <p>
+                Approve or reject user applications instantly.
+            </p>
+
+            <a href="/owner/applications" class="btn">
+                Open Panel
+            </a>
+
+        </div>
+
+        <div class="action-card">
+
+            <div class="action-icon">📅</div>
+
+            <h3>Booking Control</h3>
+
+            <p>
+                Manage all booking requests and statuses.
+            </p>
+
+            <a href="/booking/admin" class="btn">
+                Manage Bookings
+            </a>
+
+        </div>
+
+        <div class="action-card">
+
+            <div class="action-icon">👥</div>
+
+            <h3>Users Management</h3>
+
+            <p>
+                Control active, blocked and deleted users.
+            </p>
+
+            <a href="/admin/users-page" class="btn">
+                Manage Users
+            </a>
+
+        </div>
+
+        <div class="action-card">
+
+            <div class="action-icon">☎</div>
+
+            <h3>Help Line</h3>
+
+            <p>
+                Emergency support and admin communication.
+            </p>
+
+            <a href="/help-line" class="btn">
+                Open Help
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- QUICK BUTTONS -->
+
+    <div class="quick-buttons">
+
+        <a href="/owner/applications" class="quick-btn">
+
+            <div class="icon">📋</div>
+
+            <h3>Applications</h3>
+
+            <p>Approve or reject users</p>
+
+        </a>
+
+        <a href="/booking/admin" class="quick-btn">
+
+            <div class="icon">📅</div>
+
+            <h3>Bookings</h3>
+
+            <p>Manage booking system</p>
+
+        </a>
+
+        <a href="/admin/users-page" class="quick-btn">
+
+            <div class="icon">👥</div>
+
+            <h3>Users</h3>
+
+            <p>Users management panel</p>
+
+        </a>
+
+        <a href="/works" class="quick-btn">
+
+            <div class="icon">💼</div>
+
+            <h3>Works</h3>
+
+            <p>Control work posts</p>
+
+        </a>
+
+    </div>
+
+    <!-- USER PROFILE VIEW -->
+
+    <div class="user-view">
+
+        <h2 class="section-title">
+            👤 Recent Users
+        </h2>
+
+        <div class="user-box">
+
+            <div class="user-item">
+
+                <div class="user-left">
+
+                    <div class="user-avatar">
+                        U
+                    </div>
+
+                    <div class="user-info">
+
+                        <h4>User Name</h4>
+
+                        <p>user@gmail.com</p>
+
+                    </div>
+
+                </div>
+
+                <a href="/admin/users-page" class="user-btn">
+                    View Profile
+                </a>
+
+            </div>
+
+            <div class="user-item">
+
+                <div class="user-left">
+
+                    <div class="user-avatar">
+                        S
+                    </div>
+
+                    <div class="user-info">
+
+                        <h4>Worker Account</h4>
+
+                        <p>worker@gmail.com</p>
+
+                    </div>
+
+                </div>
+
+                <a href="/admin/users-page" class="user-btn">
+                    View Profile
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ACTIVITY -->
+
+    <div class="activity-section">
+
+        <h2 class="section-title">
+            📈 Recent Activity
+        </h2>
+
+        <div class="activity-box">
+
+            <div class="activity-item">
+
+                <div class="activity-left">
+
+                    <h4>New Application Submitted</h4>
+
+                    <p>User applied for Work ID #20</p>
+
+                </div>
+
+                <div class="activity-status warning">
+                    Pending
+                </div>
+
+            </div>
+
+            <div class="activity-item">
+
+                <div class="activity-left">
+
+                    <h4>Application Approved</h4>
+
+                    <p>Admin approved worker request</p>
+
+                </div>
+
+                <div class="activity-status success">
+                    Approved
+                </div>
+
+            </div>
+
+            <div class="activity-item">
+
+                <div class="activity-left">
+
+                    <h4>User Blocked</h4>
+
+                    <p>Security restriction completed</p>
+
+                </div>
+
+                <div class="activity-status danger">
+                    Blocked
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+        © 2026 S.F WORKS HUB • Production Admin Dashboard
     </div>
 
 </div>
-
-<!-- ================= USER MODAL (ONLY ONE - CLEAN) ================= -->
-<div id="modal" class="modal">
-
-    <div class="user-modal">
-
-        <div class="modal-header">
-            <h2>👤 User Details</h2>
-            <button onclick="closeModal()" class="close-btn">✖</button>
-        </div>
-
-        <div id="profileData" class="profile-grid">
-            Loading...
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-/* ================= UI ================= */
-function toggleSidebar(){
-    document.getElementById("sidebar").classList.toggle("open");
-}
-
-function toggleDark(){
-    document.body.classList.toggle("dark");
-}
-
-function searchTable(value){
-    document.querySelectorAll("#usersTable tr").forEach(r=>{
-        r.style.display = r.innerText.toLowerCase().includes(value.toLowerCase()) ? "" : "none";
-    });
-}
-
-/* ================= USERS ================= */
-async function loadUsers(page=1){
-    const res = await fetch(`/admin/users?page=${page}`);
-    const data = await res.json();
-
-    const users = data?.data?.users || [];
-    const tbody = document.getElementById("usersTable");
-
-    tbody.innerHTML = "";
-
-    users.forEach(u=>{
-        tbody.innerHTML += `
-        <tr>
-            <td>${u.id}</td>
-            <td>${u.name}</td>
-            <td>${u.status}</td>
-            <td><button class="btn primary" onclick="viewUser(${u.id})">View</button></td>
-        </tr>`;
-    });
-}
-
-/* ================= FINAL USER VIEW (CLEAN FIXED) ================= */
-async function viewUser(id){
-
-    document.getElementById("modal").style.display = "block";
-    document.getElementById("profileData").innerHTML = "<p>Loading...</p>";
-
-    try {
-        const res = await fetch(`/admin/user/${id}`);
-
-        if(!res.ok) throw new Error("API Error");
-
-        const data = await res.json();
-        const u = data.user;
-
-        document.getElementById("profileData").innerHTML = `
-        <div class="profile-box">
-            <h4>ID</h4>
-            <p>${u.id}</p>
-        </div>
-
-        <div class="profile-box">
-            <h4>Name</h4>
-            <p>${u.name}</p>
-        </div>
-
-        <div class="profile-box">
-            <h4>Status</h4>
-            <p>${u.status}</p>
-        </div>
-
-        <div class="profile-box">
-            <h4>Email</h4>
-            <p>${u.email}</p>
-        </div>
-
-        <div class="profile-box full">
-            <h4>Created</h4>
-            <p>${u.created_at}</p>
-        </div>
-        `;
-
-    } catch(err){
-        console.error(err);
-        document.getElementById("profileData").innerHTML =
-            "<p style='color:red;'>User load failed</p>";
-    }
-}
-
-/* ================= CLOSE ================= */
-function closeModal(){
-    document.getElementById("modal").style.display = "none";
-}
-
-/* ================= INIT ================= */
-document.addEventListener("DOMContentLoaded", loadUsers);
-
-</script>
 
 </body>
-</html>
+                                                                </html>
