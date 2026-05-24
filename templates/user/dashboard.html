@@ -597,40 +597,42 @@ body{
 
 </div>
 <!-- ================= TOPBAR ================= -->
+<div class="topbar">
 
-<div class="left">  
+    <div class="left">
 
-    <button class="menu-btn" onclick="openMenu()">☰</button>  
+        <button class="menu-btn" onclick="openMenu()">☰</button>
 
-    <div class="logo">  
+        <div class="logo">
 
-        <div class="logo-box">SF</div>  
+            <div class="logo-box">SF</div>
 
-        <b>S.F Hub</b>  
+            <b>S.F Hub</b>
 
-    </div>  
+        </div>
 
-</div>  
+    </div>
 
-<div class="right">  
+    <div class="right">
 
-    <div class="notif">🔔</div>  
+        <div class="notif">🔔</div>
 
-    <div class="profile" onclick="window.location.href='/profile'">  
+        <div class="profile" onclick="window.location.href='/profile'">
 
-        <span class="online-dot"></span>  
+            <span class="online-dot"></span>
 
-        <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">  
+            <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">
 
-        <small>  
-            {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}  
-        </small>  
+            <small>
+                {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}
+            </small>
 
-    </div>  
+        </div>
+
+    </div>
 
 </div>
 
-</div>  
 <!-- ================= SEARCH ================= -->
 
 <div class="search-bar">
