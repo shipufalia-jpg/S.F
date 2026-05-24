@@ -136,18 +136,14 @@ const socket = io();
 const currentUserId = Number("{{ current_user_id }}");
 const receiverId = Number("{{ receiver.id }}");
 
-/* ROOM ID (IMPORTANT FIX) */
-const roomId = [currentUserId, receiverId].sort().join("_");
-
-/* JOIN ROOM */
+/* JOIN ROOM (FIXED) */
 socket.on("connect", () => {
-    socket.emit("join_room", {
-        room: roomId,
+    socket.emit("join", {
         user_id: currentUserId
     });
 });
 
-/* SEND MESSAGE */
+/* SEND MESSAGE (FIXED) */
 function sendMessage(){
 
     const input = document.getElementById("messageInput");
@@ -156,8 +152,6 @@ function sendMessage(){
     if(!message) return;
 
     socket.emit("send_message", {
-        room: roomId,
-        sender_id: currentUserId,
         receiver_id: receiverId,
         message: message
     });
@@ -170,20 +164,20 @@ socket.on("receive_message", (data) => {
 
     const box = document.getElementById("chatBox");
 
-    const row = document.createElement("div");
+    const div = document.createElement("div");
 
     if(Number(data.sender_id) === currentUserId){
 
-        row.className = "message-row me";
-        row.innerHTML = `<div class="message me">${data.message}</div>`;
+        div.className = "message-row me";
+        div.innerHTML = `<div class="message me">${data.message}</div>`;
 
     } else {
 
-        row.className = "message-row other";
-        row.innerHTML = `<div class="message other">${data.message}</div>`;
+        div.className = "message-row other";
+        div.innerHTML = `<div class="message other">${data.message}</div>`;
     }
 
-    box.appendChild(row);
+    box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 });
 
