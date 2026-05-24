@@ -91,54 +91,50 @@ def public_profile(user_id):
 # =================================================
 # 💬 CHAT SYSTEM
 # =================================================
+from flask import render_template, redirect, session
 from sqlalchemy import or_, and_
 
 @user.route("/chat/<int:user_id>")
+@role_required("user")
 def chat(user_id):
 
     current_user_id = session.get("user_id")
 
+    # 🔒 login check
     if not current_user_id:
         return redirect("/auth/login")
 
+    # 🔢 convert type (VERY IMPORTANT FIX)
     current_user_id = int(current_user_id)
+    user_id = int(user_id)
+
+    # 🚫 self chat block
+    if current_user_id == user_id:
+        return redirect("/user/dashboard")
 
     receiver = User.query.get_or_404(user_id)
 
+    # 💬 GET MESSAGES (FIXED SAFE QUERY)
     messages = Chat.query.filter(
         or_(
-            and_(Chat.sender_id == current_user_id,
-                 Chat.receiver_id == user_id),
-            and_(Chat.sender_id == user_id,
-                 Chat.receiver_id == current_user_id)
+            and_(
+                Chat.sender_id == current_user_id,
+                Chat.receiver_id == user_id
+            ),
+            and_(
+                Chat.sender_id == user_id,
+                Chat.receiver_id == current_user_id
+            )
         )
     ).order_by(Chat.id.asc()).all()
 
-    return render_template("chat.html",
-                           receiver=receiver,
-                           messages=messages,
-                           current_user_id=current_user_id)
+    # 🐞 DEBUG (temporary)
+    print("USER:", current_user_id, "CHAT WITH:", user_id)
+    print("TOTAL MESSAGES:", len(messages))
 
-@user.route("/send_message", methods=["POST"])
-def send_message():
-
-    sender_id = session.get("user_id")
-
-    if not sender_id:
-        return redirect("/auth/login")
-
-    sender_id = int(sender_id)
-
-    receiver_id = request.form.get("receiver_id")
-    message = request.form.get("message")
-
-    chat = Chat(
-        sender_id=sender_id,
-        receiver_id=int(receiver_id),
-        message=message
-    )
-
-    db.session.add(chat)
-    db.session.commit()
-
-    return redirect(f"/chat/{receiver_id}")
+    return render_template(
+        "chat.html",
+        receiver=receiver,
+        messages=messages,
+        current_user_id=current_user_id
+)
