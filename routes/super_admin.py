@@ -2,50 +2,102 @@ from flask import Blueprint, session, jsonify, request, render_template
 from functools import wraps
 from datetime import datetime, timedelta
 from sqlalchemy import func
+
 from models.user import User
-from models.work_model import Work
 from models.work_application import WorkApplication
-from models.booking import Booking
 from models.activity_log import ActivityLog
-from extensions import db
-from extensions import socketio
+
+from extensions import db, socketio
 from services.logger import log_activity
-from utils.decorators import login_required, admin_required
 
-super_admin = Blueprint('super_admin', __name__, url_prefix="/super")
+super_admin = Blueprint(
+    'super_admin',
+    __name__,
+    url_prefix="/super"
+)
 
-# ================= RESPONSE =================
+# =========================================================
+# RESPONSE
+# =========================================================
 
 def success(data=None, message="OK"):
-    return jsonify({"success": True, "message": message, "data": data}), 200
+    return jsonify({
+        "success": True,
+        "message": message,
+        "data": data
+    }), 200
+
 
 def error(msg="Error", code=400):
-    return jsonify({"success": False, "message": msg}), code
+    return jsonify({
+        "success": False,
+        "message": msg
+    }), code
 
 
-# ================= AUTH =================
+# =========================================================
+# AUTH
+# =========================================================
 
 def super_admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if session.get('role') != "super_admin":
+
+        if session.get("role") != "super_admin":
             return error("Unauthorized", 403)
+
         return f(*args, **kwargs)
+
     return wrapper
 
 
-# ================= DASHBOARD =================
+# =========================================================
+# HELPERS
+# =========================================================
+
+def get_controlled_admin_ids():
+
+    admin_ids = db.session.query(User.id).filter(
+        User.role == "admin",
+        User.controller_id == session["user_id"]
+    ).all()
+
+    return [a[0] for a in admin_ids]
+
+
+def get_controlled_user_ids():
+
+    admin_ids = get_controlled_admin_ids()
+
+    if not admin_ids:
+        return []
+
+    user_ids = db.session.query(User.id).filter(
+        User.role == "user",
+        User.controller_id.in_(admin_ids)
+    ).all()
+
+    return [u[0] for u in user_ids]
+
+
+# =========================================================
+# DASHBOARD
+# =========================================================
 
 @super_admin.route('/')
 @super_admin_required
 def dashboard_page():
-    return render_template("super_admin/dashboard.html",
+
+    return render_template(
+        "super_admin/dashboard.html",
         user_id=session.get("user_id"),
         now=datetime.utcnow()
     )
 
 
-# ================= ADMIN LIST (PAGINATION) =================
+# =========================================================
+# ADMINS LIST
+# =========================================================
 
 @super_admin.route('/admins')
 @super_admin_required
@@ -54,19 +106,23 @@ def view_admins():
     page = request.args.get("page", 1, type=int)
     limit = request.args.get("limit", 20, type=int)
 
-    query = User.query.filter_by(
-        role="admin",
-        controller_id=session['user_id']
+    query = User.query.filter(
+        User.role == "admin",
+        User.controller_id == session["user_id"]
     )
 
-    admins = query.paginate(page=page, per_page=limit)
+    admins = query.order_by(
+        User.id.desc()
+    ).paginate(page=page, per_page=limit)
 
     return success({
         "admins": [{
             "id": a.id,
-            "name": a.username,
+            "name": a.name,
+            "phone": a.phone,
             "status": a.status
         } for a in admins.items],
+
         "pagination": {
             "total": admins.total,
             "pages": admins.pages,
@@ -75,82 +131,170 @@ def view_admins():
     })
 
 
-# ================= UPDATE ADMIN =================
+# =========================================================
+# USERS UNDER CONTROLLED ADMINS
+# =========================================================
+
+@super_admin.route('/users')
+@super_admin_required
+def controlled_users():
+
+    page = request.args.get("page", 1, type=int)
+    limit = request.args.get("limit", 20, type=int)
+
+    admin_ids = get_controlled_admin_ids()
+
+    users = User.query.filter(
+        User.role == "user",
+        User.controller_id.in_(admin_ids)
+    ).order_by(
+        User.id.desc()
+    ).paginate(page=page, per_page=limit)
+
+    return success({
+        "users": [{
+            "id": u.id,
+            "name": u.name,
+            "phone": u.phone,
+            "status": u.status,
+            "controller_id": u.controller_id
+        } for u in users.items],
+
+        "pagination": {
+            "total": users.total,
+            "pages": users.pages,
+            "current": users.page
+        }
+    })
+
+
+# =========================================================
+# APPLICATIONS
+# =========================================================
+
+@super_admin.route('/applications')
+@super_admin_required
+def applications():
+
+    user_ids = get_controlled_user_ids()
+
+    apps = WorkApplication.query.filter(
+        WorkApplication.user_id.in_(user_ids),
+        WorkApplication.is_deleted == False
+    ).order_by(
+        WorkApplication.id.desc()
+    ).all()
+
+    return render_template(
+        "super_admin/applications.html",
+        applications=apps
+    )
+
+
+# =========================================================
+# APPROVE ADMIN
+# =========================================================
 
 @super_admin.route('/admin/<int:id>/status', methods=["POST"])
 @super_admin_required
 def update_admin_status(id):
 
-    user = User.query.get_or_404(id)
-
-    if user.controller_id != session['user_id'] or user.role != "admin":
-        return error("Forbidden", 403)
+    admin = User.query.filter(
+        User.id == id,
+        User.role == "admin",
+        User.controller_id == session["user_id"]
+    ).first_or_404()
 
     data = request.get_json(silent=True) or {}
+
     action = data.get("action")
 
     if action not in ["approve", "block", "unblock"]:
         return error("Invalid action")
 
-    old_status = user.status
-    user.status = "blocked" if action == "block" else "active"
+    old_status = admin.status
+
+    if action == "block":
+        admin.status = "blocked"
+    else:
+        admin.status = "active"
 
     db.session.commit()
 
-    # 🔔 notification
-    socketio.emit('notify',
+    # =====================================================
+    # SOCKET NOTIFICATION
+    # =====================================================
+
+    socketio.emit(
+        "notify",
         {"message": f"Admin {action}"},
-        room=f"user_{user.id}"
+        room=f"user_{admin.id}"
     )
 
-    # 🧠 logging
+    # =====================================================
+    # LOG
+    # =====================================================
+
     log_activity(
-        actor_id=session['user_id'],
-        target_id=user.id,
+        actor_id=session["user_id"],
+        target_id=admin.id,
         action=action,
         role="super_admin",
         meta={
             "old_status": old_status,
-            "new_status": user.status
+            "new_status": admin.status
         }
     )
 
-    return success(message=f"Admin {action} done")
+    return success(message=f"Admin {action} successful")
 
 
-# ================= BULK ACTION =================
+# =========================================================
+# BULK ADMIN ACTION
+# =========================================================
 
 @super_admin.route('/admins/bulk', methods=["POST"])
 @super_admin_required
 def bulk_admin_action():
 
     data = request.get_json(silent=True) or {}
+
     ids = data.get("ids", [])
     action = data.get("action")
 
-    if not ids or action not in ["approve", "block", "unblock"]:
-        return error("Invalid request")
+    if not ids:
+        return error("No admin selected")
+
+    if action not in ["approve", "block", "unblock"]:
+        return error("Invalid action")
 
     admins = User.query.filter(
         User.id.in_(ids),
         User.role == "admin",
-        User.controller_id == session['user_id']
+        User.controller_id == session["user_id"]
     ).all()
 
     for admin in admins:
-        admin.status = "blocked" if action == "block" else "active"
 
-        socketio.emit('notify',
+        if action == "block":
+            admin.status = "blocked"
+        else:
+            admin.status = "active"
+
+        socketio.emit(
+            "notify",
             {"message": f"Admin {action}"},
             room=f"user_{admin.id}"
         )
 
     db.session.commit()
 
-    return success(message=f"Bulk {action} done")
+    return success(message=f"Bulk {action} successful")
 
 
-# ================= LOGS (ADVANCED FILTER) =================
+# =========================================================
+# LOGS
+# =========================================================
 
 @super_admin.route('/logs')
 @super_admin_required
@@ -159,31 +303,15 @@ def get_logs():
     page = request.args.get("page", 1, type=int)
     limit = request.args.get("limit", 20, type=int)
 
-    action = request.args.get("action")
-    role = request.args.get("role")
-    start = request.args.get("start")
-    end = request.args.get("end")
+    controlled_admin_ids = get_controlled_admin_ids()
 
-    query = ActivityLog.query
+    query = ActivityLog.query.filter(
+        ActivityLog.target_id.in_(controlled_admin_ids)
+    )
 
-    if action:
-        query = query.filter(ActivityLog.action == action)
-
-    if role:
-        query = query.filter(ActivityLog.role == role)
-
-    if start and end:
-        try:
-            start = datetime.strptime(start, "%Y-%m-%d")
-            end = datetime.strptime(end, "%Y-%m-%d")
-            end = end.replace(hour=23, minute=59, second=59)
-
-            query = query.filter(ActivityLog.timestamp.between(start, end))
-        except:
-            return error("Invalid date format")
-
-    logs = query.order_by(ActivityLog.timestamp.desc())\
-                .paginate(page=page, per_page=limit)
+    logs = query.order_by(
+        ActivityLog.timestamp.desc()
+    ).paginate(page=page, per_page=limit)
 
     return success({
         "logs": [{
@@ -195,6 +323,7 @@ def get_logs():
             "time": l.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
             "meta": l.meta
         } for l in logs.items],
+
         "pagination": {
             "total": logs.total,
             "pages": logs.pages,
@@ -203,7 +332,9 @@ def get_logs():
     })
 
 
-# ================= ANALYTICS (OPTIMIZED) =================
+# =========================================================
+# ANALYTICS
+# =========================================================
 
 @super_admin.route('/analytics')
 @super_admin_required
@@ -211,40 +342,77 @@ def analytics():
 
     start = datetime.utcnow() - timedelta(days=30)
 
-    total_users = db.session.query(func.count(User.id))\
-        .filter(User.role == "user").scalar()
+    admin_ids = get_controlled_admin_ids()
 
-    active_users = db.session.query(func.count(User.id))\
-        .filter(User.role == "user", User.status == "active").scalar()
+    user_ids = get_controlled_user_ids()
 
-    total_admins = db.session.query(func.count(User.id))\
-        .filter(User.role == "admin").scalar()
+    # =====================================================
+    # COUNTS
+    # =====================================================
 
-    # 📊 growth (limited)
+    total_admins = len(admin_ids)
+
+    total_users = db.session.query(
+        func.count(User.id)
+    ).filter(
+        User.id.in_(user_ids)
+    ).scalar()
+
+    active_users = db.session.query(
+        func.count(User.id)
+    ).filter(
+        User.id.in_(user_ids),
+        User.status == "active"
+    ).scalar()
+
+    blocked_users = db.session.query(
+        func.count(User.id)
+    ).filter(
+        User.id.in_(user_ids),
+        User.status == "blocked"
+    ).scalar()
+
+    total_applications = db.session.query(
+        func.count(WorkApplication.id)
+    ).filter(
+        WorkApplication.user_id.in_(user_ids)
+    ).scalar()
+
+    # =====================================================
+    # USER GROWTH
+    # =====================================================
+
     growth = db.session.query(
         func.date(User.created_at),
         func.count(User.id)
-    ).filter(User.created_at >= start)\
-     .group_by(func.date(User.created_at)).all()
-
-    # 📈 last 7 days growth %
-    last_7 = datetime.utcnow() - timedelta(days=7)
-    new_users = db.session.query(func.count(User.id))\
-        .filter(User.created_at >= last_7).scalar()
-
-    growth_percent = round((new_users / total_users * 100), 2) if total_users else 0
+    ).filter(
+        User.id.in_(user_ids),
+        User.created_at >= start
+    ).group_by(
+        func.date(User.created_at)
+    ).all()
 
     return success({
-        "users": {
-            "total": total_users,
-            "active": active_users,
-            "blocked": total_users - active_users,
-            "growth_percent": growth_percent
-        },
+
         "admins": {
             "total": total_admins
         },
+
+        "users": {
+            "total": total_users,
+            "active": active_users,
+            "blocked": blocked_users
+        },
+
+        "applications": {
+            "total": total_applications
+        },
+
         "growth": [
-            {"date": str(g[0]), "count": g[1]} for g in growth
+            {
+                "date": str(g[0]),
+                "count": g[1]
+            }
+            for g in growth
         ]
     })
