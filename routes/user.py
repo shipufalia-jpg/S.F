@@ -182,17 +182,4 @@ def inbox():
 
     return render_template("inbox.html", inbox=list(inbox_data.values()))
 
-@user.route("/chat/<int:user_id>")
-def chat(user_id):
 
-    current_user_id = int(session.get("user_id"))
-
-    Chat.query.filter_by(
-        sender_id=user_id,
-        receiver_id=current_user_id,
-        is_read=False
-    ).update({"is_read": True})
-
-    db.session.commit()
-
-    # তারপর normal chat load
