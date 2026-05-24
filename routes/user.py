@@ -91,8 +91,9 @@ def public_profile(user_id):
 # =================================================
 # 💬 CHAT SYSTEM
 # =================================================
+from sqlalchemy import or_, and_
+
 @user.route("/chat/<int:user_id>")
-@role_required("user")
 def chat(user_id):
 
     current_user_id = session.get("user_id")
@@ -100,29 +101,44 @@ def chat(user_id):
     if not current_user_id:
         return redirect("/auth/login")
 
-    if current_user_id == user_id:
-        return redirect("/user/dashboard")
+    current_user_id = int(current_user_id)
 
     receiver = User.query.get_or_404(user_id)
 
-    # BLOCKED USER CHECK
-    if receiver.status == "blocked":
-        return redirect("/user/dashboard")
-
     messages = Chat.query.filter(
-        (
-            (Chat.sender_id == current_user_id) &
-            (Chat.receiver_id == user_id)
-        ) |
-        (
-            (Chat.sender_id == user_id) &
-            (Chat.receiver_id == current_user_id)
+        or_(
+            and_(Chat.sender_id == current_user_id,
+                 Chat.receiver_id == user_id),
+            and_(Chat.sender_id == user_id,
+                 Chat.receiver_id == current_user_id)
         )
-    ).order_by(Chat.created_at.asc()).all()
+    ).order_by(Chat.id.asc()).all()
 
-    return render_template(
-        "chat.html",
-        receiver=receiver,
-        messages=messages,
-        current_user_id=current_user_id
+    return render_template("chat.html",
+                           receiver=receiver,
+                           messages=messages,
+                           current_user_id=current_user_id)
+
+@user.route("/send_message", methods=["POST"])
+def send_message():
+
+    sender_id = session.get("user_id")
+
+    if not sender_id:
+        return redirect("/auth/login")
+
+    sender_id = int(sender_id)
+
+    receiver_id = request.form.get("receiver_id")
+    message = request.form.get("message")
+
+    chat = Chat(
+        sender_id=sender_id,
+        receiver_id=int(receiver_id),
+        message=message
     )
+
+    db.session.add(chat)
+    db.session.commit()
+
+    return redirect(f"/chat/{receiver_id}")
