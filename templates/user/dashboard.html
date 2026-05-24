@@ -598,37 +598,58 @@ body{
 </div>
 <!-- ================= TOPBAR ================= -->
 
-<div class="topbar">
+<div class="right">
 
-    <div class="left">
+    <!-- NOTIFICATION -->
+    <div class="notif">🔔</div>
 
-        <button class="menu-btn" onclick="openMenu()">☰</button>
+    <!-- INBOX BUTTON (NEW) -->
+    <a href="/inbox" style="text-decoration:none;">
+        <div style="
+            width:42px;
+            height:42px;
+            border-radius:10px;
+            background:#1e293b;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-size:18px;
+            color:white;
+            position:relative;
+        ">
+            📩
 
-        <div class="logo">
-
-            <div class="logo-box">SF</div>
-
-            <b>S.F Hub</b>
+            <!-- optional unread badge -->
+            <span style="
+                position:absolute;
+                top:-5px;
+                right:-5px;
+                background:red;
+                width:18px;
+                height:18px;
+                border-radius:50%;
+                font-size:11px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            ">
+                3
+            </span>
 
         </div>
+    </a>
 
-    </div>
+    <!-- PROFILE -->
+    <div class="profile" onclick="window.location.href='/profile'">
 
-    <div class="right">
+        <span class="online-dot"></span>
 
-        <div class="notif">🔔</div>
+        <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">
 
-        <div class="profile" onclick="window.location.href='/profile'">
-
-            <span class="online-dot"></span>
-
-            <img src="{{ current_user.profile.profile_img if current_user.profile and current_user.profile.profile_img else '/static/default.png' }}">
-
-            <small>
-                {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}
-            </small>
-
-        </div>
+        <small>
+            {{ current_user.profile.name if current_user.profile and current_user.profile.name else 'User' }}
+        </small>
 
     </div>
 
