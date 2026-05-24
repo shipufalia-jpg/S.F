@@ -105,6 +105,10 @@ def chat(user_id):
 
     receiver = User.query.get_or_404(user_id)
 
+    # BLOCKED USER CHECK
+    if receiver.status == "blocked":
+        return redirect("/user/dashboard")
+
     messages = Chat.query.filter(
         (
             (Chat.sender_id == current_user_id) &
