@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, flash, session, render_template
 from datetime import datetime
-
+from models.user import User
 from models.work_model import Work
 from models.work_application import WorkApplication
 from extensions import db
@@ -189,3 +189,109 @@ def my_applications():
         print("APP:", a.id, a.status)
 
     return render_template("my_applications.html", apps=apps)
+
+# =================================================
+# 🛡 ADMIN - CONTROL USERS APPLICATIONS
+# =================================================
+@application_bp.route('/admin/applications')
+def admin_applications():
+
+    admin_id = session.get("user_id")
+
+    if not admin_id:
+        flash("Please login first", "danger")
+        return redirect('/auth/login')
+
+    status = request.args.get("status")
+
+    query = WorkApplication.query.join(User).filter(
+        User.controller_id == admin_id,
+        WorkApplication.is_deleted == False
+    )
+
+    # STATUS FILTER
+    if status and status != "all":
+        query = query.filter(
+            WorkApplication.status == status
+        )
+
+    applications = query.order_by(
+        WorkApplication.id.desc()
+    ).all()
+
+    return render_template(
+        "admin_applications.html",
+        applications=applications,
+        status=status
+    )
+
+
+# =================================================
+# ✔ ADMIN APPROVE
+# =================================================
+@application_bp.route('/admin/application/approve/<int:id>')
+def admin_approve_application(id):
+
+    admin_id = session.get("user_id")
+
+    app = WorkApplication.query.join(User).filter(
+        WorkApplication.id == id,
+        User.controller_id == admin_id
+    ).first_or_404()
+
+    app.status = "approved"
+    app.is_shortlisted = True
+    app.updated_at = datetime.utcnow()
+
+    db.session.commit()
+
+    flash("Application Approved", "success")
+
+    return redirect('/admin/applications')
+
+
+# =================================================
+# ❌ ADMIN REJECT
+# =================================================
+@application_bp.route('/admin/application/reject/<int:id>')
+def admin_reject_application(id):
+
+    admin_id = session.get("user_id")
+
+    app = WorkApplication.query.join(User).filter(
+        WorkApplication.id == id,
+        User.controller_id == admin_id
+    ).first_or_404()
+
+    app.status = "rejected"
+    app.updated_at = datetime.utcnow()
+
+    db.session.commit()
+
+    flash("Application Rejected", "warning")
+
+    return redirect('/admin/applications')
+
+
+# =================================================
+# 🗑 ADMIN DELETE
+# =================================================
+@application_bp.route('/admin/application/delete/<int:id>')
+def admin_delete_application(id):
+
+    admin_id = session.get("user_id")
+
+    app = WorkApplication.query.join(User).filter(
+        WorkApplication.id == id,
+        User.controller_id == admin_id
+    ).first_or_404()
+
+    app.is_deleted = True
+    app.status = "cancelled"
+
+    db.session.commit()
+
+    flash("Application Deleted", "danger")
+
+    return redirect('/admin/applications')
+    
