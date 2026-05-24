@@ -254,7 +254,7 @@ def applications():
     ).all()
 
     return render_template(
-        "super_admin/applications.html",
+        "owner_applications.html",
         applications=apps
     )
 
