@@ -71,18 +71,19 @@ body{
 .view{background:#2563eb;color:white;}
 .delete{background:#374151;color:white;}
 
+/* STATUS */
 .status{
     display:inline-block;
     padding:4px 10px;
     border-radius:6px;
     font-size:12px;
     text-transform:uppercase;
+    font-weight:bold;
 }
 
-.status-applied{background:#2563eb;}
+.status-pending{background:#2563eb;}
 .status-approved{background:#16a34a;}
 .status-rejected{background:#dc2626;}
-.status-cancelled{background:#6b7280;}
 
 </style>
 
@@ -106,14 +107,19 @@ body{
 
     <div class="card">
 
-        <h3>{{ app.name }} → Work ID #{{ app.work_id }}</h3>
+        <!-- NAME + WORK -->
+        <h3>👤 {{ app.name }} → Work ID #{{ app.work_id }}</h3>
 
+        <!-- DETAILS GRID -->
         <div class="row small">
 
-            <div>📞 {{ app.phone }}</div>
+            <div>📞 {{ app.phone or 'N/A' }}</div>
+
             <div>📍 {{ app.address or 'N/A' }}</div>
+
             <div>💰 {{ app.expected_salary or 'Not set' }}</div>
-            <div>⭐ Exp: {{ app.experience_years or 0 }} years</div>
+
+            <div>⭐ Experience: {{ app.experience_years or 0 }} years</div>
 
             <div>
                 📌 Status:
@@ -124,18 +130,21 @@ body{
 
         </div>
 
-        <p class="small">
-            {{ app.message or 'No message provided' }}
+        <!-- MESSAGE -->
+        <p class="small" style="margin-top:10px;">
+            📝 {{ app.message or 'No message provided' }}
         </p>
 
-        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <!-- ACTION BUTTONS -->
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
 
             <a class="btn view"
                href="{{ url_for('application.application_details', id=app.id) }}">
                View
             </a>
 
-            {% if app.status == "applied" %}
+            <!-- ONLY PENDING -->
+            {% if app.status == "pending" %}
 
                 <a class="btn approve"
                    href="{{ url_for('application.approve_application', id=app.id) }}">
