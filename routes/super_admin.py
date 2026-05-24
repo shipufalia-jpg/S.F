@@ -152,12 +152,39 @@ def controlled_users():
     ).paginate(page=page, per_page=limit)
 
     return success({
+
         "users": [{
+
             "id": u.id,
             "name": u.name,
             "phone": u.phone,
+            "email": getattr(u, "email", ""),
             "status": u.status,
-            "controller_id": u.controller_id
+            "controller_id": u.controller_id,
+
+            "profile_image":
+                u.profile.image
+                if hasattr(u, "profile") and u.profile
+                and getattr(u.profile, "image", None)
+                else "https://i.pravatar.cc/150?img=12",
+
+            "address":
+                u.profile.address
+                if hasattr(u, "profile") and u.profile
+                and getattr(u.profile, "address", None)
+                else "Not Added",
+
+            "bio":
+                u.profile.bio
+                if hasattr(u, "profile") and u.profile
+                and getattr(u.profile, "bio", None)
+                else "No bio",
+
+            "created_at":
+                u.created_at.strftime("%d %b %Y")
+                if u.created_at
+                else "N/A"
+
         } for u in users.items],
 
         "pagination": {
@@ -165,6 +192,7 @@ def controlled_users():
             "pages": users.pages,
             "current": users.page
         }
+
     })
 
 
