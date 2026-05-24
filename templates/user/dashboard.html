@@ -599,25 +599,45 @@ body{
 <!-- ================= TOPBAR ================= -->
 <div class="topbar">
 
-    <div class="left">
+    <div class="left" style="display:flex; align-items:center; gap:10px;">
 
         <button class="menu-btn" onclick="openMenu()">☰</button>
 
-        <div class="logo">
+        <div class="logo" style="display:flex; align-items:center; gap:8px;">
 
             <div class="logo-box">SF</div>
 
             <b>S.F Hub</b>
 
         </div>
-        
 
     </div>
 
-    <div class="right">
+    <div class="right" style="display:flex; align-items:center; gap:10px;">
 
+        <!-- INBOX (converted from floating to topbar icon) -->
+        <a href="{{ url_for('user.inbox') }}" style="text-decoration:none;">
+            <div style="
+                width:42px;
+                height:42px;
+                border-radius:10px;
+                background:#1e293b;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                color:white;
+                font-size:18px;
+                cursor:pointer;
+                position:relative;
+            ">
+                📩
+            </div>
+        </a>
+
+        <!-- NOTIFICATION -->
         <div class="notif">🔔</div>
 
+        <!-- PROFILE -->
         <div class="profile" onclick="window.location.href='/profile'">
 
             <span class="online-dot"></span>
