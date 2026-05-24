@@ -80,51 +80,6 @@ def work_list():
     return render_template("work_list.html", works=works)
 
 
-# =====================================================
-# APPLY WORK
-# =====================================================
-@work.route('/apply_work/<int:id>', methods=['POST'])
-def apply_work(id):
-
-    if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
-
-    work_item = Work.query.filter_by(
-        id=id,
-        status="approved",
-        is_deleted=False
-    ).first()
-
-    if not work_item:
-        flash("Work not found")
-        return redirect(url_for('work.work_list'))
-
-    # DUPLICATE CHECK
-    already_applied = WorkApplication.query.filter_by(
-        user_id=session['user_id'],
-        work_id=id
-    ).first()
-
-    if already_applied:
-        flash("Already applied")
-        return redirect(url_for('work.work_list'))
-
-    try:
-        application = WorkApplication(
-            user_id=session['user_id'],
-            work_id=id
-        )
-
-        db.session.add(application)
-        db.session.commit()
-
-        flash("Applied successfully")
-        return redirect(url_for('work.work_list'))
-
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error: {str(e)}")
-        return redirect(url_for('work.work_list'))
 
 @work.route('/work/<int:id>', methods=['GET'])
 def work_details(id):
