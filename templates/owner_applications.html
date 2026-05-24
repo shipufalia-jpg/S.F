@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,7 +86,6 @@ body{
 .status-unknown{background:#64748b;}
 
 </style>
-
 </head>
 
 <body>
@@ -112,16 +110,15 @@ body{
 
             <!-- NAME + WORK -->
             <h3>
-                👤 {{ app.user.name if app.user else 'Unknown User' }}
-                → Work ID #{{ app.work_id }}
+                👤 {{ app.name }} → Work ID #{{ app.work_id }}
             </h3>
 
             <!-- DETAILS GRID -->
             <div class="row small">
 
-                <div>📞 {{ app.user.phone if app.user else 'N/A' }}</div>
+                <div>📞 {{ app.phone or 'N/A' }}</div>
 
-                <div>📍 {{ app.user.profile.address if app.user and app.user.profile else 'N/A' }}</div>
+                <div>📍 {{ app.address or 'N/A' }}</div>
 
                 <div>💰 {{ app.expected_salary or 'Not set' }}</div>
 
