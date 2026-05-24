@@ -144,18 +144,18 @@ body{
         </div>
 
         <!-- STATUS -->
-        {% if a.status == "pending" %}
-            <div class="status pending">🟡 Pending</div>
+{% set status = a.status|lower %}
 
-        {% elif a.status == "approved" %}
-            <div class="status approved">🟢 Approved</div>
+{% if status == "pending" %}
+<div class="status pending">🟡 Pending</div>
 
-        {% elif a.status == "rejected" %}
-            <div class="status rejected">🔴 Rejected</div>
+{% elif status == "approved" %}
+<div class="status approved">🟢 Approved</div>
 
-        {% else %}
-            <div class="status pending">🟡 Pending</div>
-        {% endif %}
+{% elif status == "rejected" %}
+<div class="status rejected">🔴 Rejected</div>
+
+{% endif %}
 
     </div>
 
