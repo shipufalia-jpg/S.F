@@ -511,32 +511,32 @@ body{
 <div class="sidebar" id="sidebar">
 
     <a href="/user/dashboard">🏠 Dashboard</a>
+
     <a href="/profile">👤 My Profile</a>
+
     <a href="/gallery">🖼️ Gallery</a>
+
     <a href="/user/post_work">➕ Create Work Post</a>
-    <a href="{{ url_for('work.work_list') }}">
-    ✅ Work Approval List
-    </a>
-    <a href="{{ url_for('application.my_applications') }}"
-   class="btn">
-   📋 My Applications
-    </a>
-    <div class="dashboard-card">
 
-    <h3>Bookings</h3>
+    <a href="{{ url_for('work.work_list') }}">💼 Work List</a>
 
-    <a href="{{ url_for('booking.my_bookings') }}" class="btn primary-btn">
-        📅 View My Bookings
+    <a href="{{ url_for('application.my_applications') }}">
+        📋 My Applications
     </a>
 
-    </div>
+    <a href="{{ url_for('booking.my_bookings') }}">
+        📅 My Bookings
+    </a>
+
     <a href="/referral">🔗 Referral</a>
+
     <a href="/help-line">☎️ Help Line</a>
+
     <a href="/settings">⚙️ Settings</a>
+
     <a href="/auth/logout">🚪 Logout</a>
 
 </div>
-
 <!-- ================= TOPBAR ================= -->
 
 <div class="topbar">
