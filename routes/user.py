@@ -4,7 +4,7 @@ from flask import (
     redirect,
     render_template
 )
-
+from sqlalchemy import or_, and_, func
 from models.user import User
 from models.profile import Profile
 from models.chat import Chat
