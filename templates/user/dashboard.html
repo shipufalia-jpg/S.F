@@ -612,11 +612,11 @@ body{
 
 </div>    
 
-<div class="right">    
+<div class="right" style="display:flex; align-items:center; gap:10px;">    
 
     <div class="notif">🔔</div>    
 
-    <!-- ✅ INBOX ADDED HERE (NEW) -->
+    <!-- INBOX -->
     <a href="/inbox" style="text-decoration:none;">
         <div style="
             width:42px;
@@ -630,11 +630,10 @@ body{
             font-size:18px;
             cursor:pointer;
             position:relative;
-            margin-left:8px;
         ">
             📩
 
-            <!-- OPTIONAL BADGE -->
+            <!-- BADGE -->
             <span style="
                 position:absolute;
                 top:-5px;
@@ -654,6 +653,7 @@ body{
         </div>
     </a>
 
+    <!-- PROFILE -->
     <div class="profile" onclick="window.location.href='/profile'">    
 
         <span class="online-dot"></span>    
