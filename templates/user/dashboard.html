@@ -648,48 +648,7 @@ body{
 
 <div class="main">
 
-    <!-- ================= WORKS ================= -->
-
-    {% if works and works|length > 0 %}
-
-    <div class="grid">
-
-        {% for w in works %}
-
-        <div class="card work">
-
-            <h3>{{ w.title }}</h3>
-
-            <p>{{ w.description }}</p>
-
-            <p>📱 {{ w.mobile }}</p>
-
-            <span class="badge">{{ w.status }}</span>
-
-            <br>
-
-            <a class="btn" href="/work/{{ w.id }}">
-                View Details
-            </a>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    {% else %}
-
-    <div class="empty">
-
-        <h3>No Work Found</h3>
-
-        <p>Create a work post to get started</p>
-
-    </div>
-
-    {% endif %}
-
+    
     <!-- ================= USERS SECTION ================= -->
 
     <div class="users-section">
