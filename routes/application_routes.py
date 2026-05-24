@@ -169,3 +169,18 @@ def application_details(id):
         "application_details.html",
         app=app
 )
+
+@application_bp.route('/my_applications')
+def my_applications():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        flash("Please login first", "danger")
+        return redirect('/auth/login')
+
+    apps = WorkApplication.query.filter_by(
+        user_id=user_id
+    ).order_by(WorkApplication.id.desc()).all()
+
+    return render_template("my_applications.html", apps=apps)
