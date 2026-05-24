@@ -894,10 +894,11 @@ function loadUsers(){
                     <div class="profile-header">
 
                         <img
-                            src="${u.profile_image || '/static/images/default.png'}"
-                        alt="profile"
-                           onerror="this.src='/static/images/default.png'"
-                          >
+                             src="${u.profile_image}"
+                         alt="profile"
+                              class="user-avatar"
+                              onerror="this.onerror=null;this.src='/static/images/default.png';"
+                            />
 
                         <div class="profile-info">
 
