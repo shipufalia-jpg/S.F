@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Inbox</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+}
+
+/* HEADER */
+.header{
+    padding:15px;
+    font-size:18px;
+    font-weight:bold;
+    background:#111827;
+}
+
+/* CHAT ITEM */
+.chat-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 15px;
+    border-bottom:1px solid #1e293b;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.chat-item:hover{
+    background:#111827;
+}
+
+/* LEFT SIDE */
+.left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+/* AVATAR */
+.avatar{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#2563eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:16px;
+}
+
+/* TEXT */
+.text{
+    display:flex;
+    flex-direction:column;
+}
+
+.name{
+    font-weight:bold;
+    font-size:15px;
+}
+
+.msg{
+    font-size:13px;
+    color:#94a3b8;
+    max-width:180px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* RIGHT SIDE */
+.right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:5px;
+}
+
+/* BADGE */
+.badge{
+    background:#ef4444;
+    padding:3px 7px;
+    border-radius:50%;
+    font-size:11px;
+    min-width:18px;
+    text-align:center;
+}
+
+/* TIME */
+.time{
+    font-size:11px;
+    color:#64748b;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    Chats
+</div>
+
+{% for chat in inbox %}
+
+<a href="/chat/{{ chat.user_id }}" style="text-decoration:none;color:white;">
+
+<div class="chat-item">
+
+    <!-- LEFT -->
+    <div class="left">
+
+        <div class="avatar">
+            {{ chat.user_id }}
+        </div>
+
+        <div class="text">
+            <div class="name">User {{ chat.user_id }}</div>
+            <div class="msg">{{ chat.last_message }}</div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+        <div class="time">
+            {{ chat.time.strftime('%H:%M') if chat.time }}
+        </div>
+
+        {% if chat.unread > 0 %}
+        <div class="badge">
+            {{ chat.unread }}
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</a>
+
+{% endfor %}
+
+</body>
+</html>
