@@ -130,22 +130,20 @@ body{
 
 <!-- SOCKET -->
 <script>
-
 const socket = io();
 
 const currentUserId = Number("{{ current_user_id }}");
 const receiverId = Number("{{ receiver.id }}");
 
-// SAME ROOM (VERY IMPORTANT)
-const room = `chat_${Math.min(currentUserId, receiverId)}_${Math.max(currentUserId, receiverId)}`;
-
+// JOIN ROOM
 socket.on("connect", () => {
     socket.emit("join", {
         user_id: receiverId
     });
 });
 
-/* SEND */
+
+// SEND MESSAGE
 function sendMessage(){
 
     const input = document.getElementById("messageInput");
@@ -161,29 +159,34 @@ function sendMessage(){
     input.value = "";
 }
 
-/* RECEIVE */
+
+// RECEIVE MESSAGE
 socket.on("receive_message", (data) => {
 
     const box = document.getElementById("chatBox");
 
     const div = document.createElement("div");
 
-    if(Number(data.sender_id) === currentUserId){
+    const isMe = Number(data.sender_id) === currentUserId;
 
-        div.className = "message-row me";
-        div.innerHTML = `<div class="message me">${data.message}</div>`;
-
-    } else {
-
-        div.className = "message-row other";
-        div.innerHTML = `<div class="message other">${data.message}</div>`;
-    }
+    div.innerHTML = `
+        <div style="
+            text-align:${isMe ? 'right' : 'left'};
+            background:${isMe ? '#2563eb' : '#1e293b'};
+            margin:5px;
+            padding:8px;
+            border-radius:10px;
+        ">
+            ${data.message}
+        </div>
+    `;
 
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 });
+                             </script>
 
-</script>
+
 
 </body>
 </html>
