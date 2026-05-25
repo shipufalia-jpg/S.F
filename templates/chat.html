@@ -137,10 +137,18 @@ const socket = io();
 const currentUserId = Number("{{ current_user_id }}");
 const receiverId = Number("{{ receiver.id }}");
 
+function getRoom(a, b){
+    return `chat_${Math.min(a,b)}_${Math.max(a,b)}`;
+}
+
+/* JOIN ROOM */
 socket.on("connect", () => {
-    console.log("CONNECTED");
+    socket.emit("join", {
+        user_id: receiverId
+    });
 });
 
+/* SEND MESSAGE */
 function sendMessage(){
 
     const input = document.getElementById("messageInput");
@@ -156,35 +164,28 @@ function sendMessage(){
     input.value = "";
 }
 
+/* RECEIVE MESSAGE */
 socket.on("receive_message", (data) => {
 
-    // 🔥 FILTER (VERY IMPORTANT)
-    if (
-        (data.sender_id == currentUserId && data.receiver_id == receiverId) ||
-        (data.sender_id == receiverId && data.receiver_id == currentUserId)
-    ){
+    const box = document.getElementById("chatBox");
 
-        const box = document.getElementById("chatBox");
+    const div = document.createElement("div");
 
-        const div = document.createElement("div");
-
-        const isMe = data.sender_id == currentUserId;
+    if(Number(data.sender_id) === currentUserId){
 
         div.innerHTML = `
-            <div style="
-                text-align:${isMe ? 'right' : 'left'};
-                background:${isMe ? '#2563eb' : '#1e293b'};
-                margin:5px;
-                padding:8px;
-                border-radius:10px;
-                color:white;
-            ">
-                ${data.message}
-            </div>
-        `;
+        <div class="message-row me">
+            <div class="message me">${data.message}</div>
+        </div>`;
+    } else {
 
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
+        div.innerHTML = `
+        <div class="message-row other">
+            <div class="message other">${data.message}</div>
+        </div>`;
     }
+
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
 });
-</script>
+                </script>
