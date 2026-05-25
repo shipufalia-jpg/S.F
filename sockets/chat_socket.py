@@ -7,11 +7,9 @@ from models.chat import Chat
 # ================= JOIN ROOM =================
 @socketio.on("join")
 def join(data):
-
     user_id = int(data.get("user_id"))
-
-    join_room(f"chat_user_{user_id}")
-
+    join_room(f"user_{user_id}")
+    print("JOINED:", user_id)
 # ================= SEND MESSAGE =================
 @socketio.on("send_message")
 def send_message(data):
@@ -20,9 +18,10 @@ def send_message(data):
     receiver_id = int(data.get("receiver_id"))
     message = data.get("message")
 
-    if not sender_id or not receiver_id or not message:
+    if not message:
         return
 
+    # SAVE DB
     chat = Chat(
         sender_id=sender_id,
         receiver_id=receiver_id,
@@ -32,11 +31,13 @@ def send_message(data):
     db.session.add(chat)
     db.session.commit()
 
-    room = f"chat_{min(sender_id, receiver_id)}_{max(sender_id, receiver_id)}"
-
-    emit("receive_message", {
+    payload = {
         "id": chat.id,
         "sender_id": sender_id,
         "receiver_id": receiver_id,
         "message": chat.message
-    }, room=room)
+    }
+
+    # SEND TO BOTH USERS (IMPORTANT)
+    socketio.emit("receive_message", payload, room=f"user_{sender_id}")
+    socketio.emit("receive_message", payload, room=f"user_{receiver_id}")
