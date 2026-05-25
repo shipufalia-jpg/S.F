@@ -129,6 +129,8 @@ body{
 </div>
 
 <!-- SOCKET -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
 <script>
 const socket = io();
 
@@ -136,7 +138,7 @@ const currentUserId = Number("{{ current_user_id }}");
 const receiverId = Number("{{ receiver.id }}");
 
 socket.on("connect", () => {
-    console.log("Socket Connected");
+    console.log("CONNECTED");
 });
 
 function sendMessage(){
@@ -157,10 +159,11 @@ function sendMessage(){
 socket.on("receive_message", (data) => {
 
     // 🔥 FILTER (VERY IMPORTANT)
-    if(
+    if (
         (data.sender_id == currentUserId && data.receiver_id == receiverId) ||
         (data.sender_id == receiverId && data.receiver_id == currentUserId)
     ){
+
         const box = document.getElementById("chatBox");
 
         const div = document.createElement("div");
@@ -174,6 +177,7 @@ socket.on("receive_message", (data) => {
                 margin:5px;
                 padding:8px;
                 border-radius:10px;
+                color:white;
             ">
                 ${data.message}
             </div>
@@ -184,7 +188,3 @@ socket.on("receive_message", (data) => {
     }
 });
 </script>
-
-
-</body>
-</html>
