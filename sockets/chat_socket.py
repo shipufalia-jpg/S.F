@@ -23,46 +23,30 @@ def handle_join(data):
 @socketio.on("send_message")
 def send_message(data):
 
-    print("🔥 SOCKET HIT")
-    print("RAW DATA:", data)
+    sender_id = data.get("sender_id")  # 🔥 FIX HERE
+    receiver_id = data.get("receiver_id")
+    message = data.get("message")
 
-    try:
-        sender_id = data.get("sender_id")
-        receiver_id = data.get("receiver_id")
-        message = data.get("message")
+    print("DEBUG:", sender_id, receiver_id, message)
 
-        print("PARSED:", sender_id, receiver_id, message)
+    if not sender_id or not receiver_id or not message:
+        return
 
-        if not sender_id:
-            print("❌ sender_id missing")
-            return
+    chat = Chat(
+        sender_id=int(sender_id),
+        receiver_id=int(receiver_id),
+        message=message.strip()
+    )
 
-        if not receiver_id:
-            print("❌ receiver_id missing")
-            return
+    db.session.add(chat)
+    db.session.commit()
 
-        if not message:
-            print("❌ message missing")
-            return
+    room = f"user_{receiver_id}"
 
-        chat = Chat(
-            sender_id=int(sender_id),
-            receiver_id=int(receiver_id),
-            message=message.strip()
-        )
-
-        db.session.add(chat)
-        db.session.commit()
-
-        print("✅ SAVED SUCCESS:", chat.id)
-
-        emit("receive_message", {
-            "id": chat.id,
-            "sender_id": sender_id,
-            "receiver_id": receiver_id,
-            "message": message
-        }, broadcast=True)
-
-    except Exception as e:
-        db.session.rollback()
-        print("❌ DB ERROR:", str(e))
+    emit("receive_message", {
+        "id": chat.id,
+        "sender_id": chat.sender_id,
+        "receiver_id": receiver_id,
+        "message": chat.message,
+        "created_at": str(chat.created_at)
+    }, room=room)
