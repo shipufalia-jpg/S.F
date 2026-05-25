@@ -136,14 +136,14 @@ const socket = io();
 const currentUserId = Number("{{ current_user_id }}");
 const receiverId = Number("{{ receiver.id }}");
 
-/* JOIN ROOM (FIXED) */
+/* JOIN */
 socket.on("connect", () => {
     socket.emit("join", {
         user_id: currentUserId
     });
 });
 
-/* SEND MESSAGE (FIXED) */
+/* SEND */
 function sendMessage(){
 
     const input = document.getElementById("messageInput");
@@ -151,20 +151,16 @@ function sendMessage(){
 
     if(!message) return;
 
- socket.emit("send_message", {
-    sender_id: currentUserId,   // 🔥 ADD THIS
-    receiver_id: receiverId,
-    message: message
-});   
-        
-        
-        
-    
+    socket.emit("send_message", {
+        sender_id: currentUserId,
+        receiver_id: receiverId,
+        message: message
+    });
 
     input.value = "";
 }
 
-/* RECEIVE MESSAGE */
+/* RECEIVE */
 socket.on("receive_message", (data) => {
 
     const box = document.getElementById("chatBox");
