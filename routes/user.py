@@ -92,89 +92,44 @@ def public_profile(user_id):
 # 💬 CHAT SYSTEM
 # =================================================
 
-
 @user.route("/chat/<int:user_id>")
-@role_required("user")
 def chat(user_id):
 
-    current_user_id = session.get("user_id")
-
-    # 🔒 login check
-    if not current_user_id:
-        return redirect("/auth/login")
-
-    # 🔢 convert type (VERY IMPORTANT FIX)
-    current_user_id = int(current_user_id)
-    user_id = int(user_id)
-
-    # 🚫 self chat block
-    if current_user_id == user_id:
-        return redirect("/user/dashboard")
+    current_user_id = int(session.get("user_id"))
 
     receiver = User.query.get_or_404(user_id)
 
-    # 💬 GET MESSAGES (FIXED SAFE QUERY)
     messages = Chat.query.filter(
-        or_(
-            and_(
-                Chat.sender_id == current_user_id,
-                Chat.receiver_id == user_id
-            ),
-            and_(
-                Chat.sender_id == user_id,
-                Chat.receiver_id == current_user_id
-            )
-        )
+        ((Chat.sender_id == current_user_id) & (Chat.receiver_id == user_id)) |
+        ((Chat.sender_id == user_id) & (Chat.receiver_id == current_user_id))
     ).order_by(Chat.id.asc()).all()
-
-    # 🐞 DEBUG (temporary)
-    print("USER:", current_user_id, "CHAT WITH:", user_id)
-    print("TOTAL MESSAGES:", len(messages))
 
     return render_template(
         "chat.html",
         receiver=receiver,
         messages=messages,
         current_user_id=current_user_id
-)
-
-from sqlalchemy import or_, func
-from collections import defaultdict
+    )
 
 @user.route("/inbox")
 def inbox():
 
-    user_id = session.get("user_id")
+    user_id = int(session.get("user_id"))
 
-    if not user_id:
-        return redirect("/auth/login")
-
-    user_id = int(user_id)
-
-    # ✅ শুধু message fetch
     chats = Chat.query.filter(
-        or_(
-            Chat.sender_id == user_id,
-            Chat.receiver_id == user_id
-        )
-    ).order_by(Chat.created_at.desc()).all()
+        (Chat.sender_id == user_id) | (Chat.receiver_id == user_id)
+    ).order_by(Chat.id.desc()).all()
 
     inbox_data = {}
 
-    for chat in chats:
+    for c in chats:
 
-        other_user_id = chat.receiver_id if chat.sender_id == user_id else chat.sender_id
+        other = c.receiver_id if c.sender_id == user_id else c.sender_id
 
-        # first message = last message (because desc order)
-        if other_user_id not in inbox_data:
-            inbox_data[other_user_id] = {
-                "user_id": other_user_id,
-                "last_message": chat.message,
-                "time": chat.created_at,
-                "unread": 0
+        if other not in inbox_data:
+            inbox_data[other] = {
+                "user_id": other,
+                "last_message": c.message
             }
-
-        if chat.receiver_id == user_id and not chat.is_read:
-            inbox_data[other_user_id]["unread"] += 1
 
     return render_template("inbox.html", inbox=inbox_data.values())
