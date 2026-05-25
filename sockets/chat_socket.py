@@ -24,19 +24,14 @@ def handle_join(data):
 def send_message(data):
 
     try:
-        sender_id = session.get("user_id")
-
-        print("SESSION:", dict(session))
-        print("SENDER:", sender_id)
-
-        if not sender_id:
-            print("NO SESSION USER")
-            return
-
+        sender_id = data.get("sender_id")
         receiver_id = data.get("receiver_id")
         message = data.get("message")
 
-        print("DATA:", receiver_id, message)
+        print("INCOMING:", sender_id, receiver_id, message)
+
+        if not sender_id or not receiver_id or not message:
+            return
 
         chat = Chat(
             sender_id=int(sender_id),
@@ -47,8 +42,18 @@ def send_message(data):
         db.session.add(chat)
         db.session.commit()
 
-        print("✅ SAVED CHAT:", chat.id)
+        print("✅ MESSAGE SAVED:", chat.id)
+
+        payload = {
+            "id": chat.id,
+            "sender_id": sender_id,
+            "receiver_id": receiver_id,
+            "message": message
+        }
+
+        # send to both users
+        emit("receive_message", payload, broadcast=True)
 
     except Exception as e:
         db.session.rollback()
-        print("❌ CHAT ERROR:", str(e))
+        print("❌ ERROR:", str(e))
