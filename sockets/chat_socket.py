@@ -23,50 +23,32 @@ def handle_join(data):
 @socketio.on("send_message")
 def send_message(data):
 
-    sender_id = session.get("user_id")
+    try:
+        sender_id = session.get("user_id")
 
-    print("SESSION USER:", sender_id)
+        print("SESSION:", dict(session))
+        print("SENDER:", sender_id)
 
-    if not sender_id:
-        return
+        if not sender_id:
+            print("NO SESSION USER")
+            return
 
-    receiver_id = data.get("receiver_id")
-    message = data.get("message")
+        receiver_id = data.get("receiver_id")
+        message = data.get("message")
 
-    print("DATA:", receiver_id, message)
+        print("DATA:", receiver_id, message)
 
-    if not receiver_id or not message:
-        return
+        chat = Chat(
+            sender_id=int(sender_id),
+            receiver_id=int(receiver_id),
+            message=message.strip()
+        )
 
-    chat = Chat(
-        sender_id=int(sender_id),
-        receiver_id=int(receiver_id),
-        message=message.strip()
-    )
+        db.session.add(chat)
+        db.session.commit()
 
-    db.session.add(chat)
-    db.session.commit()
+        print("✅ SAVED CHAT:", chat.id)
 
-    print("SAVED CHAT ID:", chat.id)
-
-    payload = {
-        "id": chat.id,
-        "sender_id": chat.sender_id,
-        "receiver_id": chat.receiver_id,
-        "message": chat.message,
-        "created_at": str(chat.created_at)
-    }
-
-    # 🔥 SEND TO RECEIVER ROOM
-    socketio.emit(
-        "receive_message",
-        payload,
-        room=f"user_{receiver_id}"
-    )
-
-    # 🔥 SEND TO SENDER ROOM
-    socketio.emit(
-        "receive_message",
-        payload,
-        room=f"user_{sender_id}"
-    )
+    except Exception as e:
+        db.session.rollback()
+        print("❌ CHAT ERROR:", str(e))
