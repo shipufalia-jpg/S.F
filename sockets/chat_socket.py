@@ -23,29 +23,38 @@ def handle_join(data):
 @socketio.on("send_message")
 def send_message(data):
 
-    try:
-        print("🔥 RAW DATA:", data)
+    print("🔥 SOCKET HIT")
+    print("RAW DATA:", data)
 
+    try:
         sender_id = data.get("sender_id")
         receiver_id = data.get("receiver_id")
         message = data.get("message")
 
-        print("➡ PARSED:", sender_id, receiver_id, message)
+        print("PARSED:", sender_id, receiver_id, message)
 
-        if not sender_id or not receiver_id or not message:
-            print("❌ MISSING DATA")
+        if not sender_id:
+            print("❌ sender_id missing")
+            return
+
+        if not receiver_id:
+            print("❌ receiver_id missing")
+            return
+
+        if not message:
+            print("❌ message missing")
             return
 
         chat = Chat(
             sender_id=int(sender_id),
             receiver_id=int(receiver_id),
-            message=str(message).strip()
+            message=message.strip()
         )
 
         db.session.add(chat)
         db.session.commit()
 
-        print("✅ SAVED CHAT ID:", chat.id)
+        print("✅ SAVED SUCCESS:", chat.id)
 
         emit("receive_message", {
             "id": chat.id,
