@@ -135,15 +135,10 @@ const socket = io();
 const currentUserId = Number("{{ current_user_id }}");
 const receiverId = Number("{{ receiver.id }}");
 
-// JOIN ROOM
 socket.on("connect", () => {
-    socket.emit("join", {
-        user_id: receiverId
-    });
+    console.log("Socket Connected");
 });
 
-
-// SEND MESSAGE
 function sendMessage(){
 
     const input = document.getElementById("messageInput");
@@ -159,33 +154,36 @@ function sendMessage(){
     input.value = "";
 }
 
-
-// RECEIVE MESSAGE
 socket.on("receive_message", (data) => {
 
-    const box = document.getElementById("chatBox");
+    // 🔥 FILTER (VERY IMPORTANT)
+    if(
+        (data.sender_id == currentUserId && data.receiver_id == receiverId) ||
+        (data.sender_id == receiverId && data.receiver_id == currentUserId)
+    ){
+        const box = document.getElementById("chatBox");
 
-    const div = document.createElement("div");
+        const div = document.createElement("div");
 
-    const isMe = Number(data.sender_id) === currentUserId;
+        const isMe = data.sender_id == currentUserId;
 
-    div.innerHTML = `
-        <div style="
-            text-align:${isMe ? 'right' : 'left'};
-            background:${isMe ? '#2563eb' : '#1e293b'};
-            margin:5px;
-            padding:8px;
-            border-radius:10px;
-        ">
-            ${data.message}
-        </div>
-    `;
+        div.innerHTML = `
+            <div style="
+                text-align:${isMe ? 'right' : 'left'};
+                background:${isMe ? '#2563eb' : '#1e293b'};
+                margin:5px;
+                padding:8px;
+                border-radius:10px;
+            ">
+                ${data.message}
+            </div>
+        `;
 
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
 });
-                             </script>
-
+</script>
 
 
 </body>
