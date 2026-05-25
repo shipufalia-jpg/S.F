@@ -42,13 +42,8 @@ def send_message(data):
     db.session.add(chat)
     db.session.commit()
 
-    room = f"chat_{min(chat.sender_id, receiver_id)}_{max(chat.sender_id, receiver_id)}"
-
     emit("receive_message", {
-        "sender_id": chat.sender_id,
+        "sender_id": current_user.id,
         "receiver_id": receiver_id,
-        "message": chat.message,
-        "created_at": str(chat.created_at)
-    }, room=room)
-
-    print("SENT ROOM:", room)
+        "message": chat.message
+    }, broadcast=True)
