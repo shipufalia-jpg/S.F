@@ -26,6 +26,7 @@ from routes.super_admin import super_admin
 from routes.user import user
 from routes.main import main
 from routes.work_routes import work
+from models.notification import Notification
 
 from routes.booking import booking
 from routes.profile import profile_bp
