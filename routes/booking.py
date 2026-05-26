@@ -585,3 +585,198 @@ def delete_booking(id):
     )
 
     return redirect(request.referrer or "/bookings")
+
+# =========================================
+# OWNER FULL BOOKING CONTROL
+# PRODUCTION VERSION + NOTIFICATION SYSTEM
+# =========================================
+
+@booking.route("/owner/bookings")
+def owner_bookings():
+
+    # =====================================
+    # LOGIN CHECK
+    # =====================================
+
+    if not login_required():
+        return redirect("/auth/login")
+
+    # =====================================
+    # ONLY OWNER ACCESS
+    # =====================================
+
+    if not is_owner():
+        abort(403)
+
+    # =====================================
+    # PAGINATION
+    # =====================================
+
+    page = request.args.get("page", 1, type=int)
+
+    per_page = 20
+
+    # =====================================
+    # SEARCH
+    # =====================================
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    # =====================================
+    # BASE QUERY
+    # =====================================
+
+    query = Booking.query.filter_by(
+        is_deleted=False
+    )
+
+    # =====================================
+    # SEARCH FILTER
+    # =====================================
+
+    if search:
+
+        query = query.join(User).filter(
+            User.name.ilike(f"%{search}%")
+        )
+
+    # =====================================
+    # BOOKINGS
+    # =====================================
+
+    bookings = query.order_by(
+        desc(Booking.id)
+    ).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+
+    # =====================================
+    # TOTAL COUNTS
+    # =====================================
+
+    total_bookings = Booking.query.filter_by(
+        is_deleted=False
+    ).count()
+
+    pending_bookings = Booking.query.filter_by(
+        status="pending",
+        is_deleted=False
+    ).count()
+
+    approved_bookings = Booking.query.filter_by(
+        status="approved",
+        is_deleted=False
+    ).count()
+
+    rejected_bookings = Booking.query.filter_by(
+        status="rejected",
+        is_deleted=False
+    ).count()
+
+    blocked_bookings = Booking.query.filter_by(
+        status="blocked",
+        is_deleted=False
+    ).count()
+
+    active_bookings = Booking.query.filter_by(
+        is_active=True,
+        is_deleted=False
+    ).count()
+
+    # =====================================
+    # RECENT BOOKINGS
+    # =====================================
+
+    recent_bookings = Booking.query.filter_by(
+        is_deleted=False
+    ).order_by(
+        desc(Booking.id)
+    ).limit(5).all()
+
+    # =====================================
+    # OWNER NOTIFICATIONS
+    # =====================================
+
+    owner_notifications = Notification.query.filter_by(
+
+        user_id=session.get("user_id"),
+
+        is_deleted=False
+
+    ).order_by(
+
+        desc(Notification.id)
+
+    ).limit(10).all()
+
+    # =====================================
+    # UNREAD COUNT
+    # =====================================
+
+    unread_notifications = Notification.query.filter_by(
+
+        user_id=session.get("user_id"),
+
+        is_read=False,
+
+        is_deleted=False
+
+    ).count()
+
+    # =====================================
+    # AUTO MARK AS READ
+    # =====================================
+
+    Notification.query.filter_by(
+
+        user_id=session.get("user_id"),
+
+        is_read=False
+
+    ).update({
+
+        "is_read": True
+
+    })
+
+    db.session.commit()
+
+    # =====================================
+    # RENDER TEMPLATE
+    # =====================================
+
+    return render_template(
+
+        "owner_bookings.html",
+
+        bookings=bookings.items,
+
+        pagination=bookings,
+
+        recent_bookings=recent_bookings,
+
+        total_bookings=total_bookings,
+
+        pending_bookings=pending_bookings,
+
+        approved_bookings=approved_bookings,
+
+        rejected_bookings=rejected_bookings,
+
+        blocked_bookings=blocked_bookings,
+
+        active_bookings=active_bookings,
+
+        current_page=page,
+
+        search=search,
+
+        owner_notifications=owner_notifications,
+
+        unread_notifications=unread_notifications
+    )
