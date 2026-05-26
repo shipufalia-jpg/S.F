@@ -21,7 +21,7 @@ from extensions import db
 from models.booking import Booking
 from models.user import User
 from models.work_model import Work
-
+from models.notification import Notification
 from permissions import (
     is_admin,
     is_super_admin,
