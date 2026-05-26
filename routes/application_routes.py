@@ -4,6 +4,8 @@ from models.user import User
 from models.work_model import Work
 from models.work_application import WorkApplication
 from extensions import db
+from utils.notification_helper import send_notification
+
 
 application_bp = Blueprint('application', __name__)
 
@@ -119,9 +121,24 @@ def approve_application(id):
 
     db.session.commit()
 
-    flash("Approved", "success")
-    return redirect('/owner/applications')
+    send_notification(
 
+        user_id=app.user_id,
+
+        title="Application Approved",
+
+        message="Your work application has been approved.",
+
+        type="approve",
+
+        icon="check-circle",
+
+        priority="high"
+    )
+
+    flash("Approved", "success")
+
+    return redirect('/owner/applications')
 
 # =================================================
 # ❌ REJECT
@@ -135,6 +152,20 @@ def reject_application(id):
     app.updated_at = datetime.utcnow()
 
     db.session.commit()
+    send_notification(
+
+    user_id=app.user_id,
+
+    title="Application Rejected",
+
+    message="Sorry, your application was rejected.",
+
+    type="reject",
+
+    icon="x-circle",
+
+    priority="high"
+    )
 
     flash("Rejected", "warning")
     return redirect('/owner/applications')
@@ -152,6 +183,7 @@ def delete_application(id):
     app.status = "cancelled"
 
     db.session.commit()
+    
 
     flash("Deleted", "danger")
     return redirect('/owner/applications')
