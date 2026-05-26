@@ -635,7 +635,20 @@ body{
         </a>
 
         <!-- NOTIFICATION -->
-        <div class="notif">🔔</div>
+        <a href="/notifications" class="position-relative me-3 text-decoration-none">
+
+    <span style="font-size:24px;">
+        🔔
+    </span>
+
+    <span id="notification-count"
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+
+        0
+
+    </span>
+
+        </a>
 
         <!-- PROFILE -->
         <div class="profile" onclick="window.location.href='/profile'">
@@ -777,6 +790,31 @@ body{
 <script>
 
 /* ================= MENU ================= */
+    async function loadNotificationCount(){
+
+    try{
+
+        const response = await fetch('/notifications/unread-count');
+
+        const data = await response.json();
+
+        document.getElementById("notification-count").innerText =
+            data.unread_count;
+
+    }catch(err){
+
+        console.log(err);
+
+    }
+
+}
+
+loadNotificationCount();
+
+setInterval(loadNotificationCount, 5000);
+
+</script>
+    
 
 function openMenu(){
 
