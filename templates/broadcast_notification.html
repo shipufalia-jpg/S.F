@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}
+Broadcast Notification
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ================= PAGE HEADER ================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                📢 Broadcast Notification
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Send realtime notifications to all users,
+                workers, owners or targeted roles.
+
+            </p>
+
+        </div>
+
+        <a href="/notifications"
+           class="btn btn-outline-dark rounded-pill px-4">
+
+            🔔 View Notifications
+
+        </a>
+
+    </div>
+
+    <!-- ================= MAIN CARD ================= -->
+
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <!-- TOP BAR -->
+        <div class="bg-dark text-white p-3">
+
+            <h5 class="mb-0 fw-semibold">
+
+                Notification Control Panel
+
+            </h5>
+
+        </div>
+
+        <div class="card-body p-4">
+
+            <!-- FORM -->
+            <form method="POST">
+
+                <div class="row">
+
+                    <!-- ================= LEFT SIDE ================= -->
+
+                    <div class="col-lg-8">
+
+                        <!-- TITLE -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Notification Title
+
+                            </label>
+
+                            <input type="text"
+                                   name="title"
+                                   class="form-control form-control-lg rounded-4"
+                                   placeholder="Enter notification title"
+                                   maxlength="120"
+                                   required>
+
+                            <small class="text-muted">
+
+                                Example: System Maintenance Alert
+
+                            </small>
+
+                        </div>
+
+                        <!-- MESSAGE -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Notification Message
+
+                            </label>
+
+                            <textarea name="message"
+                                      rows="8"
+                                      class="form-control rounded-4"
+                                      placeholder="Write your notification message..."
+                                      required></textarea>
+
+                            <small class="text-muted">
+
+                                This message will be delivered instantly.
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ================= RIGHT SIDE ================= -->
+
+                    <div class="col-lg-4">
+
+                        <!-- TYPE -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Notification Type
+
+                            </label>
+
+                            <select name="type"
+                                    class="form-select rounded-4">
+
+                                <option value="general">
+                                    🔔 General
+                                </option>
+
+                                <option value="booking">
+                                    💼 Booking
+                                </option>
+
+                                <option value="payment">
+                                    💰 Payment
+                                </option>
+
+                                <option value="message">
+                                    💬 Message
+                                </option>
+
+                                <option value="warning">
+                                    ⚠️ Warning
+                                </option>
+
+                                <option value="approve">
+                                    ✅ Approve
+                                </option>
+
+                                <option value="reject">
+                                    ❌ Reject
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- PRIORITY -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Priority Level
+
+                            </label>
+
+                            <select name="priority"
+                                    class="form-select rounded-4">
+
+                                <option value="low">
+                                    🟢 Low
+                                </option>
+
+                                <option value="normal"
+                                        selected>
+
+                                    🔵 Normal
+
+                                </option>
+
+                                <option value="high">
+                                    🔴 High
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- TARGET -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Target Audience
+
+                            </label>
+
+                            <select name="target_role"
+                                    class="form-select rounded-4">
+
+                                <option value="all">
+
+                                    🌍 All Users
+
+                                </option>
+
+                                <option value="worker">
+
+                                    👷 Workers
+
+                                </option>
+
+                                <option value="owner">
+
+                                    🏢 Owners
+
+                                </option>
+
+                                <option value="user">
+
+                                    👤 Normal Users
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- LIVE INFO -->
+                        <div class="alert alert-info rounded-4 border-0">
+
+                            <div class="fw-semibold mb-2">
+
+                                ⚡ Live Delivery
+
+                            </div>
+
+                            <small>
+
+                                Notifications are delivered in realtime
+                                using SocketIO live events.
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ================= ACTION BUTTONS ================= -->
+
+                <div class="d-flex flex-wrap gap-3 mt-3">
+
+                    <button type="submit"
+                            class="btn btn-dark rounded-pill px-5 py-2 fw-semibold">
+
+                        🚀 Send Notification
+
+                    </button>
+
+                    <button type="reset"
+                            class="btn btn-outline-secondary rounded-pill px-4 py-2">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= CUSTOM STYLE ================= -->
+
+<style>
+
+    .card{
+
+        transition:0.3s;
+    }
+
+    .card:hover{
+
+        transform:translateY(-2px);
+    }
+
+    .form-control,
+    .form-select{
+
+        border:1px solid #ddd;
+
+        padding:14px;
+    }
+
+    .form-control:focus,
+    .form-select:focus{
+
+        border-color:#111;
+
+        box-shadow:none;
+    }
+
+    textarea{
+
+        resize:none;
+    }
+
+    .btn{
+
+        transition:0.3s;
+    }
+
+    .btn:hover{
+
+        transform:translateY(-1px);
+    }
+
+</style>
+
+{% endblock %}
