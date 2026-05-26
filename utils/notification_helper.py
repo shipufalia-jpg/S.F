@@ -108,6 +108,8 @@ def send_notification(
                 {
 
                     "id": notification.id,
+                    
+                    "app_name": "S.F WORKS HUB",
 
                     "title": notification.title,
 
