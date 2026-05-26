@@ -67,6 +67,23 @@ def apply_work(work_id):
     db.session.add(application)
     db.session.commit()
 
+    send_notification(
+
+        user_id=session.get("user_id"),
+
+        title="Application Submitted",
+
+        message="Your application submitted successfully.",
+
+        type="application",
+
+        icon="send",
+
+        priority="normal",
+
+        action_url="/user/my_applications"
+    )
+
     print("✅ SAVED APPLICATION ID:", application.id)
 
     flash("Application submitted successfully", "success")
