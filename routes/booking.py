@@ -1,6 +1,6 @@
 # =========================================
 # routes/booking.py
-# PRODUCTION VERSION
+# PRODUCTION VERSION + NOTIFICATION SYSTEM
 # =========================================
 
 from flask import (
@@ -10,7 +10,8 @@ from flask import (
     redirect,
     abort,
     flash,
-    request
+    request,
+    url_for
 )
 
 from sqlalchemy import desc
@@ -20,7 +21,6 @@ from extensions import db
 from models.booking import Booking
 from models.user import User
 from models.work_model import Work
-from flask_login import current_user
 
 from permissions import (
     is_admin,
@@ -28,6 +28,9 @@ from permissions import (
     is_owner,
     can_manage_booking
 )
+
+from utils.notification_helper import send_notification
+
 
 booking = Blueprint(
     "booking",
@@ -49,7 +52,6 @@ def login_required():
 
 # =========================================
 # USER BOOKINGS
-# USER CAN SEE OWN BOOKINGS
 # =========================================
 
 @booking.route("/my-bookings")
@@ -70,34 +72,24 @@ def my_bookings():
         bookings=bookings
     )
 
+
 # =========================================
-# USER CREATE BOOKING
+# CREATE BOOKING
 # =========================================
+
 @booking.route('/create/<int:work_id>', methods=['POST'])
 def create_booking(work_id):
 
-    work = Work.query.get_or_404(work_id)
+    if not login_required():
+        return redirect("/auth/login")
 
-    booking = Booking(
-        user_id=current_user.id,
-        owner_id=work.user_id,
-        work_id=work.id
-    )
-
-    db.session.add(booking)
-    db.session.commit()
-
-    return redirect(url_for('profile.view_profile', user_id=work.user_id))
+    user_id = session.get("user_id")
 
     # =====================================
     # FIND WORK
     # =====================================
 
     work = Work.query.get_or_404(work_id)
-
-    # =====================================
-    # OWNER ID
-    # =====================================
 
     owner_id = work.user_id
 
@@ -138,15 +130,65 @@ def create_booking(work_id):
     # =====================================
 
     booking_data = Booking(
+
         user_id=user_id,
+
         owner_id=owner_id,
+
+        work_id=work.id,
+
         status="pending",
+
         is_active=False
     )
 
     db.session.add(booking_data)
 
     db.session.commit()
+
+    # =====================================
+    # USER NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=user_id,
+
+        title="Booking Created",
+
+        message="Your booking request submitted successfully.",
+
+        type="booking",
+
+        icon="briefcase",
+
+        priority="normal",
+
+        action_url="/my-bookings"
+    )
+
+    # =====================================
+    # OWNER NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=owner_id,
+
+        sender_id=user_id,
+
+        title="New Booking Request",
+
+        message="Someone booked your work.",
+
+        type="booking",
+
+        icon="briefcase",
+
+        priority="high",
+
+        action_url="/owner/bookings"
+    )
 
     flash(
         "Booking created successfully",
@@ -158,7 +200,6 @@ def create_booking(work_id):
 
 # =========================================
 # ADMIN BOOKINGS
-# ADMIN CAN SEE OWN USERS BOOKINGS
 # =========================================
 
 @booking.route("/bookings")
@@ -166,10 +207,6 @@ def admin_bookings():
 
     if not login_required():
         return redirect("/auth/login")
-
-    # =====================================
-    # OWNER FULL ACCESS
-    # =====================================
 
     if is_owner():
 
@@ -183,10 +220,6 @@ def admin_bookings():
             "bookings.html",
             bookings=bookings
         )
-
-    # =====================================
-    # SUPER ADMIN
-    # =====================================
 
     if is_super_admin():
 
@@ -218,10 +251,6 @@ def admin_bookings():
             bookings=bookings
         )
 
-    # =====================================
-    # ADMIN
-    # =====================================
-
     if is_admin():
 
         users = User.query.filter_by(
@@ -243,10 +272,6 @@ def admin_bookings():
             "bookings.html",
             bookings=bookings
         )
-
-    # =====================================
-    # NORMAL USER NOT ALLOWED
-    # =====================================
 
     abort(403)
 
@@ -284,6 +309,27 @@ def approve_booking(id):
     )
 
     db.session.commit()
+
+    # =====================================
+    # NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=booking_data.user_id,
+
+        title="Booking Approved",
+
+        message="Your booking has been approved.",
+
+        type="approve",
+
+        icon="check-circle",
+
+        priority="high",
+
+        action_url="/my-bookings"
+    )
 
     flash(
         "Booking approved successfully",
@@ -327,6 +373,27 @@ def reject_booking(id):
 
     db.session.commit()
 
+    # =====================================
+    # NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=booking_data.user_id,
+
+        title="Booking Rejected",
+
+        message="Sorry, your booking has been rejected.",
+
+        type="reject",
+
+        icon="x-circle",
+
+        priority="high",
+
+        action_url="/my-bookings"
+    )
+
     flash(
         "Booking rejected successfully",
         "warning"
@@ -369,6 +436,27 @@ def block_booking(id):
 
     db.session.commit()
 
+    # =====================================
+    # NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=booking_data.user_id,
+
+        title="Booking Blocked",
+
+        message="Your booking has been blocked.",
+
+        type="block",
+
+        icon="ban",
+
+        priority="high",
+
+        action_url="/my-bookings"
+    )
+
     flash(
         "Booking blocked successfully",
         "danger"
@@ -406,6 +494,27 @@ def unblock_booking(id):
     booking_data.is_active = False
 
     db.session.commit()
+
+    # =====================================
+    # NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=booking_data.user_id,
+
+        title="Booking Unblocked",
+
+        message="Your booking has been unblocked.",
+
+        type="general",
+
+        icon="check-circle",
+
+        priority="normal",
+
+        action_url="/my-bookings"
+    )
 
     flash(
         "Booking unblocked successfully",
@@ -449,147 +558,30 @@ def delete_booking(id):
 
     db.session.commit()
 
+    # =====================================
+    # NOTIFICATION
+    # =====================================
+
+    send_notification(
+
+        user_id=booking_data.user_id,
+
+        title="Booking Deleted",
+
+        message="Your booking has been deleted.",
+
+        type="warning",
+
+        icon="trash",
+
+        priority="high",
+
+        action_url="/my-bookings"
+    )
+
     flash(
         "Booking deleted successfully",
         "danger"
     )
 
     return redirect(request.referrer or "/bookings")
-
-# =========================================
-# OWNER FULL BOOKING CONTROL
-# PRODUCTION VERSION
-# =========================================
-
-@booking.route("/owner/bookings")
-def owner_bookings():
-
-    # =====================================
-    # LOGIN CHECK
-    # =====================================
-
-    if not login_required():
-        return redirect("/auth/login")
-
-    # =====================================
-    # ONLY OWNER ACCESS
-    # =====================================
-
-    if not is_owner():
-        abort(403)
-
-    # =====================================
-    # PAGINATION
-    # =====================================
-
-    page = request.args.get("page", 1, type=int)
-    per_page = 20
-
-    # =====================================
-    # SEARCH
-    # =====================================
-
-    search = request.args.get("search", "").strip()
-
-    # =====================================
-    # BASE QUERY
-    # =====================================
-
-    query = Booking.query.filter_by(
-        is_deleted=False
-    )
-
-    # =====================================
-    # SEARCH FILTER
-    # =====================================
-
-    if search:
-
-        query = query.join(User).filter(
-            User.name.ilike(f"%{search}%")
-        )
-
-    # =====================================
-    # BOOKINGS
-    # =====================================
-
-    bookings = query.order_by(
-        desc(Booking.id)
-    ).paginate(
-        page=page,
-        per_page=per_page
-    )
-
-    # =====================================
-    # TOTAL COUNTS
-    # =====================================
-
-    total_bookings = Booking.query.filter_by(
-        is_deleted=False
-    ).count()
-
-    pending_bookings = Booking.query.filter_by(
-        status="pending",
-        is_deleted=False
-    ).count()
-
-    approved_bookings = Booking.query.filter_by(
-        status="approved",
-        is_deleted=False
-    ).count()
-
-    rejected_bookings = Booking.query.filter_by(
-        status="rejected",
-        is_deleted=False
-    ).count()
-
-    blocked_bookings = Booking.query.filter_by(
-        status="blocked",
-        is_deleted=False
-    ).count()
-
-    active_bookings = Booking.query.filter_by(
-        is_active=True,
-        is_deleted=False
-    ).count()
-
-    # =====================================
-    # RECENT BOOKINGS
-    # =====================================
-
-    recent_bookings = Booking.query.filter_by(
-        is_deleted=False
-    ).order_by(
-        desc(Booking.id)
-    ).limit(5).all()
-
-    # =====================================
-    # RENDER
-    # =====================================
-
-    return render_template(
-
-        "owner_bookings.html",
-
-        bookings=bookings.items,
-
-        pagination=bookings,
-
-        recent_bookings=recent_bookings,
-
-        total_bookings=total_bookings,
-
-        pending_bookings=pending_bookings,
-
-        approved_bookings=approved_bookings,
-
-        rejected_bookings=rejected_bookings,
-
-        blocked_bookings=blocked_bookings,
-
-        active_bookings=active_bookings,
-
-        current_page=page,
-
-        search=search
-    )
