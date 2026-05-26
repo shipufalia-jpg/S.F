@@ -790,32 +790,7 @@ body{
 <script>
 
 /* ================= MENU ================= */
-    async function loadNotificationCount(){
-
-    try{
-
-        const response = await fetch('/notifications/unread-count');
-
-        const data = await response.json();
-
-        document.getElementById("notification-count").innerText =
-            data.unread_count;
-
-    }catch(err){
-
-        console.log(err);
-
-    }
-
-}
-
-loadNotificationCount();
-
-setInterval(loadNotificationCount, 5000);
-
-</script>
     
-
 function openMenu(){
 
     document.getElementById("sidebar").classList.add("active");
