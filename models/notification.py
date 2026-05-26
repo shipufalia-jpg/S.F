@@ -1,193 +1,202 @@
 from extensions import db
 from datetime import datetime
 
+
 class Notification(db.Model):
 
-__tablename__ = "notifications"  
+    __tablename__ = "notifications"
 
-id = db.Column(  
-    db.Integer,  
-    primary_key=True  
-)  
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-# =========================  
-# USER INFO  
-# =========================  
+    # =========================
+    # USER INFO
+    # =========================
 
-user_id = db.Column(  
-    db.Integer,  
-    db.ForeignKey('user.id'),  
-    nullable=False  
-)  
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False
+    )
 
-sender_id = db.Column(  
-    db.Integer,  
-    db.ForeignKey('user.id'),  
-    nullable=True  
-)  
+    sender_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=True
+    )
 
-# =========================  
-# NOTIFICATION CONTENT  
-# =========================  
+    # =========================
+    # NOTIFICATION CONTENT
+    # =========================
 
-title = db.Column(  
-    db.String(255),  
-    nullable=False  
-)  
+    title = db.Column(
+        db.String(255),
+        nullable=False
+    )
 
-message = db.Column(  
-    db.Text,  
-    nullable=False  
-)  
+    message = db.Column(
+        db.Text,
+        nullable=False
+    )
 
-# =========================  
-# TYPE  
-# =========================  
+    # =========================
+    # TYPE
+    # =========================
 
-type = db.Column(  
-    db.String(50),  
-    default="general"  
-)  
+    type = db.Column(
+        db.String(50),
+        default="general"
+    )
 
-# example:  
-# general  
-# booking  
-# payment  
-# message  
-# warning  
-# approve  
-# reject  
-# block  
+    # example:
+    # general
+    # booking
+    # payment
+    # message
+    # warning
+    # approve
+    # reject
+    # block
 
-# =========================  
-# ICON  
-# =========================  
+    # =========================
+    # ICON
+    # =========================
 
-icon = db.Column(  
-    db.String(100),  
-    default="bell"  
-)  
+    icon = db.Column(
+        db.String(100),
+        default="bell"
+    )
 
-# example:  
-# bell  
-# check  
-# warning  
-# money  
-# user  
-# message  
+    # example:
+    # bell
+    # check
+    # warning
+    # money
+    # user
+    # message
 
-# =========================  
-# LINK / REDIRECT  
-# =========================  
+    # =========================
+    # LINK / REDIRECT
+    # =========================
 
-action_url = db.Column(  
-    db.String(500),  
-    nullable=True  
-)  
+    action_url = db.Column(
+        db.String(500),
+        nullable=True
+    )
 
-# example:  
-# /booking/12  
-# /chat/5  
-# /wallet  
+    # example:
+    # /booking/12
+    # /chat/5
+    # /wallet
 
-# =========================  
-# STATUS  
-# =========================  
+    # =========================
+    # STATUS
+    # =========================
 
-is_read = db.Column(  
-    db.Boolean,  
-    default=False  
-)  
+    is_read = db.Column(
+        db.Boolean,
+        default=False
+    )
 
-is_deleted = db.Column(  
-    db.Boolean,  
-    default=False  
-)  
+    is_deleted = db.Column(
+        db.Boolean,
+        default=False
+    )
 
-# =========================  
-# PRIORITY  
-# =========================  
+    # =========================
+    # PRIORITY
+    # =========================
 
-priority = db.Column(  
-    db.String(20),  
-    default="normal"  
-)  
+    priority = db.Column(
+        db.String(20),
+        default="normal"
+    )
 
-# low  
-# normal  
-# high  
+    # low
+    # normal
+    # high
 
-# =========================  
-# REALTIME  
-# =========================  
+    # =========================
+    # REALTIME
+    # =========================
 
-is_sent = db.Column(  
-    db.Boolean,  
-    default=False  
-)  
+    is_sent = db.Column(
+        db.Boolean,
+        default=False
+    )
 
-# socket/push sent status  
+    # socket/push sent status
 
-# =========================  
-# DEVICE  
-# =========================  
+    # =========================
+    # DEVICE
+    # =========================
 
-device = db.Column(  
-    db.String(50),  
-    nullable=True  
-)  
+    device = db.Column(
+        db.String(50),
+        nullable=True
+    )
 
-# android  
-# web  
-# ios  
+    # android
+    # web
+    # ios
 
-# =========================  
-# TIMESTAMP  
-# =========================  
+    # =========================
+    # TIMESTAMP
+    # =========================
 
-created_at = db.Column(  
-    db.DateTime,  
-    default=datetime.utcnow  
-)  
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
 
-updated_at = db.Column(  
-    db.DateTime,  
-    default=datetime.utcnow,  
-    onupdate=datetime.utcnow  
-)  
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
 
-# =========================  
-# RELATIONSHIP  
-# =========================  
+    # =========================
+    # RELATIONSHIP
+    # =========================
 
-user = db.relationship(  
-    "User",  
-    foreign_keys=[user_id],  
-    backref="notifications"  
-)  
+    user = db.relationship(
+        "User",
+        foreign_keys=[user_id],
+        backref="notifications"
+    )
 
-sender = db.relationship(  
-    "User",  
-    foreign_keys=[sender_id]  
-)  
+    sender = db.relationship(
+        "User",
+        foreign_keys=[sender_id]
+    )
 
-# =========================  
-# TO DICT  
-# =========================  
+    # =========================
+    # TO DICT
+    # =========================
 
-def to_dict(self):  
+    def to_dict(self):
 
-    return {  
+        return {
 
-        "id": self.id,  
-        "title": self.title,  
-        "message": self.message,  
-        "type": self.type,  
-        "icon": self.icon,  
-        "action_url": self.action_url,  
-        "is_read": self.is_read,  
-        "priority": self.priority,  
-        "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S")  
+            "id": self.id,
+
+            "title": self.title,
+
+            "message": self.message,
+
+            "type": self.type,
+
+            "icon": self.icon,
+
+            "action_url": self.action_url,
+
+            "is_read": self.is_read,
+
+            "priority": self.priority,
+
+            "created_at": self.created_at.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
     }
-
-
