@@ -18,6 +18,7 @@ from models.user import User
 from models.chat import Chat
 from models.work_model import Work
 from models.work_application import WorkApplication
+from models.notification import Notification
 
 from routes.auth import auth
 from routes.owner import owner
@@ -26,7 +27,7 @@ from routes.super_admin import super_admin
 from routes.user import user
 from routes.main import main
 from routes.work_routes import work
-from models.notification import Notification
+from routes.notification import notification_bp
 
 from routes.booking import booking
 from routes.profile import profile_bp
@@ -158,6 +159,7 @@ def create_app():
     app.register_blueprint(admin_tools)
     app.register_blueprint(owner_tools)
     app.register_blueprint(application_bp)
+    app.register_blueprint(notification_bp)
 
     return app
 
