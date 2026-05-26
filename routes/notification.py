@@ -12,6 +12,9 @@ from sqlalchemy import desc
 from extensions import db
 
 from models.notification import Notification
+from flask import request
+from models.user import User
+from utils.notification_helper import send_notification
 
 
 notification_bp = Blueprint(
@@ -160,7 +163,135 @@ def unread_notification_count():
 # =========================================
 # MARK SINGLE READ
 # =========================================
+# =========================================
+# BROADCAST NOTIFICATION
+# =========================================
 
+@notification_bp.route(
+
+    "/owner/notification/broadcast",
+
+    methods=["GET", "POST"]
+
+)
+def broadcast_notification():
+
+    # LOGIN CHECK
+    if not session.get("user_id"):
+
+        flash("Login required", "danger")
+
+        return redirect("/auth/login")
+
+    # ROLE CHECK
+    if session.get("role") not in [
+
+        "owner",
+        "admin"
+
+    ]:
+
+        flash("Access denied", "danger")
+
+        return redirect("/")
+
+    # POST
+    if request.method == "POST":
+
+        title = request.form.get("title")
+
+        message = request.form.get("message")
+
+        type = request.form.get(
+
+            "type",
+
+            "general"
+        )
+
+        priority = request.form.get(
+
+            "priority",
+
+            "normal"
+        )
+
+        target_role = request.form.get(
+
+            "target_role",
+
+            "all"
+        )
+
+        # VALIDATION
+        if not title or not message:
+
+            flash(
+
+                "Title and message required",
+
+                "danger"
+            )
+
+            return redirect(
+                "/owner/notification/broadcast"
+            )
+
+        # USERS
+        if target_role == "all":
+
+            users = User.query.all()
+
+        else:
+
+            users = User.query.filter_by(
+
+                role=target_role
+
+            ).all()
+
+        # SEND
+        total_sent = 0
+
+        for user in users:
+
+            notification = send_notification(
+
+                user_id=user.id,
+
+                sender_id=session.get("user_id"),
+
+                title=title,
+
+                message=message,
+
+                type=type,
+
+                icon="bell",
+
+                priority=priority
+            )
+
+            if notification:
+
+                total_sent += 1
+
+        flash(
+
+            f"{total_sent} notifications sent",
+
+            "success"
+        )
+
+        return redirect(
+            "/owner/notification/broadcast"
+        )
+
+    return render_template(
+
+        "broadcast_notification.html"
+        )
+    
 @notification_bp.route('/notification/read/<int:id>')
 def mark_notification_read(id):
 
