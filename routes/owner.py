@@ -55,6 +55,7 @@ def approve_user(id):
 
     user.status = "active"
     db.session.commit()
+    
 
     return redirect('/owner/dashboard')
 
@@ -200,6 +201,20 @@ def reject_work(id):
     work.updated_at = datetime.utcnow()
 
     db.session.commit()
+    send_notification(
+
+    user_id=user.id,
+
+    title="Account Rejected",
+
+    message="Sorry, your account has been rejected.",
+
+    type="reject",
+
+    icon="x-circle",
+
+    priority="high"
+    )
 
     # ================= SOCKET =================
     socketio.emit("work_update", {
@@ -382,6 +397,20 @@ def block_user(id):
     user.status = "blocked"
 
     db.session.commit()
+    send_notification(
+
+    user_id=user.id,
+
+    title="Account Blocked",
+
+    message="Your account has been blocked by admin.",
+
+    type="block",
+
+    icon="ban",
+
+    priority="high"
+        )
 
     socketio.emit("notify", {
         "type": "warning",
