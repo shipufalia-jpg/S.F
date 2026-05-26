@@ -7,6 +7,7 @@ from flask import (
 from sqlalchemy import or_, and_, func
 from models.user import User
 from models.profile import Profile
+from models.gallery import Gallery
 from models.chat import Chat
 from models.work_model import Work
 from extensions import db
@@ -74,17 +75,37 @@ def public_profile(user_id):
 
     profile_user = User.query.get_or_404(user_id)
 
-    profile = Profile.query.filter_by(user_id=user_id).first()
+    profile = Profile.query.filter_by(
+        user_id=user_id
+    ).first()
 
-    works = Work.query.filter_by(user_id=user_id).order_by(
+    works = Work.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Work.id.desc()
     ).all()
 
+    # =========================
+    # GALLERY IMAGES
+    # =========================
+
+    gallery_images = Gallery.query.filter_by(
+        user_id=user_id
+    ).order_by(
+        Gallery.id.desc()
+    ).all()
+
     return render_template(
+
         "public_profile.html",
+
         profile_user=profile_user,
+
         profile=profile,
-        works=works
+
+        works=works,
+
+        gallery_images=gallery_images
     )
 
 
