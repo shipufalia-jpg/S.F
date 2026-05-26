@@ -20,6 +20,7 @@ from extensions import db
 from models.booking import Booking
 from models.user import User
 from models.work_model import Work
+from flask_login import current_user
 
 from permissions import (
     is_admin,
