@@ -161,26 +161,11 @@ def my_profile():
 @profile_bp.route('/profile/<int:user_id>')
 def view_profile(user_id):
 
-    user = User.query.get_or_404(user_id)
-    profile = Profile.query.filter_by(user_id=user_id).first_or_404()
-    work = Work.query.filter_by(user_id=user_id).first()
-
-    return render_template(
-        "profile.html",
-        user=user,
-        profile=profile,
-        work=work
-    )
-    
     # ================= USER =================
 
-    viewed_user = db.session.get(
-        User,
+    viewed_user = User.query.get_or_404(
         user_id
     )
-
-    if not viewed_user:
-        return "User not found"
 
     # ================= PROFILE =================
 
@@ -188,19 +173,19 @@ def view_profile(user_id):
         user_id=user_id
     ).first()
 
-    if not profile:
-        return render_template(
-            "profile.html",
-            user=viewed_user,
-            profile=None,
-            gallery=[]
-        )
+    # ================= WORK =================
+
+    works = Work.query.filter_by(
+        user_id=user_id
+    ).order_by(
+        Work.id.desc()
+    ).all()
 
     # ================= GALLERY =================
 
     gallery = []
 
-    if profile.gallery:
+    if profile and profile.gallery:
 
         try:
 
@@ -209,19 +194,29 @@ def view_profile(user_id):
             )
 
             if not isinstance(gallery, list):
+
                 gallery = []
 
         except Exception:
+
             gallery = []
 
     # ================= RENDER =================
 
     return render_template(
+
         "profile.html",
+
         user=viewed_user,
+
         profile=profile,
+
+        works=works,
+
         gallery=gallery
-            )
+    )
+
+        
 
 # ================= PROFILE SETUP =================
 
