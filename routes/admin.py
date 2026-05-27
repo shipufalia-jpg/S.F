@@ -8,7 +8,6 @@ from extensions import db
 from sqlalchemy.orm import load_only
 from sqlalchemy.orm import joinedload
 from models.profile import Profile
-from models.work_image_model import WorkImage
 from utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -232,30 +231,23 @@ def get_user(user_id):
         Work.id.desc()
     ).all()
 
-    # ================= WORK IMAGES =================
+    # ================= GALLERY (FROM PROFILE JSON) =================
 
-    work_images = WorkImage.query.join(
-        Work,
-        Work.id == WorkImage.work_id
-    ).filter(
-        Work.user_id == user.id
-    ).all()
+    import json
 
-    # ================= USER GALLERY =================
+    gallery_images = []
 
-    galleries = Gallery.query.filter_by(
-        user_id=user.id
-    ).order_by(
-        Gallery.id.desc()
-    ).all()
+    if profile and profile.gallery:
+        try:
+            gallery_images = json.loads(profile.gallery)
+        except:
+            gallery_images = []
 
     # ================= COUNTS =================
 
     total_works = len(works)
 
-    total_gallery = len(galleries)
-
-    total_work_images = len(work_images)
+    total_gallery = len(gallery_images)
 
     total_applications = WorkApplication.query.filter_by(
         user_id=user.id
@@ -266,56 +258,35 @@ def get_user(user_id):
         (Chat.receiver_id == user.id)
     ).count()
 
-    # ================= ONLINE STATUS =================
+    # ================= STATUS =================
 
-    online_status = (
-        "Online"
-        if user.is_online
-        else "Offline"
-    )
-
-    # ================= LAST SEEN =================
+    online_status = "Online" if user.is_online else "Offline"
 
     last_seen = (
         user.last_seen.strftime("%d %b %Y %I:%M %p")
-        if user.last_seen
-        else None
+        if user.last_seen else None
     )
-
-    # ================= JOIN DATE =================
 
     joined_date = (
         user.created_at.strftime("%d %b %Y")
-        if user.created_at
-        else None
+        if user.created_at else None
     )
 
-    # ================= PROFILE IMAGE =================
-
-    profile_image = (
-        user.profile_img
-        if user.profile_img
-        else "/static/default.png"
-    )
+    profile_image = user.profile_img or "/static/default.png"
 
     # ================= RETURN =================
 
     return render_template(
-
         "admin/user_profile.html",
 
         user=user,
         profile=profile,
-
         works=works,
-        work_images=work_images,
 
-        galleries=galleries,
+        gallery_images=gallery_images,   # ✅ FIXED
 
         total_works=total_works,
         total_gallery=total_gallery,
-        total_work_images=total_work_images,
-
         total_applications=total_applications,
         total_chats=total_chats,
 
