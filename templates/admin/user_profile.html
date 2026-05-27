@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin User Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+
+        <!-- COVER -->
+
+        <div style="
+            height:220px;
+            background: linear-gradient(135deg,#0d6efd,#6610f2);
+        ">
+        </div>
+
+        <!-- PROFILE -->
+
+        <div class="px-4 pb-4 position-relative">
+
+            <div class="text-center">
+
+                <img src="{{ profile_image }}"
+                     class="rounded-circle border border-4 border-white shadow"
+                     style="
+                        width:140px;
+                        height:140px;
+                        object-fit:cover;
+                        margin-top:-70px;
+                     ">
+
+                <h2 class="fw-bold mt-3 mb-1">
+                    {{ user.name }}
+                </h2>
+
+                <p class="text-muted mb-2">
+                    {{ user.role|title }}
+                </p>
+
+                <!-- STATUS -->
+
+                {% if user.is_online %}
+
+                    <span class="badge bg-success px-3 py-2">
+                        Online
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-secondary px-3 py-2">
+                        Offline
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= STATS ================= -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-md-3">
+
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+
+                <h3 class="fw-bold text-primary">
+                    {{ total_works }}
+                </h3>
+
+                <small class="text-muted">
+                    Works
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="col-6 col-md-3">
+
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+
+                <h3 class="fw-bold text-success">
+                    {{ total_gallery }}
+                </h3>
+
+                <small class="text-muted">
+                    Gallery
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="col-6 col-md-3">
+
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+
+                <h3 class="fw-bold text-danger">
+                    {{ total_applications }}
+                </h3>
+
+                <small class="text-muted">
+                    Applications
+                </small>
+
+            </div>
+
+        </div>
+
+        <div class="col-6 col-md-3">
+
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+
+                <h3 class="fw-bold text-dark">
+                    {{ total_chats }}
+                </h3>
+
+                <small class="text-muted">
+                    Chats
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= USER INFO ================= -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-4">
+                User Information
+            </h4>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="text-muted small">
+                        Phone
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ user.phone or "N/A" }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="text-muted small">
+                        Email
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ user.email or "N/A" }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="text-muted small">
+                        Skill
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ user.skill or "N/A" }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="text-muted small">
+                        Area
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ user.area or "N/A" }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="text-muted small">
+                        Account Status
+                    </label>
+
+                    <div>
+
+                        {% if user.status == "active" %}
+
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-danger">
+                                {{ user.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-4">
+
+                    <label class="text-muted small">
+                        Joined Date
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ joined_date }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="text-muted small">
+                        Last Seen
+                    </label>
+
+                    <div class="fw-semibold">
+                        {{ last_seen or "N/A" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= GALLERY ================= -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-4">
+                Gallery
+            </h4>
+
+            <div class="row g-3">
+
+                {% for item in galleries %}
+
+                    <div class="col-6 col-md-3">
+
+                        <img src="{{ item.image }}"
+                             class="img-fluid rounded-4 shadow-sm"
+                             style="
+                                height:200px;
+                                width:100%;
+                                object-fit:cover;
+                             ">
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= WORK IMAGES ================= -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-4">
+                Work Images
+            </h4>
+
+            <div class="row g-3">
+
+                {% for image in work_images %}
+
+                    <div class="col-6 col-md-3">
+
+                        <img src="{{ image.image }}"
+                             class="img-fluid rounded-4 shadow-sm"
+                             style="
+                                height:200px;
+                                width:100%;
+                                object-fit:cover;
+                             ">
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= ACTIONS ================= -->
+
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-4">
+                Admin Actions
+            </h4>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="/admin/block_user/{{ user.id }}"
+                   class="btn btn-warning rounded-pill">
+
+                    Block User
+
+                </a>
+
+                <a href="/admin/delete_user/{{ user.id }}"
+                   class="btn btn-danger rounded-pill">
+
+                    Delete User
+
+                </a>
+
+                <a href="/chat/{{ user.id }}"
+                   class="btn btn-primary rounded-pill">
+
+                    Message User
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
