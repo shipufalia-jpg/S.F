@@ -23,6 +23,18 @@ super_admin = Blueprint(
 
 
 
+def super_admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        if session.get("role") != "super_admin":
+            flash("Unauthorized access", "danger")
+            return redirect("/auth/login")
+
+        return f(*args, **kwargs)
+
+    return wrapper
+
 
 # =========================================================
 # HELPERS (FIXED)
@@ -56,10 +68,17 @@ def get_controlled_user_ids():
 @super_admin_required
 def dashboard_page():
 
+    total_users = User.query.count()
+    total_admins = User.query.filter_by(role="admin").count()
+    active_users = User.query.filter_by(status="active").count()
+    blocked_users = User.query.filter_by(status="blocked").count()
+
     return render_template(
         "super_admin/dashboard.html",
-        user_id=session.get("user_id"),
-        now=datetime.utcnow()
+        total_users=total_users,
+        total_admins=total_admins,
+        active_users=active_users,
+        blocked_users=blocked_users
     )
 
 
@@ -71,55 +90,12 @@ def dashboard_page():
 @super_admin_required
 def view_admins():
 
-    page = request.args.get("page", 1, type=int)
-    limit = request.args.get("limit", 20, type=int)
+    admins = User.query.filter_by(role="admin").order_by(User.id.desc()).all()
 
-    query = User.query.filter(
-        User.role == "admin",
-        User.controller_id == session.get("user_id")
+    return render_template(
+        "super_admin/admins.html",
+        admins=admins
     )
-
-    admins = query.order_by(User.id.desc()).paginate(
-        page=page,
-        per_page=limit
-    )
-
-    return success({
-        "admins": [{
-            "id": a.id,
-            "name": a.name,
-            "phone": a.phone,
-            "email": getattr(a, "email", ""),
-            "status": a.status,
-            "controller_id": a.controller_id,
-
-            "profile_image": (
-                a.profile.image if a.profile and getattr(a.profile, "image", None)
-                else "/static/images/default.png"
-            ),
-
-            "address": (
-                a.profile.address if a.profile and getattr(a.profile, "address", None)
-                else "Not Added"
-            ),
-
-            "bio": (
-                a.profile.bio if a.profile and getattr(a.profile, "bio", None)
-                else "No Bio"
-            ),
-
-            "created_at": (
-                a.created_at.strftime("%d %b %Y") if a.created_at else "N/A"
-            )
-
-        } for a in admins.items],
-
-        "pagination": {
-            "total": admins.total,
-            "pages": admins.pages,
-            "current": admins.page
-        }
-    })
 
 
 # =========================================================
@@ -315,35 +291,16 @@ def super_admin_user_profile(user_id):
 @super_admin_required
 def get_logs():
 
-    page = request.args.get("page", 1, type=int)
-    limit = request.args.get("limit", 20, type=int)
-
     admin_ids = get_controlled_admin_ids()
 
     logs = ActivityLog.query.filter(
         ActivityLog.target_id.in_(admin_ids)
-    ).order_by(
-        ActivityLog.timestamp.desc()
-    ).paginate(page=page, per_page=limit)
+    ).order_by(ActivityLog.timestamp.desc()).all()
 
-    return success({
-        "logs": [{
-            "id": l.id,
-            "actor": l.actor_id,
-            "target": l.target_id,
-            "action": l.action,
-            "role": l.role,
-            "time": l.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-            "meta": l.meta
-        } for l in logs.items],
-
-        "pagination": {
-            "total": logs.total,
-            "pages": logs.pages,
-            "current": logs.page
-        }
-    })
-
+    return render_template(
+        "super_admin/logs.html",
+        logs=logs
+    )
 
 # =========================================================
 # ANALYTICS
@@ -358,25 +315,13 @@ def analytics():
     admin_ids = get_controlled_admin_ids()
     user_ids = get_controlled_user_ids()
 
-    total_admins = len(admin_ids)
-
-    total_users = db.session.query(func.count(User.id)).filter(
-        User.id.in_(user_ids)
-    ).scalar()
-
-    active_users = db.session.query(func.count(User.id)).filter(
-        User.id.in_(user_ids),
-        User.status == "active"
-    ).scalar()
-
-    blocked_users = db.session.query(func.count(User.id)).filter(
-        User.id.in_(user_ids),
-        User.status == "blocked"
-    ).scalar()
-
-    total_applications = db.session.query(func.count(WorkApplication.id)).filter(
-        WorkApplication.user_id.in_(user_ids)
-    ).scalar()
+    data = {
+        "total_admins": len(admin_ids),
+        "total_users": len(user_ids),
+        "active_users": User.query.filter(User.id.in_(user_ids), User.status=="active").count(),
+        "blocked_users": User.query.filter(User.id.in_(user_ids), User.status=="blocked").count(),
+        "total_applications": WorkApplication.query.filter(WorkApplication.user_id.in_(user_ids)).count()
+    }
 
     growth = db.session.query(
         func.date(User.created_at),
@@ -386,15 +331,8 @@ def analytics():
         User.created_at >= start
     ).group_by(func.date(User.created_at)).all()
 
-    return success({
-        "admins": {"total": total_admins},
-        "users": {
-            "total": total_users,
-            "active": active_users,
-            "blocked": blocked_users
-        },
-        "applications": {"total": total_applications},
-        "growth": [
-            {"date": str(g[0]), "count": g[1]} for g in growth
-        ]
-    })
+    return render_template(
+        "super_admin/analytics.html",
+        data=data,
+        growth=growth
+    )
