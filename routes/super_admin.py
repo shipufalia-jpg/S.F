@@ -171,73 +171,41 @@ def view_admins():
 # =========================================================
 # USERS UNDER CONTROLLED ADMINS
 # =========================================================
-
-@super_admin.route('/users')
+@super_admin.route("/users")
 @super_admin_required
-def controlled_users():
+def super_admin_users():
 
+    # ================= SESSION CHECK =================
+    super_admin_id = session.get("user_id")
+
+    if not super_admin_id:
+        flash("Login required", "danger")
+        return redirect("/auth/login")
+
+    # ================= PAGINATION =================
     page = request.args.get("page", 1, type=int)
     limit = request.args.get("limit", 20, type=int)
 
-    admin_ids = get_controlled_admin_ids()
-
-    users = User.query.filter(
-        User.role == "user",
-        User.controller_id.in_(admin_ids)
+    # ================= USERS QUERY =================
+    users_query = User.query.filter(
+        User.is_deleted == False
     ).order_by(
         User.id.desc()
-    ).paginate(page=page, per_page=limit)
+    )
 
-    return success({
+    users = users_query.paginate(page=page, per_page=limit, error_out=False)
 
-        "users": [{
-
-            "id": u.id,
-            "name": u.name,
-            "phone": u.phone,
-            "email": getattr(u, "email", ""),
-            "status": u.status,
-            "controller_id": u.controller_id,
-
-            # =================================================
-            # REAL PROFILE IMAGE ONLY
-            # =================================================
-
-            "profile_image":
-                u.profile.image
-                if hasattr(u, "profile")
-                and u.profile
-                and getattr(u.profile, "image", None)
-                else None,
-
-            "address":
-                u.profile.address
-                if hasattr(u, "profile")
-                and u.profile
-                and getattr(u.profile, "address", None)
-                else "Not Added",
-
-            "bio":
-                u.profile.bio
-                if hasattr(u, "profile")
-                and u.profile
-                and getattr(u.profile, "bio", None)
-                else "No bio",
-
-            "created_at":
-                u.created_at.strftime("%d %b %Y")
-                if u.created_at
-                else "N/A"
-
-        } for u in users.items],
-
-        "pagination": {
+    return render_template(
+        "super_admin/users.html",
+        users=users.items,
+        pagination={
             "total": users.total,
             "pages": users.pages,
-            "current": users.page
+            "current": users.page,
+            "has_next": users.has_next,
+            "has_prev": users.has_prev
         }
-
-    })
+    )
 
 
 # =========================================================
