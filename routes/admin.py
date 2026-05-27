@@ -6,6 +6,7 @@ from models.work_model import Work
 from models.work_application import WorkApplication
 from extensions import db
 from sqlalchemy.orm import load_only
+from sqlalchemy.orm import joinedload
 from utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
