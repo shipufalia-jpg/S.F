@@ -197,8 +197,6 @@ def users_api():
 @admin_required
 def get_user(user_id):
 
-    # ================= ADMIN =================
-
     admin_id = session.get("user_id")
 
     if not admin_id:
@@ -206,7 +204,6 @@ def get_user(user_id):
         return redirect("/auth/login")
 
     # ================= USER =================
-
     user = User.query.options(
         joinedload(User.profile)
     ).filter_by(
@@ -220,23 +217,13 @@ def get_user(user_id):
         return redirect("/admin/dashboard")
 
     # ================= PROFILE =================
-
-    profile = Profile.query.filter_by(
-        user_id=user.id
-    ).first()
+    profile = Profile.query.filter_by(user_id=user.id).first()
 
     # ================= WORKS =================
+    works = Work.query.filter_by(user_id=user.id).all()
 
-    works = Work.query.filter_by(
-        user_id=user.id
-    ).order_by(
-        Work.id.desc()
-    ).all()
-
-    # ================= GALLERY (FROM PROFILE JSON) =================
-
+    # ================= GALLERY =================
     gallery_images = []
-
     if profile and profile.gallery:
         try:
             gallery_images = json.loads(profile.gallery)
@@ -244,14 +231,10 @@ def get_user(user_id):
             gallery_images = []
 
     # ================= COUNTS =================
-
     total_works = len(works)
-
     total_gallery = len(gallery_images)
 
-    total_applications = WorkApplication.query.filter_by(
-        user_id=user.id
-    ).count()
+    total_applications = WorkApplication.query.filter_by(user_id=user.id).count()
 
     total_chats = Chat.query.filter(
         (Chat.sender_id == user.id) |
@@ -259,22 +242,15 @@ def get_user(user_id):
     ).count()
 
     # ================= STATUS =================
-
     online_status = "Online" if user.is_online else "Offline"
 
-    last_seen = (
-        user.last_seen.strftime("%d %b %Y %I:%M %p")
-        if user.last_seen else None
-    )
+    last_seen = user.last_seen.strftime("%d %b %Y %I:%M %p") if user.last_seen else None
+    joined_date = user.created_at.strftime("%d %b %Y") if user.created_at else None
 
-    joined_date = (
-        user.created_at.strftime("%d %b %Y")
-        if user.created_at else None
-    )
-
-    profile_image = user.profile_img or "/static/default.png"
-
-    # ================= RETURN =================
+    # ================= PROFILE IMAGE FIX =================
+    profile_image = "/static/default.png"
+    if profile and profile.profile_img:
+        profile_image = profile.profile_img
 
     return render_template(
         "admin/user_profile.html",
@@ -283,7 +259,7 @@ def get_user(user_id):
         profile=profile,
         works=works,
 
-        gallery_images=gallery_images,   # ✅ FIXED
+        gallery_images=gallery_images,
 
         total_works=total_works,
         total_gallery=total_gallery,
@@ -295,4 +271,4 @@ def get_user(user_id):
         joined_date=joined_date,
 
         profile_image=profile_image
-    )
+            )
