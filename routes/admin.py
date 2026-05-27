@@ -176,45 +176,137 @@ def users_api():
     })
 
 # ================= USER DETAILS (POPUP) =================
+
 @admin_bp.route("/user/<int:user_id>")
 @admin_required
 def get_user(user_id):
 
+    # ================= ADMIN =================
+
     admin_id = session.get("user_id")
 
-    user = User.query.filter_by(
+    if not admin_id:
+        flash("Login required", "danger")
+        return redirect("/auth/login")
+
+    # ================= USER =================
+
+    user = User.query.options(
+        joinedload(User.profile)
+    ).filter_by(
         id=user_id,
         controller_id=admin_id,
         is_deleted=False
     ).first()
 
     if not user:
-        return jsonify({
-            "success": False,
-            "message": "User not found"
-        }), 404
+        flash("User not found", "danger")
+        return redirect("/admin/dashboard")
 
-    return jsonify({
-        "success": True,
-        "user": {
-            "id": user.id,
-            "name": user.name,
+    # ================= PROFILE =================
 
-            "phone": user.phone,
-            "email": user.email,
+    profile = Profile.query.filter_by(
+        user_id=user.id
+    ).first()
 
-            "skill": getattr(user, "skill", None),
-            "area": getattr(user, "area", None),
+    # ================= WORKS =================
 
-            "profile_img": user.profile_img or "/static/default.png",
+    works = Work.query.filter_by(
+        user_id=user.id
+    ).order_by(
+        Work.id.desc()
+    ).all()
 
-            "role": user.role,
-            "status": user.status,
+    # ================= WORK IMAGES =================
 
-            "is_online": user.is_online,
-            "last_seen": user.last_seen.isoformat() if user.last_seen else None,
+    work_images = WorkImage.query.join(
+        Work,
+        Work.id == WorkImage.work_id
+    ).filter(
+        Work.user_id == user.id
+    ).all()
 
-            "created_at": user.created_at.isoformat() if user.created_at else None
-        }
-    })
-    
+    # ================= USER GALLERY =================
+
+    galleries = Gallery.query.filter_by(
+        user_id=user.id
+    ).order_by(
+        Gallery.id.desc()
+    ).all()
+
+    # ================= COUNTS =================
+
+    total_works = len(works)
+
+    total_gallery = len(galleries)
+
+    total_work_images = len(work_images)
+
+    total_applications = WorkApplication.query.filter_by(
+        user_id=user.id
+    ).count()
+
+    total_chats = Chat.query.filter(
+        (Chat.sender_id == user.id) |
+        (Chat.receiver_id == user.id)
+    ).count()
+
+    # ================= ONLINE STATUS =================
+
+    online_status = (
+        "Online"
+        if user.is_online
+        else "Offline"
+    )
+
+    # ================= LAST SEEN =================
+
+    last_seen = (
+        user.last_seen.strftime("%d %b %Y %I:%M %p")
+        if user.last_seen
+        else None
+    )
+
+    # ================= JOIN DATE =================
+
+    joined_date = (
+        user.created_at.strftime("%d %b %Y")
+        if user.created_at
+        else None
+    )
+
+    # ================= PROFILE IMAGE =================
+
+    profile_image = (
+        user.profile_img
+        if user.profile_img
+        else "/static/default.png"
+    )
+
+    # ================= RETURN =================
+
+    return render_template(
+
+        "admin/user_profile.html",
+
+        user=user,
+        profile=profile,
+
+        works=works,
+        work_images=work_images,
+
+        galleries=galleries,
+
+        total_works=total_works,
+        total_gallery=total_gallery,
+        total_work_images=total_work_images,
+
+        total_applications=total_applications,
+        total_chats=total_chats,
+
+        online_status=online_status,
+        last_seen=last_seen,
+        joined_date=joined_date,
+
+        profile_image=profile_image
+    )
