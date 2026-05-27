@@ -238,10 +238,10 @@ def get_user(user_id):
     gallery_images = []
 
     if profile and profile.gallery:
-    try:
-        gallery_images = json.loads(profile.gallery)
-    except:
-        gallery_images = []
+        try:
+            gallery_images = json.loads(profile.gallery)
+        except:
+            gallery_images = []
 
     # ================= COUNTS =================
 
