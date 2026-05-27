@@ -9,6 +9,7 @@ from sqlalchemy.orm import load_only
 from sqlalchemy.orm import joinedload
 from models.profile import Profile
 from models.chat import Chat
+import json
 from utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -234,15 +235,13 @@ def get_user(user_id):
 
     # ================= GALLERY (FROM PROFILE JSON) =================
 
-    import json
-
     gallery_images = []
 
     if profile and profile.gallery:
-        try:
-            gallery_images = json.loads(profile.gallery)
-        except:
-            gallery_images = []
+    try:
+        gallery_images = json.loads(profile.gallery)
+    except:
+        gallery_images = []
 
     # ================= COUNTS =================
 
