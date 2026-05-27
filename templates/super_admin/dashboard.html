@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>S.F WORKS HUB • Super Admin</title>
+<title>S.F Super Admin • Advanced Panel</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
+/* ================= BASE ================= */
 body{
     margin:0;
     font-family:Segoe UI;
@@ -18,7 +20,7 @@ body{
     color:#fff;
 }
 
-/* SIDEBAR */
+/* ================= SIDEBAR ================= */
 .sidebar{
     position:fixed;
     top:0;
@@ -26,24 +28,97 @@ body{
     width:260px;
     height:100vh;
     background:#0f172a;
+    border-right:1px solid #1f2937;
     padding:20px;
     transition:0.3s;
-    border-right:1px solid #1f2937;
-    z-index:1000;
+    overflow-y:auto;
 }
 
-.sidebar.hide{left:-260px;}
+.sidebar.hide{
+    left:-260px;
+}
 
-/* MAIN */
+/* LOGO */
+.logo{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+/* MENU */
+.menu a{
+    display:block;
+    padding:12px;
+    color:#cbd5e1;
+    text-decoration:none;
+    border-radius:10px;
+    margin-bottom:8px;
+    transition:0.3s;
+}
+
+.menu a:hover{
+    background:#1e293b;
+    color:#fff;
+}
+
+/* ================= MAIN ================= */
 .main{
     margin-left:260px;
     padding:20px;
     transition:0.3s;
 }
 
-.main.full{margin-left:0;}
+.main.full{
+    margin-left:0;
+}
 
-/* CARD */
+/* ================= TOPBAR ================= */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#111827;
+    padding:12px 15px;
+    border-radius:12px;
+    margin-bottom:20px;
+    border:1px solid #1f2937;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+/* SEARCH */
+.search-box{
+    flex:1;
+    min-width:200px;
+}
+
+.search-box input{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    background:#0f172a;
+    color:white;
+}
+
+/* BUTTON */
+.btn-toggle{
+    background:#2563eb;
+    border:none;
+    color:white;
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* ================= CARDS ================= */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
 .cardx{
     background:#111827;
     border:1px solid #1f2937;
@@ -51,75 +126,62 @@ body{
     border-radius:12px;
 }
 
-/* TOPBAR */
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
+/* LIVE BADGE */
+.badge-live{
+    background:#16a34a;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
 }
 
-/* MENU */
-.menu button{
-    width:100%;
-    padding:10px;
-    background:none;
-    border:none;
-    color:#cbd5e1;
-    text-align:left;
-    border-radius:10px;
-    margin-bottom:5px;
-    cursor:pointer;
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+    .main{
+        margin-left:0;
+    }
 }
 
-.menu button:hover{
-    background:#1e293b;
-}
-
-/* MOBILE BUTTON FIX */
-.menu-toggle{
-    position:fixed;
-    top:10px;
-    left:10px;
-    z-index:2000;
-}
-
-.loading{
-    color:#94a3b8;
-}
 </style>
-
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- ================= SIDEBAR ================= -->
 <div class="sidebar" id="sidebar">
-    <h4>🚀 SUPER ADMIN</h4>
+
+    <div class="logo">🚀 S.F SUPER ADMIN</div>
 
     <div class="menu">
-
-        <button onclick="loadDashboard()"><i class="fa fa-chart-line"></i> Dashboard</button>
-        <button onclick="loadAdmins()"><i class="fa fa-user-shield"></i> Admins</button>
-        <button onclick="loadUsers()"><i class="fa fa-users"></i> Users</button>
-        <button onclick="loadLogs()"><i class="fa fa-clock"></i> Logs</button>
-
-        <button onclick="logout()"><i class="fa fa-right-from-bracket"></i> Logout</button>
-
+        <a href="#" onclick="loadDashboard()"><i class="fa fa-chart-line"></i> Dashboard</a>
+        <a href="#" onclick="loadAdmins()"><i class="fa fa-user-shield"></i> Admins</a>
+        <a href="#" onclick="loadUsers()"><i class="fa fa-users"></i> Users</a>
+        <a href="/super/applications"><i class="fa fa-file"></i> Applications</a>
+        <a href="#" onclick="loadLogs()"><i class="fa fa-clock"></i> Logs</a>
+        <a href="/auth/logout"><i class="fa fa-right-from-bracket"></i> Logout</a>
     </div>
+
 </div>
 
-<!-- MENU TOGGLE BUTTON -->
-<button class="btn btn-light menu-toggle" onclick="toggleSidebar()">☰</button>
-
-<!-- MAIN -->
+<!-- ================= MAIN ================= -->
 <div class="main" id="main">
 
-<div class="topbar">
-    <h5>CONTROL DASHBOARD</h5>
-</div>
+    <!-- TOPBAR -->
+    <div class="topbar">
 
-<div id="content" class="loading">Loading...</div>
+        <button class="btn-toggle" onclick="toggleSidebar()">
+            ☰ Menu
+        </button>
+
+        <div class="search-box">
+            <input type="text" placeholder="Search users, admins, logs..." onkeyup="searchFilter(this.value)">
+        </div>
+
+        <span class="badge-live">🟢 LIVE</span>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content">Loading...</div>
 
 </div>
 
@@ -127,86 +189,73 @@ body{
 
 let chartInstance = null;
 
-/* ================= FIXED GLOBAL FUNCTIONS ================= */
-window.loadDashboard = loadDashboard;
-window.loadAdmins = loadAdmins;
-window.loadUsers = loadUsers;
-window.loadLogs = loadLogs;
-
-/* ================= SIDEBAR ================= */
+/* ================= SIDEBAR TOGGLE ================= */
 function toggleSidebar(){
     document.getElementById("sidebar").classList.toggle("hide");
     document.getElementById("main").classList.toggle("full");
 }
 
+/* ================= SEARCH FILTER (UI ONLY) ================= */
+function searchFilter(value){
+    console.log("Searching:", value);
+}
+
 /* ================= DASHBOARD ================= */
 async function loadDashboard(){
 
-    try{
-        document.getElementById("content").innerHTML = "Loading...";
+    const res = await fetch("/super/analytics");
+    const json = await res.json();
+    const d = json.data;
 
-        const res = await fetch('/super/analytics');
-        const json = await res.json();
+    document.getElementById("content").innerHTML = `
+    <div class="grid">
 
-        const d = json.data;
+        <div class="cardx">Admins <h3>${d.admins.total}</h3></div>
+        <div class="cardx">Users <h3>${d.users.total}</h3></div>
+        <div class="cardx">Active <h3>${d.users.active}</h3></div>
+        <div class="cardx">Blocked <h3>${d.users.blocked}</h3></div>
+        <div class="cardx">Applications <h3>${d.applications.total}</h3></div>
 
-        document.getElementById("content").innerHTML = `
-        <div class="row g-3">
+    </div>
 
-            <div class="col-md-3"><div class="cardx">Admins <h3>${d.admins.total}</h3></div></div>
-            <div class="col-md-3"><div class="cardx">Users <h3>${d.users.total}</h3></div></div>
-            <div class="col-md-3"><div class="cardx">Active <h3>${d.users.active}</h3></div></div>
-            <div class="col-md-3"><div class="cardx">Blocked <h3>${d.users.blocked}</h3></div></div>
+    <div class="cardx mt-3">
+        <canvas id="chart"></canvas>
+    </div>
+    `;
 
-        </div>
+    const ctx = document.getElementById("chart");
 
-        <div class="cardx mt-3">
-            <canvas id="chart"></canvas>
-        </div>
-        `;
-
-        const ctx = document.getElementById("chart");
-
-        if(chartInstance){
-            chartInstance.destroy();
-        }
-
-        chartInstance = new Chart(ctx,{
-            type:'line',
-            data:{
-                labels: d.growth.map(x => x.date),
-                datasets:[{
-                    label:"Users",
-                    data: d.growth.map(x => x.count),
-                    borderWidth:2,
-                    tension:0.4
-                }]
-            }
-        });
-
-    }catch(err){
-        document.getElementById("content").innerHTML =
-        `<div class="alert alert-danger">Dashboard failed</div>`;
+    if(chartInstance){
+        chartInstance.destroy();
     }
+
+    chartInstance = new Chart(ctx,{
+        type:'line',
+        data:{
+            labels:d.growth.map(x=>x.date),
+            datasets:[{
+                label:"User Growth",
+                data:d.growth.map(x=>x.count),
+                borderWidth:2,
+                tension:0.4
+            }]
+        }
+    });
 }
 
 /* ================= ADMINS ================= */
 async function loadAdmins(){
-
-    const res = await fetch('/super/admins');
+    const res = await fetch("/super/admins");
     const json = await res.json();
 
-    let html = `<div class="row g-3">`;
+    let html = `<div class="grid">`;
 
     json.data.admins.forEach(a=>{
         html += `
-        <div class="col-md-4">
-            <div class="cardx">
-                <b>${a.name}</b><br>
-                📞 ${a.phone}<br>
-                📧 ${a.email}<br>
-                Status: ${a.status}
-            </div>
+        <div class="cardx">
+            <b>${a.name}</b><br>
+            ${a.phone}<br>
+            ${a.status}
         </div>`;
     });
 
@@ -216,21 +265,18 @@ async function loadAdmins(){
 
 /* ================= USERS ================= */
 async function loadUsers(){
-
-    const res = await fetch('/super/users');
+    const res = await fetch("/super/users");
     const json = await res.json();
 
-    let html = `<div class="row g-3">`;
+    let html = `<div class="grid">`;
 
     json.data.users.forEach(u=>{
         html += `
-        <div class="col-md-4">
-            <div class="cardx">
-                <b>${u.name}</b><br>
-                📞 ${u.phone}<br>
-                Role: ${u.role}<br>
-                Status: ${u.status}
-            </div>
+        <div class="cardx">
+            <b>${u.name}</b><br>
+            ${u.phone}<br>
+            ${u.role}<br>
+            ${u.status}
         </div>`;
     });
 
@@ -239,16 +285,25 @@ async function loadUsers(){
 }
 
 /* ================= LOGS ================= */
-function loadLogs(){
-    window.location.href="/super/logs";
+async function loadLogs(){
+    const res = await fetch("/super/logs");
+    const json = await res.json();
+
+    let html = "";
+
+    json.data.logs.forEach(l=>{
+        html += `
+        <div class="cardx mb-2">
+            <b>${l.action}</b><br>
+            ${l.time}<br>
+            Actor: ${l.actor} → Target: ${l.target}
+        </div>`;
+    });
+
+    document.getElementById("content").innerHTML = html;
 }
 
-/* ================= LOGOUT ================= */
-function logout(){
-    window.location.href="/auth/logout";
-}
-
-/* ================= INIT ================= */
+/* INIT */
 loadDashboard();
 
 </script>
