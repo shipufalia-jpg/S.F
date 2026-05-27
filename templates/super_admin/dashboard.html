@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,118 +11,75 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-/* ================= GLOBAL ================= */
 body{
     margin:0;
     font-family:Segoe UI;
-    background: radial-gradient(circle at top,#0b1220,#020617);
+    background:#0b1220;
     color:#fff;
 }
 
-/* ================= GLASS ================= */
-.glass{
-    background:rgba(255,255,255,0.06);
-    backdrop-filter: blur(14px);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:16px;
-}
-
-/* ================= SIDEBAR ================= */
+/* SIDEBAR */
 .sidebar{
     position:fixed;
     top:0;
     left:0;
     width:260px;
     height:100vh;
+    background:#0f172a;
     padding:20px;
     transition:0.3s;
-    background:rgba(2,6,23,0.9);
-    backdrop-filter: blur(15px);
+    border-right:1px solid #1f2937;
 }
 
-.sidebar.hide{
-    left:-260px;
+.sidebar.hide{left:-260px;}
+
+.sidebar h4{
+    margin-bottom:20px;
 }
 
-.logo{
-    font-size:20px;
-    font-weight:bold;
-    margin-bottom:25px;
-}
-
-.menu a{
-    display:flex;
-    gap:12px;
-    padding:12px;
-    color:#cbd5e1;
-    text-decoration:none;
-    border-radius:12px;
-    margin-bottom:8px;
-}
-
-.menu a:hover{
-    background:rgba(255,255,255,0.08);
-}
-
-.menu a.active{
-    background:#2563eb;
-    color:#fff;
-}
-
-/* ================= MAIN ================= */
+/* MAIN */
 .main{
     margin-left:260px;
     padding:20px;
     transition:0.3s;
 }
 
-.main.full{
-    margin-left:0;
+.main.full{margin-left:0;}
+
+/* CARDS */
+.cardx{
+    background:#111827;
+    border:1px solid #1f2937;
+    padding:15px;
+    border-radius:12px;
 }
 
-/* ================= TOPBAR ================= */
+/* TOPBAR */
 .topbar{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:15px;
+    margin-bottom:20px;
 }
 
-.search{
-    position:relative;
+/* MENU */
+.menu a{
+    display:block;
+    padding:10px;
+    color:#cbd5e1;
+    text-decoration:none;
+    border-radius:10px;
+    margin-bottom:5px;
 }
 
-.search input{
-    width:320px;
-    padding:10px 40px;
-    border-radius:12px;
-    border:none;
-    background:rgba(255,255,255,0.06);
-    color:#fff;
+.menu a:hover{
+    background:#1e293b;
 }
 
-.search i{
-    position:absolute;
-    left:12px;
-    top:12px;
+/* LOADING */
+.loading{
     color:#94a3b8;
 }
-
-/* ================= CARD ================= */
-.cardx{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.08);
-    padding:20px;
-    border-radius:16px;
-}
-
-/* ================= RESPONSIVE ================= */
-@media(max-width:900px){
-    .sidebar{left:-260px;}
-    .main{margin-left:0;}
-}
-
 </style>
 
 </head>
@@ -131,63 +87,33 @@ body{
 <body>
 
 <!-- ================= SIDEBAR ================= -->
-<div class="sidebar glass" id="sidebar">
-
-    <div class="logo">
-        🚀 S.F WORKS HUB
-    </div>
+<div class="sidebar" id="sidebar">
+    <h4>🚀 SUPER ADMIN</h4>
 
     <div class="menu">
-
-        <a href="#" onclick="loadDashboard()" class="active">
-            <i class="fa fa-chart-line"></i> Dashboard
-        </a>
-
-        <a href="#" onclick="loadAdmins()">
-            <i class="fa fa-user-shield"></i> Admins
-        </a>
-
-        <a href="#" onclick="loadUsers()">
-            <i class="fa fa-users"></i> Users
-        </a>
-
-        <a href="#" onclick="loadLogs()">
-            <i class="fa fa-clock"></i> Logs
-        </a>
-
-        <a href="/auth/logout">
-            <i class="fa fa-right-from-bracket"></i> Logout
-        </a>
-
+        <a href="#" onclick="loadDashboard()"><i class="fa fa-chart-line"></i> Dashboard</a>
+        <a href="#" onclick="loadAdmins()"><i class="fa fa-user-shield"></i> Admins</a>
+        <a href="#" onclick="loadUsers()"><i class="fa fa-users"></i> Users</a>
+        <a href="#" onclick="loadLogs()"><i class="fa fa-clock"></i> Logs</a>
+        <a href="/auth/logout"><i class="fa fa-right-from-bracket"></i> Logout</a>
     </div>
-
 </div>
 
 <!-- ================= MAIN ================= -->
 <div class="main" id="main">
 
-<!-- TOPBAR -->
-<div class="topbar glass">
-
+<div class="topbar">
     <button class="btn btn-light btn-sm" onclick="toggleSidebar()">☰</button>
-
-    <div class="search">
-        <i class="fa fa-search"></i>
-        <input id="searchInput" placeholder="Search users...">
-    </div>
-
-    <div>
-        <b>SUPER ADMIN</b>
-    </div>
-
+    <h5>CONTROL DASHBOARD</h5>
 </div>
 
-<!-- CONTENT -->
-<div id="content" class="mt-3"></div>
+<div id="content" class="loading">Loading...</div>
 
 </div>
 
 <script>
+
+let chartInstance = null;
 
 /* ================= SIDEBAR ================= */
 function toggleSidebar(){
@@ -196,94 +122,127 @@ function toggleSidebar(){
 }
 
 /* ================= DASHBOARD ================= */
-function loadDashboard(){
+async function loadDashboard(){
 
-fetch('/super/analytics')
-.then(r=>r.json())
-.then(res=>{
+    try{
+        document.getElementById("content").innerHTML = "Loading...";
 
-let d = res.data;
+        const res = await fetch('/super/analytics');
+        const json = await res.json();
 
-document.getElementById("content").innerHTML = `
-<div class="row g-3">
+        const d = json.data;
 
-<div class="col-md-3"><div class="cardx">Admins<br><h3>${d.admins.total}</h3></div></div>
-<div class="col-md-3"><div class="cardx">Users<br><h3>${d.users.total}</h3></div></div>
-<div class="col-md-3"><div class="cardx">Active<br><h3>${d.users.active}</h3></div></div>
-<div class="col-md-3"><div class="cardx">Apps<br><h3>${d.applications.total}</h3></div></div>
+        document.getElementById("content").innerHTML = `
+        <div class="row g-3">
 
-</div>
+            <div class="col-md-3"><div class="cardx">Admins <h3>${d.admins.total}</h3></div></div>
+            <div class="col-md-3"><div class="cardx">Users <h3>${d.users.total}</h3></div></div>
+            <div class="col-md-3"><div class="cardx">Active <h3>${d.users.active}</h3></div></div>
+            <div class="col-md-3"><div class="cardx">Blocked <h3>${d.users.blocked}</h3></div></div>
 
-<div class="cardx mt-3">
-<canvas id="chart"></canvas>
-</div>
-`;
+        </div>
 
-new Chart(document.getElementById("chart"),{
-type:"line",
-data:{
-labels:d.growth.map(x=>x.date),
-datasets:[{
-data:d.growth.map(x=>x.count),
-borderWidth:2
-}]
-}
-});
+        <div class="cardx mt-3">
+            <canvas id="chart"></canvas>
+        </div>
+        `;
 
-});
+        const ctx = document.getElementById("chart");
 
+        if(chartInstance){
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx,{
+            type:'line',
+            data:{
+                labels: d.growth.map(x => x.date),
+                datasets:[{
+                    label: "User Growth",
+                    data: d.growth.map(x => x.count),
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            }
+        });
+
+    }catch(err){
+        console.error(err);
+        document.getElementById("content").innerHTML =
+        `<div class="alert alert-danger">Dashboard failed to load</div>`;
+    }
 }
 
 /* ================= ADMINS ================= */
-function loadAdmins(){
+async function loadAdmins(){
 
-fetch('/super/admins')
-.then(r=>r.json())
-.then(res=>{
+    try{
+        document.getElementById("content").innerHTML = "Loading...";
 
-let html = `<div class="row g-3">`;
+        const res = await fetch('/super/admins');
+        const json = await res.json();
 
-res.data.admins.forEach(a=>{
+        let html = `<div class="row g-3">`;
 
-html += `
-<div class="col-md-4">
-<div class="cardx">
+        json.data.admins.forEach(a=>{
+            html += `
+            <div class="col-md-4">
+                <div class="cardx">
+                    <b>${a.name}</b><br>
+                    📞 ${a.phone}<br>
+                    📧 ${a.email}<br>
+                    Status: <b>${a.status}</b>
+                </div>
+            </div>`;
+        });
 
-<b>${a.name}</b><br>
-<small>${a.phone}</small><br>
-Status: ${a.status}<br>
+        html += `</div>`;
+        document.getElementById("content").innerHTML = html;
 
-<a class="btn btn-primary btn-sm mt-2" href="#">
-View
-</a>
-
-</div>
-</div>`;
-});
-
-html += `</div>`;
-document.getElementById("content").innerHTML = html;
-
-});
-
+    }catch(err){
+        document.getElementById("content").innerHTML =
+        `<div class="alert alert-danger">Admins failed to load</div>`;
+    }
 }
 
 /* ================= USERS ================= */
-function loadUsers(){
+async function loadUsers(){
 
-fetch('/super/users')
-.then(r=>r.text())
-.then(html=>{
-document.getElementById("content").innerHTML = html;
-});
+    try{
+        document.getElementById("content").innerHTML = "Loading...";
 
+        const res = await fetch('/super/users');
+        const json = await res.json();
+
+        let html = `<div class="row g-3">`;
+
+        json.data.users.forEach(u=>{
+            html += `
+            <div class="col-md-4">
+                <div class="cardx">
+                    <b>${u.name}</b><br>
+                    📞 ${u.phone}<br>
+                    Role: ${u.role}<br>
+                    Status: ${u.status}
+                </div>
+            </div>`;
+        });
+
+        html += `</div>`;
+        document.getElementById("content").innerHTML = html;
+
+    }catch(err){
+        document.getElementById("content").innerHTML =
+        `<div class="alert alert-danger">Users failed to load</div>`;
+    }
 }
 
 /* ================= LOGS ================= */
 function loadLogs(){
-window.location.href="/super/logs";
+    window.location.href = "/super/logs";
 }
 
+/* ================= AUTO LOAD ================= */
 loadDashboard();
 
 </script>
