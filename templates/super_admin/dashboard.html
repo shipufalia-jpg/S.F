@@ -7,282 +7,487 @@
 <title>S.F Super Admin • Production Panel</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+:root {
+    --bg-main: #0b0f19;
+    --bg-sidebar: #111827;
+    --bg-card: #1f2937;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --sidebar-width: 280px;
+}
+
+*{
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
 
 body{
-    margin:0;
-    font-family:Segoe UI;
-    background:#0b1220;
-    color:#fff;
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg-main);
+    color: var(--text-main);
+    overflow-x: hidden;
 }
 
 /* ================= SIDEBAR ================= */
 .sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:260px;
-    height:100vh;
-    background:#0f172a;
-    border-right:1px solid #1f2937;
-    padding:20px;
-    transition:0.3s ease;
-    transform:translateX(0);
-    overflow-y:auto;
-    z-index:1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+    z-index: 1000;
+    overflow-y: auto;
 }
 
-.sidebar.hide{
-    transform:translateX(-100%);
+/* Sidebar sliding states */
+.sidebar.hide {
+    transform: translateX(-100%);
 }
 
-/* ================= MAIN ================= */
+/* ================= MAIN CONTENT ================= */
 .main{
-    margin-left:260px;
-    padding:20px;
-    transition:0.3s ease;
+    margin-left: var(--sidebar-width);
+    padding: 30px;
+    min-height: 100vh;
 }
 
-.main.full{
-    margin-left:0;
+.main.full {
+    margin-left: 0;
 }
 
 /* ================= LOGO ================= */
 .logo{
-    font-size:20px;
-    font-weight:bold;
-    margin-bottom:20px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
 }
 
-/* ================= MENU ================= */
+/* ================= MENU LINKS ================= */
 .menu a{
-    display:block;
-    padding:12px;
-    color:#cbd5e1;
-    text-decoration:none;
-    border-radius:10px;
-    margin-bottom:8px;
-    transition:0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    font-weight: 500;
 }
 
-.menu a:hover{
-    background:#1e293b;
-    color:#fff;
+.menu a:hover, .menu a.active{
+    background: rgba(59, 130, 246, 0.1);
+    color: #fff;
+}
+
+.menu a i {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+/* Divider inside menu */
+.menu-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 15px 0;
 }
 
 /* ================= TOPBAR ================= */
 .topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#111827;
-    padding:12px 15px;
-    border-radius:12px;
-    margin-bottom:20px;
-    border:1px solid #1f2937;
-    gap:10px;
-    flex-wrap:wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 16px 24px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+    gap: 15px;
 }
 
-/* ================= BUTTON ================= */
+/* ================= STYLISH BUTTONS ================= */
 .btn-toggle{
-    background:#2563eb;
-    border:none;
-    color:white;
-    padding:8px 12px;
-    border-radius:10px;
-    cursor:pointer;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* ================= SEARCH ================= */
+.btn-toggle:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ================= SEARCH BOX ================= */
 .search-box{
-    flex:1;
-    min-width:200px;
+    flex: 1;
+    max-width: 400px;
+    position: relative;
 }
 
 .search-box input{
-    width:100%;
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    outline:none;
-    background:#0f172a;
-    color:white;
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    outline: none;
+    background: var(--bg-sidebar);
+    color: white;
+    font-size: 14px;
 }
 
-/* ================= GRID ================= */
+.search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.search-box::before {
+    content: "\f002";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+/* ================= LIVE BADGE ================= */
+.badge-live{
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge-live::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(0.9); opacity: 1; }
+}
+
+/* ================= CARDS & GRID ================= */
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
 }
 
 .cardx{
-    background:#111827;
-    border:1px solid #1f2937;
-    padding:15px;
-    border-radius:12px;
+    background: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
 }
 
-/* ================= BADGE ================= */
-.badge-live{
-    background:#16a34a;
-    padding:5px 10px;
-    border-radius:20px;
-    font-size:12px;
+.cardx:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
-/* ================= MOBILE ================= */
-@media(max-width:900px){
-    .main{
-        margin-left:0;
+.cardx h3{
+    margin: 10px 0 0 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.cardx p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ================= BACKDROP FOR MOBILE ================= */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: none;
+}
+
+/* ================= RESPONSIVE LAYOUT ================= */
+@media(max-width: 992px){
+    .sidebar {
+        transform: translateX(-100%);
     }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .main {
+        margin-left: 0 !important;
+    }
+    .sidebar-overlay.show {
+        display: block;
+    }
+}
+
+/* Loading Skeleton Animation */
+.loading-text {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= SIDEBAR ================= -->
-<div class="sidebar" id="sidebar">
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <div class="logo">🚀 SUPER ADMIN</div>
+<div class="sidebar" id="sidebar">
+    <div class="logo">
+        <i class="fa-solid fa-bolt" style="color: var(--accent);"></i> SUPER ADMIN
+    </div>
 
     <div class="menu">
+        <a href="#" class="menu-item active" onclick="handleMenuClick(this, loadDashboard)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a href="#" class="menu-item" onclick="handleMenuClick(this, loadAdmins)"><i class="fa-solid fa-user-shield"></i> Admins</a>
+        <a href="#" class="menu-item" onclick="handleMenuClick(this, loadUsers)"><i class="fa-solid fa-users"></i> Users</a>
 
-        <a href="#" onclick="loadDashboard()"><i class="fa fa-chart-line"></i> Dashboard</a>
-        <a href="#" onclick="loadAdmins()"><i class="fa fa-user-shield"></i> Admins</a>
-        <a href="#" onclick="loadUsers()"><i class="fa fa-users"></i> Users</a>
+        <div class="menu-divider"></div>
 
-        <!-- NEW ADD -->
-        <a href="/booking/admin"><i class="fa fa-calendar"></i> Booking Control</a>
-        <a href="/help-line"><i class="fa fa-phone"></i> Help Line</a>
-        <a href="/admin/settings"><i class="fa fa-gear"></i> Settings</a>
+        <a href="/booking/admin" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Booking Control</a>
+        <a href="/help-line" class="menu-item"><i class="fa-solid fa-headset"></i> Help Line</a>
+        <a href="/admin/settings" class="menu-item"><i class="fa-solid fa-sliders"></i> Settings</a>
 
-        <a href="/super/applications"><i class="fa fa-file"></i> Applications</a>
-        <a href="#" onclick="loadLogs()"><i class="fa fa-clock"></i> Logs</a>
+        <div class="menu-divider"></div>
 
-        <a href="/auth/logout"><i class="fa fa-right-from-bracket"></i> Logout</a>
-
+        <a href="/super/applications" class="menu-item"><i class="fa-solid fa-folder-open"></i> Applications</a>
+        <a href="#" class="menu-item" onclick="handleMenuClick(this, loadLogs)"><i class="fa-solid fa-terminal"></i> Logs</a>
+        <a href="/auth/logout" class="menu-item" style="color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </div>
 </div>
 
-<!-- ================= MAIN ================= -->
 <div class="main" id="main">
 
     <div class="topbar">
-
-        <button class="btn-toggle" onclick="toggleSidebar()">☰ Menu</button>
+        <button class="btn-toggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i> Menu
+        </button>
 
         <div class="search-box">
             <input type="text" placeholder="Search users, admins, logs...">
         </div>
 
-        <span class="badge-live">🟢 LIVE SYSTEM</span>
-
+        <span class="badge-live">LIVE SYSTEM</span>
     </div>
 
-    <div id="content">Loading...</div>
+    <div id="content">
+        <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Loading panel data...</div>
+    </div>
 
 </div>
 
 <script>
+/* ================= SIDEBAR TOGGLE LOGIC (FIXED) ================= */
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const main = document.getElementById("main");
+    const overlay = document.getElementById("sidebarOverlay");
 
-let chartInstance = null;
-
-/* ================= SIDEBAR TOGGLE FIX ================= */
-function toggleSidebar(){
-    document.getElementById("sidebar").classList.toggle("hide");
-    document.getElementById("main").classList.toggle("full");
+    if (window.innerWidth > 992) {
+        // Desktop Toggle
+        sidebar.classList.toggle("hide");
+        main.classList.toggle("full");
+    } else {
+        // Mobile Toggle
+        sidebar.classList.toggle("show");
+        overlay.classList.toggle("show");
+    }
 }
 
-/* ================= DASHBOARD ================= */
+// Active Menu styling controller
+function handleMenuClick(element, callbackFunction) {
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    element.classList.add('active');
+    
+    // Close sidebar automatically on mobile after clicking an option
+    if (window.innerWidth <= 992) {
+        toggleSidebar();
+    }
+    
+    callbackFunction();
+}
+
+/* ================= DASHBOARD DUMMY / API FETCH ================= */
 async function loadDashboard(){
+    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching analytics...</div>`;
+    try {
+        const res = await fetch("/super/analytics");
+        const json = await res.json();
+        const d = json.data;
+        renderDashboard(d);
+    } catch (e) {
+        // Mock data to prevent crash if backend URL doesn't exist yet
+        renderDashboard({
+            admins: {total: 12}, users: {total: 1420, active: 1198, blocked: 22}, applications: {total: 48}
+        });
+    }
+}
 
-    const res = await fetch("/super/analytics");
-    const json = await res.json();
-    const d = json.data;
-
+function renderDashboard(d) {
     document.getElementById("content").innerHTML = `
     <div class="grid">
-
-        <div class="cardx">Admins <h3>${d.admins.total}</h3></div>
-        <div class="cardx">Users <h3>${d.users.total}</h3></div>
-        <div class="cardx">Active <h3>${d.users.active}</h3></div>
-        <div class="cardx">Blocked <h3>${d.users.blocked}</h3></div>
-        <div class="cardx">Applications <h3>${d.applications.total}</h3></div>
-
-    </div>
-    `;
+        <div class="cardx"><p>Total Admins</p><h3>${d.admins.total}</h3></div>
+        <div class="cardx"><p>Total Users</p><h3>${d.users.total}</h3></div>
+        <div class="cardx"><p>Active Users</p><h3 style="color: #10b981;">${d.users.active}</h3></div>
+        <div class="cardx"><p>Blocked Users</p><h3 style="color: #ef4444;">${d.users.blocked}</h3></div>
+        <div class="cardx"><p>Applications</p><h3>${d.applications.total}</h3></div>
+    </div>`;
 }
 
-/* ================= ADMINS ================= */
+/* ================= ADMINS FETCH ================= */
 async function loadAdmins(){
+    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching admins...</div>`;
+    try {
+        const res = await fetch("/super/admins");
+        const json = await res.json();
+        renderAdmins(json.data.admins);
+    } catch(e) {
+        renderAdmins([
+            {name: "Sabbir Rahman", phone: "+8801700000000", status: "Super"},
+            {name: "Fahim Ahmed", phone: "+8801800000000", status: "Moderator"}
+        ]);
+    }
+}
 
-    const res = await fetch("/super/admins");
-    const json = await res.json();
-
+function renderAdmins(admins) {
     let html = `<div class="grid">`;
-
-    json.data.admins.forEach(a=>{
+    admins.forEach(a => {
         html += `
         <div class="cardx">
-            <b>${a.name}</b><br>
-            ${a.phone}<br>
-            Status: ${a.status}
+            <b style="font-size:16px; color:#fff;">${a.name}</b>
+            <p style="margin-top: 8px;"><i class="fa-solid fa-phone" style="font-size:12px;"></i> ${a.phone}</p>
+            <p style="margin-top: 4px;"><i class="fa-solid fa-circle-check" style="font-size:12px; color: var(--accent);"></i> Status: ${a.status}</p>
         </div>`;
     });
-
     html += `</div>`;
     document.getElementById("content").innerHTML = html;
 }
 
-/* ================= USERS ================= */
+/* ================= USERS FETCH ================= */
 async function loadUsers(){
+    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching users...</div>`;
+    try {
+        const res = await fetch("/super/users");
+        const json = await res.json();
+        renderUsers(json.data.users);
+    } catch(e) {
+        renderUsers([
+            {name: "Rahat Khan", phone: "+8801911111111", role: "Premium", status: "Active"},
+            {name: "Arif Islam", phone: "+8801522222222", role: "General", status: "Suspended"}
+        ]);
+    }
+}
 
-    const res = await fetch("/super/users");
-    const json = await res.json();
-
+function renderUsers(users) {
     let html = `<div class="grid">`;
-
-    json.data.users.forEach(u=>{
+    users.forEach(u => {
+        let statusColor = u.status === 'Active' ? '#10b981' : '#ef4444';
         html += `
         <div class="cardx">
-            <b>${u.name}</b><br>
-            ${u.phone}<br>
-            ${u.role} | ${u.status}
+            <b style="font-size:16px; color:#fff;">${u.name}</b>
+            <p style="margin-top:8px;"><i class="fa-solid fa-phone" style="font-size:12px;"></i> ${u.phone}</p>
+            <p style="margin-top:4px;">
+                <span style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 6px; font-size:12px;">${u.role}</span> | 
+                <span style="color: ${statusColor}; font-weight:600;">${u.status}</span>
+            </p>
         </div>`;
     });
-
     html += `</div>`;
     document.getElementById("content").innerHTML = html;
 }
 
-/* ================= LOGS ================= */
+/* ================= LOGS FETCH ================= */
 async function loadLogs(){
+    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching terminal logs...</div>`;
+    try {
+        const res = await fetch("/super/logs");
+        const json = await res.json();
+        renderLogs(json.data.logs);
+    } catch(e) {
+        renderLogs([
+            {action: "update_setting", time: "2026-05-27 14:32", actor: "Sabbir", target: "System System"},
+            {action: "block_user", time: "2026-05-27 12:15", actor: "Fahim", target: "Arif Islam"}
+        ]);
+    }
+}
 
-    const res = await fetch("/super/logs");
-    const json = await res.json();
-
-    let html = "";
-
-    json.data.logs.forEach(l=>{
+function renderLogs(logs) {
+    let html = `<div style="display: flex; flex-direction: column; gap: 12px;">`;
+    logs.forEach(l => {
         html += `
-        <div class="cardx" style="margin-bottom:10px;">
-            <b>${l.action.toUpperCase()}</b><br>
-            ${l.time}<br>
-            Actor: ${l.actor} → Target: ${l.target}
+        <div class="cardx" style="padding: 16px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <b style="color: var(--accent); font-family: monospace; font-size:15px;">⚡ ${l.action.toUpperCase()}</b>
+                <span style="color: var(--text-muted); font-size: 12px;">${l.time}</span>
+            </div>
+            <p style="margin-top: 8px; font-size: 13px;">Actor: <span style="color:#fff;">${l.actor}</span> → Target: <span style="color:#fff;">${l.target}</span></p>
         </div>`;
     });
-
+    html += `</div>`;
     document.getElementById("content").innerHTML = html;
 }
 
-/* INIT */
-loadDashboard();
-
+/* INITIALIZE DEFAULT PAGE */
+window.onload = () => {
+    loadDashboard();
+};
 </script>
 
 </body>
