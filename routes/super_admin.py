@@ -58,30 +58,25 @@ def super_admin_required(f):
 # =========================================================
 # HELPERS
 # =========================================================
-
 def get_controlled_admin_ids():
 
-    admin_ids = db.session.query(User.id).filter(
+    return db.session.query(User.id).filter(
         User.role == "admin",
         User.controller_id == session["user_id"]
     ).all()
 
-    return [a[0] for a in admin_ids]
-
 
 def get_controlled_user_ids():
 
-    admin_ids = get_controlled_admin_ids()
+    admin_ids = [a[0] for a in get_controlled_admin_ids()]
 
     if not admin_ids:
         return []
 
-    user_ids = db.session.query(User.id).filter(
+    return db.session.query(User.id).filter(
         User.role == "user",
         User.controller_id.in_(admin_ids)
     ).all()
-
-    return [u[0] for u in user_ids]
 
 
 # =========================================================
@@ -175,35 +170,47 @@ def view_admins():
 @super_admin_required
 def super_admin_users():
 
-    # ================= SESSION CHECK =================
-    super_admin_id = session.get("user_id")
-
-    if not super_admin_id:
+    if not session.get("user_id"):
         flash("Login required", "danger")
         return redirect("/auth/login")
 
-    # ================= PAGINATION =================
-    page = request.args.get("page", 1, type=int)
-    limit = request.args.get("limit", 20, type=int)
+    # ================= STEP 1: GET ADMIN IDS =================
+    admin_ids = db.session.query(User.id).filter(
+        User.role == "admin",
+        User.controller_id == session["user_id"]
+    ).all()
 
-    # ================= USERS QUERY =================
-    users_query = User.query.filter(
-        User.is_deleted == False
+    admin_ids = [a[0] for a in admin_ids]
+
+    # ================= STEP 2: GET USER IDS =================
+    user_ids = []
+    if admin_ids:
+        user_ids = db.session.query(User.id).filter(
+            User.role == "user",
+            User.controller_id.in_(admin_ids)
+        ).all()
+        user_ids = [u[0] for u in user_ids]
+
+    # ================= STEP 3: GET ALL USERS + ADMINS =================
+    users = User.query.filter(
+        User.is_deleted == False,
+        (
+            (User.role == "admin") & (User.id.in_(admin_ids))
+        ) |
+        (
+            (User.role == "user") & (User.id.in_(user_ids))
+        )
     ).order_by(
         User.id.desc()
-    )
-
-    users = users_query.paginate(page=page, per_page=limit, error_out=False)
+    ).all()
 
     return render_template(
         "super_admin/users.html",
-        users=users.items,
+        users=users,
         pagination={
-            "total": users.total,
-            "pages": users.pages,
-            "current": users.page,
-            "has_next": users.has_next,
-            "has_prev": users.has_prev
+            "total": len(users),
+            "pages": 1,
+            "current": 1
         }
     )
 
