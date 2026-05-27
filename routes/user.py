@@ -15,6 +15,181 @@ from decorators.auth import role_required
 user = Blueprint("user", __name__, url_prefix="/user")
 
 
+# =========================================================
+# USER LIVE TV
+# =========================================================
+
+@user.route("/live-tv")
+def user_live_tv():
+
+    role = session.get("role", "user")
+    country = session.get("country")
+    language = session.get("language")
+
+    now = datetime.utcnow()
+
+    medias = LiveMedia.query.filter(
+
+        # ACTIVE
+        LiveMedia.is_active.is_(True),
+
+        # NOT DELETED
+        LiveMedia.is_deleted.is_(False),
+
+        # APPROVED
+        LiveMedia.is_approved.is_(True),
+
+        # ROLE FILTER
+        (
+            (LiveMedia.target_role == "all") |
+            (LiveMedia.target_role == role)
+        ),
+
+        # SCHEDULE START
+        (
+            (LiveMedia.start_time == None) |
+            (LiveMedia.start_time <= now)
+        ),
+
+        # SCHEDULE END
+        (
+            (LiveMedia.end_time == None) |
+            (LiveMedia.end_time >= now)
+        )
+
+    ).order_by(
+
+        # FORCE SHOW FIRST
+        LiveMedia.force_show.desc(),
+
+        # FEATURED FIRST
+        LiveMedia.is_featured.desc(),
+
+        # DISPLAY ORDER
+        LiveMedia.display_order.asc(),
+
+        # LATEST
+        LiveMedia.id.desc()
+
+    ).all()
+
+    # =====================================================
+    # AUTO VIEW UPDATE
+    # =====================================================
+
+    for media in medias:
+        media.total_views += 1
+
+    db.session.commit()
+
+    # =====================================================
+    # FORCE POPUP
+    # =====================================================
+
+    force_popup = next(
+        (
+            m for m in medias
+            if m.force_show and m.show_popup
+        ),
+        None
+    )
+
+    # =====================================================
+    # LIVE MEDIA
+    # =====================================================
+
+    live_media = next(
+        (
+            m for m in medias
+            if m.is_live and m.live_status == "live"
+        ),
+        None
+    )
+
+    # =====================================================
+    # BANNERS
+    # =====================================================
+
+    banners = [
+        m for m in medias
+        if m.media_type == "banner"
+    ]
+
+    # =====================================================
+    # VIDEOS
+    # =====================================================
+
+    videos = [
+        m for m in medias
+        if m.media_type == "video"
+    ]
+
+    # =====================================================
+    # AUDIOS
+    # =====================================================
+
+    audios = [
+        m for m in medias
+        if m.media_type == "audio"
+    ]
+
+    # =====================================================
+    # POPUPS
+    # =====================================================
+
+    popups = [
+        m for m in medias
+        if m.show_popup
+    ]
+
+    # =====================================================
+    # FLOATING PLAYER
+    # =====================================================
+
+    floating_player = next(
+        (
+            m for m in medias
+            if m.floating_mode
+        ),
+        None
+    )
+
+    # =====================================================
+    # RENDER
+    # =====================================================
+
+    return render_template(
+
+        "user/live_tv.html",
+
+        medias=medias,
+
+        live_media=live_media,
+
+        banners=banners,
+
+        videos=videos,
+
+        audios=audios,
+
+        popups=popups,
+
+        floating_player=floating_player,
+
+        force_popup=force_popup,
+
+        total_medias=len(medias),
+
+        total_videos=len(videos),
+
+        total_audios=len(audios),
+
+        total_banners=len(banners),
+
+        now=now
+    )
+
+
 # =================================================
 # 👤 USER DASHBOARD
 # =================================================
