@@ -146,8 +146,6 @@ Admin User Profile
 
             <div class="row g-3">
 
-                {% set gallery_images = profile.gallery | fromjson if profile and profile.gallery else [] %}
-
                 {% for img in gallery_images %}
 
                     <div class="col-6 col-md-3">
