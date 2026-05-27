@@ -899,129 +899,112 @@ function loadAdmins(){
 USERS
 ========================================================= */
 
-function loadUsers(){
+function loadUsers() {
 
     document.getElementById("pageTitle").innerText = "Users";
 
-    fetch('/super/users')
+    document.getElementById("content").innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2">Loading users...</p>
+        </div>
+    `;
 
-    .then(res => res.json())
+    fetch('/super_admin/users')
+        .then(res => res.json())
+        .then(res => {
 
-    .then(res => {
+            let users = res.users || res.data?.users || [];
 
-        let html = `
+            if (!users.length) {
+                document.getElementById("content").innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        No users found
+                    </div>
+                `;
+                return;
+            }
 
-        <div class="row g-4">
-        `;
+            let html = `<div class="row g-4">`;
 
-        res.data.users.forEach(u => {
+            users.forEach(u => {
 
-            html += `
+                html += `
+                <div class="col-xl-4 col-lg-6 col-md-6">
 
-            <div class="col-xl-4 col-lg-6">
+                    <div class="profile-card">
 
-                <div class="profile-card">
+                        <div class="profile-header">
 
-                    <div class="profile-header">
-
-                        <img
-                             src="${u.profile_image}"
-                         alt="profile"
-                              class="user-avatar"
-                              onerror="this.onerror=null;this.src='/static/images/default.png';"
+                            <img
+                                src="${u.profile_image || '/static/default.png'}"
+                                class="user-avatar"
+                                alt="profile"
+                                onerror="this.onerror=null;this.src='/static/default.png';"
                             />
 
-                        <div class="profile-info">
+                            <div class="profile-info">
 
-                            <h4>${u.name}</h4>
+                                <h4>${u.name || 'N/A'}</h4>
 
-                            <p>
-                                ${u.phone}
-                            </p>
+                                <p>${u.phone || 'N/A'}</p>
 
-                            <span class="badge ${
-                                u.status == 'active'
-                                ? 'badge-active'
-                                : 'badge-blocked'
-                            }">
+                                <span class="badge ${
+                                    u.status === 'active'
+                                    ? 'badge-active'
+                                    : 'badge-blocked'
+                                }">
 
-                                ${u.status}
+                                    ${u.status || 'unknown'}
 
-                            </span>
+                                </span>
+
+                            </div>
 
                         </div>
 
-                    </div>
+                        <div class="profile-stats mt-4">
 
-                    <div class="profile-stats mt-4">
+                            <div class="row g-3">
 
-                        <div class="row g-3">
-
-                            <div class="col-6">
-
-                                <div class="stat-box">
-
+                                <div class="col-6 stat-box">
                                     <h6>Email</h6>
-
                                     <p style="font-size:13px;">
                                         ${u.email || 'N/A'}
                                     </p>
-
                                 </div>
 
-                            </div>
-
-                            <div class="col-6">
-
-                                <div class="stat-box">
-
+                                <div class="col-6 stat-box">
                                     <h6>Controller</h6>
-
-                                    <p>
-                                        ${u.controller_id}
-                                    </p>
-
+                                    <p>${u.controller_id || 'N/A'}</p>
                                 </div>
 
-                            </div>
-
-                            <div class="col-12">
-
-                                <div class="stat-box">
-
+                                <div class="col-12 stat-box">
                                     <h6>Address</h6>
-
-                                    <p>
-                                        ${u.address}
-                                    </p>
-
+                                    <p>${u.address || 'Not Added'}</p>
                                 </div>
 
-                            </div>
-
-                            <div class="col-12">
-
-                                <div class="stat-box">
-
+                                <div class="col-12 stat-box">
                                     <h6>Bio</h6>
-
-                                    <p>
-                                        ${u.bio}
-                                    </p>
-
+                                    <p>${u.bio || 'No bio available'}</p>
                                 </div>
 
-                            </div>
-
-                            <div class="col-12">
-
-                                <div class="stat-box">
-
+                                <div class="col-12 stat-box">
                                     <h6>Joined</h6>
+                                    <p>${u.created_at || 'N/A'}</p>
+                                </div>
 
-                                    <p>
-                                        ${u.created_at}
-                                    </p>
+                                <div class="col-12 mt-2 d-flex gap-2">
+
+                                    <a href="/super_admin/user/${u.id}"
+                                       class="btn btn-dark btn-sm w-50">
+                                        View
+                                    </a>
+
+                                    <a href="/chat/${u.id}"
+                                       class="btn btn-primary btn-sm w-50">
+                                        Chat
+                                    </a>
 
                                 </div>
 
@@ -1032,22 +1015,25 @@ function loadUsers(){
                     </div>
 
                 </div>
+                `;
+            });
 
-            </div>
+            html += `</div>`;
 
+            document.getElementById("content").innerHTML = html;
+
+        })
+        .catch(err => {
+
+            document.getElementById("content").innerHTML = `
+                <div class="text-center text-danger py-5">
+                    Failed to load users
+                </div>
             `;
+
+            console.error(err);
         });
-
-        html += `
-        </div>
-        `;
-
-        document.getElementById("content").innerHTML = html;
-
-    });
-
-            }
-
+        }
 /* =========================================================
 APPLICATIONS
 ========================================================= */
