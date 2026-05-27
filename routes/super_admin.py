@@ -381,6 +381,28 @@ def bulk_admin_action():
 
     return success(message=f"Bulk {action} successful")
 
+@super_admin.route("/users")
+@super_admin_required
+def super_admin_users():
+
+    super_admin_id = session.get("user_id")
+
+    if not super_admin_id:
+        flash("Login required", "danger")
+        return redirect("/auth/login")
+
+    # ================= ALL USERS =================
+    users = User.query.filter(
+        User.is_deleted == False
+    ).order_by(
+        User.id.desc()
+    ).all()
+
+    return render_template(
+        "super_admin/users.html",
+        users=users
+    )
+
 
 @super_admin.route("/user/<int:user_id>")
 @super_admin_required
