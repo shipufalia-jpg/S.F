@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:#0f172a;
+}
+
+/* ================= LIVE TV PLAYER ================= */
+
+.live-tv-box{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    width:420px;
+    height:240px;
+    background:#000;
+    border-radius:20px;
+    overflow:hidden;
+    z-index:9999;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    resize:both;
+    min-width:220px;
+    min-height:120px;
+    max-width:1200px;
+    max-height:900px;
+}
+
+/* HEADER */
+
+.live-header{
+    height:50px;
+    background:#111827;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    cursor:move;
+}
+
+/* LIVE BADGE */
+
+.live-badge{
+    background:red;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+    0%{opacity:1;}
+    50%{opacity:0.5;}
+    100%{opacity:1;}
+}
+
+/* PLAYER */
+
+.live-content{
+    width:100%;
+    height:calc(100% - 50px);
+    background:#000;
+}
+
+.live-content video,
+.live-content iframe,
+.live-content img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* CONTROLS */
+
+.live-controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.live-btn{
+    width:32px;
+    height:32px;
+    border:none;
+    border-radius:10px;
+    background:#1e293b;
+    color:#fff;
+}
+
+.live-btn:hover{
+    background:#2563eb;
+}
+
+/* PAGE */
+
+.page-title{
+    color:#fff;
+    font-weight:700;
+}
+
+/* GRID */
+
+.media-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+
+.media-card{
+    background:#111827;
+    border-radius:20px;
+    overflow:hidden;
+    color:#fff;
+    box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.media-thumb{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.media-body{
+    padding:15px;
+}
+
+.media-type{
+    background:#2563eb;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .live-tv-box{
+        width:95%;
+        right:10px;
+        bottom:10px;
+    }
+
+}
+
+</style>
+
+<div class="container-fluid py-4">
+
+    <!-- ================= TITLE ================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="page-title">
+                📺 Live TV & Media
+            </h2>
+
+            <p class="text-light opacity-75">
+                Watch live videos, banners, audio and announcements
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- ================= MEDIA GRID ================= -->
+
+    <div class="media-grid">
+
+        {% for media in medias %}
+
+        <div class="media-card">
+
+            {% if media.thumbnail %}
+
+            <img src="{{ media.thumbnail }}"
+                 class="media-thumb">
+
+            {% else %}
+
+            <img src="/static/images/default.png"
+                 class="media-thumb">
+
+            {% endif %}
+
+            <div class="media-body">
+
+                <div class="d-flex justify-content-between mb-2">
+
+                    <h5 class="fw-bold">
+
+                        {{ media.title }}
+
+                    </h5>
+
+                    <span class="media-type">
+
+                        {{ media.media_type }}
+
+                    </span>
+
+                </div>
+
+                <p class="text-light opacity-75 small">
+
+                    {{ media.description[:120] if media.description else "No description" }}
+
+                </p>
+
+                <button class="btn btn-primary rounded-4 w-100"
+                        onclick="openLivePlayer(
+                            '{{ media.file_url }}',
+                            '{{ media.media_type }}',
+                            '{{ media.title }}'
+                        )">
+
+                    ▶ Watch Now
+
+                </button>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<!-- ================= FLOATING LIVE PLAYER ================= -->
+
+<div class="live-tv-box"
+     id="livePlayer"
+     style="display:none;">
+
+    <!-- HEADER -->
+
+    <div class="live-header" id="dragHeader">
+
+        <div class="d-flex align-items-center gap-2">
+
+            <span class="live-badge">
+                ● LIVE
+            </span>
+
+            <span id="liveTitle">
+                Live TV
+            </span>
+
+        </div>
+
+        <!-- CONTROLS -->
+
+        <div class="live-controls">
+
+            <!-- MINIMIZE -->
+
+            <button class="live-btn"
+                    onclick="minimizePlayer()">
+
+                <i class="fa fa-minus"></i>
+
+            </button>
+
+            <!-- FULLSCREEN -->
+
+            <button class="live-btn"
+                    onclick="fullscreenPlayer()">
+
+                <i class="fa fa-expand"></i>
+
+            </button>
+
+            <!-- CLOSE -->
+
+            <button class="live-btn"
+                    onclick="closePlayer()">
+
+                <i class="fa fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CONTENT -->
+
+    <div class="live-content"
+         id="liveContent">
+
+    </div>
+
+</div>
+
+<script>
+
+/* ================= OPEN PLAYER ================= */
+
+function openLivePlayer(url, type, title){
+
+    const player = document.getElementById("livePlayer");
+    const content = document.getElementById("liveContent");
+
+    document.getElementById("liveTitle").innerText = title;
+
+    player.style.display = "block";
+
+    if(type === "video"){
+
+        content.innerHTML = `
+            <video controls autoplay>
+                <source src="${url}">
+            </video>
+        `;
+
+    }
+
+    else if(type === "audio"){
+
+        content.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center h-100 bg-dark">
+
+                <audio controls autoplay style="width:90%;">
+                    <source src="${url}">
+                </audio>
+
+            </div>
+        `;
+
+    }
+
+    else if(type === "banner"){
+
+        content.innerHTML = `
+            <img src="${url}">
+        `;
+
+    }
+
+    else{
+
+        content.innerHTML = `
+            <iframe src="${url}"
+                    frameborder="0"
+                    allowfullscreen>
+            </iframe>
+        `;
+
+    }
+
+}
+
+/* ================= CLOSE ================= */
+
+function closePlayer(){
+
+    document.getElementById("livePlayer").style.display = "none";
+
+    document.getElementById("liveContent").innerHTML = "";
+
+}
+
+/* ================= MINIMIZE ================= */
+
+function minimizePlayer(){
+
+    const player = document.getElementById("livePlayer");
+
+    player.style.height = "50px";
+
+}
+
+/* ================= FULLSCREEN ================= */
+
+function fullscreenPlayer(){
+
+    const player = document.getElementById("livePlayer");
+
+    if(player.requestFullscreen){
+        player.requestFullscreen();
+    }
+
+}
+
+/* ================= DRAG ================= */
+
+dragElement(document.getElementById("livePlayer"));
+
+function dragElement(elmnt) {
+
+    let pos1 = 0,
+        pos2 = 0,
+        pos3 = 0,
+        pos4 = 0;
+
+    document.getElementById("dragHeader").onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+
+        e = e || window.event;
+
+        e.preventDefault();
+
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        document.onmouseup = closeDragElement;
+
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+
+        e = e || window.event;
+
+        e.preventDefault();
+
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+
+        document.onmouseup = null;
+
+        document.onmousemove = null;
+    }
+}
+
+</script>
+
+{% endblock %}
