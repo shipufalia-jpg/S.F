@@ -3,6 +3,8 @@ from functools import wraps
 from datetime import datetime, timedelta
 from sqlalchemy import func
 import json
+from models.profile import Profile
+from models.chat import Chat
 from sqlalchemy.orm import joinedload
 from models.user import User
 from models.work_application import WorkApplication
