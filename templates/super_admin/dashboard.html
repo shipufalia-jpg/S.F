@@ -29,13 +29,10 @@ body{
     padding:20px;
     transition:0.3s;
     border-right:1px solid #1f2937;
+    z-index:1000;
 }
 
 .sidebar.hide{left:-260px;}
-
-.sidebar h4{
-    margin-bottom:20px;
-}
 
 /* MAIN */
 .main{
@@ -46,7 +43,7 @@ body{
 
 .main.full{margin-left:0;}
 
-/* CARDS */
+/* CARD */
 .cardx{
     background:#111827;
     border:1px solid #1f2937;
@@ -63,20 +60,30 @@ body{
 }
 
 /* MENU */
-.menu a{
-    display:block;
+.menu button{
+    width:100%;
     padding:10px;
+    background:none;
+    border:none;
     color:#cbd5e1;
-    text-decoration:none;
+    text-align:left;
     border-radius:10px;
     margin-bottom:5px;
+    cursor:pointer;
 }
 
-.menu a:hover{
+.menu button:hover{
     background:#1e293b;
 }
 
-/* LOADING */
+/* MOBILE BUTTON FIX */
+.menu-toggle{
+    position:fixed;
+    top:10px;
+    left:10px;
+    z-index:2000;
+}
+
 .loading{
     color:#94a3b8;
 }
@@ -86,24 +93,29 @@ body{
 
 <body>
 
-<!-- ================= SIDEBAR ================= -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
     <h4>🚀 SUPER ADMIN</h4>
 
     <div class="menu">
-        <a href="#" onclick="loadDashboard()"><i class="fa fa-chart-line"></i> Dashboard</a>
-        <a href="#" onclick="loadAdmins()"><i class="fa fa-user-shield"></i> Admins</a>
-        <a href="#" onclick="loadUsers()"><i class="fa fa-users"></i> Users</a>
-        <a href="#" onclick="loadLogs()"><i class="fa fa-clock"></i> Logs</a>
-        <a href="/auth/logout"><i class="fa fa-right-from-bracket"></i> Logout</a>
+
+        <button onclick="loadDashboard()"><i class="fa fa-chart-line"></i> Dashboard</button>
+        <button onclick="loadAdmins()"><i class="fa fa-user-shield"></i> Admins</button>
+        <button onclick="loadUsers()"><i class="fa fa-users"></i> Users</button>
+        <button onclick="loadLogs()"><i class="fa fa-clock"></i> Logs</button>
+
+        <button onclick="logout()"><i class="fa fa-right-from-bracket"></i> Logout</button>
+
     </div>
 </div>
 
-<!-- ================= MAIN ================= -->
+<!-- MENU TOGGLE BUTTON -->
+<button class="btn btn-light menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- MAIN -->
 <div class="main" id="main">
 
 <div class="topbar">
-    <button class="btn btn-light btn-sm" onclick="toggleSidebar()">☰</button>
     <h5>CONTROL DASHBOARD</h5>
 </div>
 
@@ -114,6 +126,12 @@ body{
 <script>
 
 let chartInstance = null;
+
+/* ================= FIXED GLOBAL FUNCTIONS ================= */
+window.loadDashboard = loadDashboard;
+window.loadAdmins = loadAdmins;
+window.loadUsers = loadUsers;
+window.loadLogs = loadLogs;
 
 /* ================= SIDEBAR ================= */
 function toggleSidebar(){
@@ -158,91 +176,79 @@ async function loadDashboard(){
             data:{
                 labels: d.growth.map(x => x.date),
                 datasets:[{
-                    label: "User Growth",
+                    label:"Users",
                     data: d.growth.map(x => x.count),
-                    borderWidth: 2,
-                    tension: 0.4
+                    borderWidth:2,
+                    tension:0.4
                 }]
             }
         });
 
     }catch(err){
-        console.error(err);
         document.getElementById("content").innerHTML =
-        `<div class="alert alert-danger">Dashboard failed to load</div>`;
+        `<div class="alert alert-danger">Dashboard failed</div>`;
     }
 }
 
 /* ================= ADMINS ================= */
 async function loadAdmins(){
 
-    try{
-        document.getElementById("content").innerHTML = "Loading...";
+    const res = await fetch('/super/admins');
+    const json = await res.json();
 
-        const res = await fetch('/super/admins');
-        const json = await res.json();
+    let html = `<div class="row g-3">`;
 
-        let html = `<div class="row g-3">`;
+    json.data.admins.forEach(a=>{
+        html += `
+        <div class="col-md-4">
+            <div class="cardx">
+                <b>${a.name}</b><br>
+                📞 ${a.phone}<br>
+                📧 ${a.email}<br>
+                Status: ${a.status}
+            </div>
+        </div>`;
+    });
 
-        json.data.admins.forEach(a=>{
-            html += `
-            <div class="col-md-4">
-                <div class="cardx">
-                    <b>${a.name}</b><br>
-                    📞 ${a.phone}<br>
-                    📧 ${a.email}<br>
-                    Status: <b>${a.status}</b>
-                </div>
-            </div>`;
-        });
-
-        html += `</div>`;
-        document.getElementById("content").innerHTML = html;
-
-    }catch(err){
-        document.getElementById("content").innerHTML =
-        `<div class="alert alert-danger">Admins failed to load</div>`;
-    }
+    html += `</div>`;
+    document.getElementById("content").innerHTML = html;
 }
 
 /* ================= USERS ================= */
 async function loadUsers(){
 
-    try{
-        document.getElementById("content").innerHTML = "Loading...";
+    const res = await fetch('/super/users');
+    const json = await res.json();
 
-        const res = await fetch('/super/users');
-        const json = await res.json();
+    let html = `<div class="row g-3">`;
 
-        let html = `<div class="row g-3">`;
+    json.data.users.forEach(u=>{
+        html += `
+        <div class="col-md-4">
+            <div class="cardx">
+                <b>${u.name}</b><br>
+                📞 ${u.phone}<br>
+                Role: ${u.role}<br>
+                Status: ${u.status}
+            </div>
+        </div>`;
+    });
 
-        json.data.users.forEach(u=>{
-            html += `
-            <div class="col-md-4">
-                <div class="cardx">
-                    <b>${u.name}</b><br>
-                    📞 ${u.phone}<br>
-                    Role: ${u.role}<br>
-                    Status: ${u.status}
-                </div>
-            </div>`;
-        });
-
-        html += `</div>`;
-        document.getElementById("content").innerHTML = html;
-
-    }catch(err){
-        document.getElementById("content").innerHTML =
-        `<div class="alert alert-danger">Users failed to load</div>`;
-    }
+    html += `</div>`;
+    document.getElementById("content").innerHTML = html;
 }
 
 /* ================= LOGS ================= */
 function loadLogs(){
-    window.location.href = "/super/logs";
+    window.location.href="/super/logs";
 }
 
-/* ================= AUTO LOAD ================= */
+/* ================= LOGOUT ================= */
+function logout(){
+    window.location.href="/auth/logout";
+}
+
+/* ================= INIT ================= */
 loadDashboard();
 
 </script>
