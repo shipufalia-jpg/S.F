@@ -26,42 +26,47 @@
 <!-- ================= STATS ================= -->
 <div class="row g-3 mb-4">
 
+    <!-- TOTAL USERS -->
     <div class="col-6 col-md-3">
         <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
-            <h4 class="fw-bold text-primary">{{ users|length }}</h4>
+            <h4 class="fw-bold text-primary">
+                {{ users.total if users.total is defined else users|length }}
+            </h4>
             <small>Total Users</small>
         </div>
     </div>
 
+    <!-- ONLINE USERS -->
     <div class="col-6 col-md-3">
         <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
             <h4 class="fw-bold text-success">
-                {{ users|selectattr('is_online')|list|length }}
+                {{ users.items|selectattr('status','equalto','active')|list|length if users.items is defined else users|selectattr('status','equalto','active')|list|length }}
             </h4>
             <small>Online</small>
         </div>
     </div>
 
+    <!-- BLOCKED USERS -->
     <div class="col-6 col-md-3">
         <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
             <h4 class="fw-bold text-danger">
-                {{ users|selectattr('status','equalto','blocked')|list|length }}
+                {{ users.items|selectattr('status','equalto','blocked')|list|length if users.items is defined else users|selectattr('status','equalto','blocked')|list|length }}
             </h4>
             <small>Blocked</small>
         </div>
     </div>
 
+    <!-- ACTIVE USERS -->
     <div class="col-6 col-md-3">
         <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
             <h4 class="fw-bold text-dark">
-                {{ users|selectattr('status','equalto','active')|list|length }}
+                {{ users.items|selectattr('status','equalto','active')|list|length if users.items is defined else users|selectattr('status','equalto','active')|list|length }}
             </h4>
             <small>Active</small>
         </div>
     </div>
 
 </div>
-
 <!-- ================= TABLE ================= -->
 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
