@@ -162,28 +162,30 @@ def view_admins():
 @super_admin_required
 def super_admin_users():
 
-    admin_ids = get_controlled_admin_ids()
-    user_ids = get_controlled_user_ids()
+    admin_ids = get_controlled_admin_ids() or []
+    user_ids = get_controlled_user_ids() or []
+
+    # নিরাপদভাবে empty IN() crash prevent
+    admin_filter = User.id.in_(admin_ids) if admin_ids else False
+    user_filter = User.id.in_(user_ids) if user_ids else False
 
     users = User.query.filter(
-        User.is_deleted == False,
+        User.is_deleted.is_(False),
         (
-            (User.role == "admin") & (User.id.in_(admin_ids))
+            (User.role == "admin") & admin_filter
         ) |
         (
-            (User.role == "user") & (User.id.in_(user_ids))
+            (User.role == "user") & user_filter
         )
     ).order_by(User.id.desc()).all()
 
-    return success({
-        "users": [{
-            "id": u.id,
-            "name": u.name,
-            "phone": u.phone,
-            "role": u.role,
-            "status": u.status
-        } for u in users]
-    })
+    return render_template(
+        "super_admin/users.html",
+        users=users,
+        total=len(users),
+        admin_count=len(admin_ids),
+        user_count=len(user_ids)
+    )
 
 
 # =========================================================
