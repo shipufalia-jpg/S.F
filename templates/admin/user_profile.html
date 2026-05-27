@@ -12,8 +12,17 @@ Admin User Profile
 
     <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
 
-        <div style="height:220px; background: linear-gradient(135deg,#0d6efd,#6610f2);"></div>
+        <!-- COVER IMAGE -->
+        <div style="
+            height:220px;
+            background: {% if profile and profile.cover_img %}
+                url('{{ profile.cover_img }}') center/cover no-repeat
+            {% else %}
+                linear-gradient(135deg,#0d6efd,#6610f2)
+            {% endif %};
+        "></div>
 
+        <!-- PROFILE -->
         <div class="px-4 pb-4 position-relative text-center">
 
             <img src="{{ profile_image }}"
@@ -21,7 +30,7 @@ Admin User Profile
                  style="width:140px;height:140px;object-fit:cover;margin-top:-70px;">
 
             <h2 class="fw-bold mt-3 mb-1">
-                {{ user.name }}
+                {{ profile.name if profile else user.name }}
             </h2>
 
             <p class="text-muted mb-2">
@@ -127,7 +136,7 @@ Admin User Profile
         </div>
     </div>
 
-    <!-- ================= GALLERY (FROM PROFILE JSON) ================= -->
+    <!-- ================= GALLERY ================= -->
 
     <div class="card shadow-sm rounded-4 mb-4">
 
@@ -137,6 +146,8 @@ Admin User Profile
 
             <div class="row g-3">
 
+                {% set gallery_images = profile.gallery | fromjson if profile and profile.gallery else [] %}
+
                 {% for img in gallery_images %}
 
                     <div class="col-6 col-md-3">
@@ -144,7 +155,6 @@ Admin User Profile
                         <img src="{{ img }}"
                              class="img-fluid rounded-4 shadow-sm"
                              style="height:200px;width:100%;object-fit:cover;">
-
                     </div>
 
                 {% endfor %}
@@ -158,23 +168,26 @@ Admin User Profile
         </div>
     </div>
 
-    <!-- ================= ACTIONS ================= -->
+    <!-- ================= ADMIN ACTIONS ================= -->
 
     <div class="card shadow-sm rounded-4">
 
         <div class="card-body p-4">
 
-            <h4 class="fw-bold mb-3">Admin Actions</h4>
+            <h4 class="fw-bold mb-3">Admin Controls</h4>
 
             <div class="d-flex flex-wrap gap-2">
 
+                {% if user.status != "blocked" %}
                 <a href="/admin/block_user/{{ user.id }}"
                    class="btn btn-warning rounded-pill">
                     Block User
                 </a>
+                {% endif %}
 
                 <a href="/admin/delete_user/{{ user.id }}"
-                   class="btn btn-danger rounded-pill">
+                   class="btn btn-danger rounded-pill"
+                   onclick="return confirm('Are you sure to delete this user?')">
                     Delete User
                 </a>
 
@@ -183,10 +196,15 @@ Admin User Profile
                     Message User
                 </a>
 
+                {% if user.is_online %}
+                <span class="btn btn-success rounded-pill disabled">
+                    Online Now
+                </span>
+                {% endif %}
+
             </div>
 
         </div>
-
     </div>
 
 </div>
