@@ -8,6 +8,7 @@ from extensions import db
 from sqlalchemy.orm import load_only
 from sqlalchemy.orm import joinedload
 from models.profile import Profile
+from models.chat import Chat
 from utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
