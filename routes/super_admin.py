@@ -383,9 +383,9 @@ def bulk_admin_action():
 
     return success(message=f"Bulk {action} successful")
 
-@super_admin.route("/users")
+@super_admin.route("/users-page")
 @super_admin_required
-def super_admin_users():
+def users_page():
 
     super_admin_id = session.get("user_id")
 
@@ -404,8 +404,7 @@ def super_admin_users():
         "super_admin/users.html",
         users=users
     )
-
-
+    
 @super_admin.route("/user/<int:user_id>")
 @super_admin_required
 def super_admin_user_profile(user_id):
