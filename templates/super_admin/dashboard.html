@@ -13,26 +13,25 @@
 
 <style>
 
-/* ===================== GLOBAL ===================== */
+/* ================= GLOBAL ================= */
 
 body{
     margin:0;
     font-family: 'Segoe UI', sans-serif;
     background: radial-gradient(circle at top, #0b1220, #020617);
     color:#fff;
-    overflow-x:hidden;
 }
 
-/* ===================== GLASS EFFECT ===================== */
+/* ================= GLASS ================= */
 
 .glass{
     background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
     border:1px solid rgba(255,255,255,0.08);
     border-radius:16px;
 }
 
-/* ===================== SIDEBAR ===================== */
+/* ================= SIDEBAR ================= */
 
 .sidebar{
     position:fixed;
@@ -40,11 +39,11 @@ body{
     left:0;
     width:260px;
     height:100vh;
-    background: rgba(2,6,23,0.85);
-    backdrop-filter: blur(15px);
-    border-right:1px solid rgba(255,255,255,0.08);
     padding:20px;
     transition:0.3s;
+    background: rgba(2,6,23,0.9);
+    backdrop-filter: blur(18px);
+    border-right:1px solid rgba(255,255,255,0.08);
 }
 
 .sidebar.hide{
@@ -67,19 +66,16 @@ body{
     margin-bottom:10px;
     text-decoration:none;
     transition:0.3s;
+    cursor:pointer;
 }
 
-.menu a:hover{
-    background:rgba(255,255,255,0.08);
-    color:#fff;
-}
-
+.menu a:hover,
 .menu a.active{
     background:#2563eb;
     color:#fff;
 }
 
-/* ===================== MAIN ===================== */
+/* ================= MAIN ================= */
 
 .main{
     margin-left:260px;
@@ -91,7 +87,7 @@ body{
     margin-left:0;
 }
 
-/* ===================== TOPBAR ===================== */
+/* ================= TOPBAR ================= */
 
 .topbar{
     display:flex;
@@ -100,6 +96,8 @@ body{
     padding:15px;
     border-radius:16px;
 }
+
+/* ================= SEARCH ================= */
 
 .search{
     position:relative;
@@ -121,35 +119,23 @@ body{
     color:#94a3b8;
 }
 
-/* ===================== CARD ===================== */
+/* ================= CARD ================= */
 
 .cardx{
     padding:20px;
     border-radius:16px;
     background:rgba(255,255,255,0.05);
     border:1px solid rgba(255,255,255,0.08);
-    transition:0.3s;
 }
 
-.cardx:hover{
-    transform:translateY(-5px);
-}
-
-/* ===================== USER CARD ===================== */
+/* ================= USER ================= */
 
 .user-card img{
-    width:60px;
-    height:60px;
+    width:55px;
+    height:55px;
     border-radius:50%;
     object-fit:cover;
     border:2px solid #2563eb;
-}
-
-/* ===================== RESPONSIVE ===================== */
-
-@media(max-width:900px){
-    .sidebar{left:-260px;}
-    .main{margin-left:0;}
 }
 
 </style>
@@ -162,29 +148,23 @@ body{
 
 <div class="sidebar glass" id="sidebar">
 
-    <div class="logo">
-        🚀 S.F HUB
-    </div>
+    <div class="logo">🚀 S.F HUB</div>
 
     <div class="menu">
 
-        <a href="#" onclick="loadDashboard()" class="active">
+        <a class="active" onclick="setActive(this);loadDashboard()">
             <i class="fa fa-chart-line"></i> Dashboard
         </a>
 
-        <a href="#" onclick="loadAdmins()">
+        <a onclick="setActive(this);loadAdmins()">
             <i class="fa fa-user-shield"></i> Admins
         </a>
 
-        <a href="#" onclick="loadUsers()">
+        <a onclick="setActive(this);loadUsers()">
             <i class="fa fa-users"></i> Users
         </a>
 
-        <a href="#" onclick="loadApplications()">
-            <i class="fa fa-file"></i> Applications
-        </a>
-
-        <a href="#" onclick="loadLogs()">
+        <a onclick="setActive(this);loadLogs()">
             <i class="fa fa-clock"></i> Logs
         </a>
 
@@ -204,18 +184,14 @@ body{
 
     <div class="topbar glass">
 
-        <button class="btn btn-sm btn-light" onclick="toggleSidebar()">
-            ☰
-        </button>
+        <button class="btn btn-light btn-sm" onclick="toggleSidebar()">☰</button>
 
         <div class="search">
             <i class="fa fa-search"></i>
             <input type="text" id="searchInput" placeholder="Search...">
         </div>
 
-        <div>
-            <b>Super Admin</b>
-        </div>
+        <div><b>Super Admin</b></div>
 
     </div>
 
@@ -227,11 +203,16 @@ body{
 
 <script>
 
-/* ================= SIDEBAR TOGGLE ================= */
+/* ================= SIDEBAR ================= */
 
 function toggleSidebar(){
     document.getElementById("sidebar").classList.toggle("hide");
     document.getElementById("main").classList.toggle("full");
+}
+
+function setActive(el){
+    document.querySelectorAll(".menu a").forEach(a=>a.classList.remove("active"));
+    el.classList.add("active");
 }
 
 /* ================= DASHBOARD ================= */
@@ -245,44 +226,15 @@ function loadDashboard(){
         let d = res.data;
 
         document.getElementById("content").innerHTML = `
-
         <div class="row g-3">
 
-            <div class="col-md-3">
-                <div class="cardx">Admins<br><h3>${d.admins.total}</h3></div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="cardx">Users<br><h3>${d.users.total}</h3></div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="cardx">Active<br><h3>${d.users.active}</h3></div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="cardx">Apps<br><h3>${d.applications.total}</h3></div>
-            </div>
+            <div class="col-md-3"><div class="cardx">Admins<br><h3>${d.admins.total}</h3></div></div>
+            <div class="col-md-3"><div class="cardx">Users<br><h3>${d.users.total}</h3></div></div>
+            <div class="col-md-3"><div class="cardx">Active<br><h3>${d.users.active}</h3></div></div>
+            <div class="col-md-3"><div class="cardx">Apps<br><h3>${d.applications.total}</h3></div></div>
 
         </div>
-
-        <div class="cardx mt-3">
-            <canvas id="chart"></canvas>
-        </div>
-
         `;
-
-        new Chart(document.getElementById("chart"),{
-            type:"line",
-            data:{
-                labels:d.growth.map(x=>x.date),
-                datasets:[{
-                    data:d.growth.map(x=>x.count),
-                    borderWidth:2
-                }]
-            }
-        });
-
     });
 
 }
@@ -291,11 +243,11 @@ function loadDashboard(){
 
 function loadUsers(){
 
-    fetch('/super_admin/users')
+    fetch('/super/users')
     .then(r=>r.json())
     .then(res=>{
 
-        let users = res.users || [];
+        let users = res.data.users;
 
         let html = `<div class="row g-3">`;
 
@@ -322,7 +274,7 @@ function loadUsers(){
                     <div>${u.email || ''}</div>
                     <div>Status: ${u.status}</div>
 
-                    <a href="/super_admin/user/${u.id}" class="btn btn-primary btn-sm mt-2">
+                    <a href="/super/user/${u.id}" class="btn btn-primary btn-sm mt-2">
                         View
                     </a>
 
@@ -339,11 +291,29 @@ function loadUsers(){
 
 }
 
-/* ================= PLACEHOLDERS ================= */
+/* ================= ADMINS ================= */
 
-function loadAdmins(){ window.location.href="/super/admins"; }
-function loadApplications(){ window.location.href="/super/applications"; }
-function loadLogs(){ window.location.href="/super/logs"; }
+function loadAdmins(){
+    fetch('/super/admins')
+    .then(r=>r.json())
+    .then(res=>{
+        document.getElementById("content").innerHTML =
+        `<pre>${JSON.stringify(res.data,null,2)}</pre>`;
+    });
+}
+
+/* ================= LOGS ================= */
+
+function loadLogs(){
+    fetch('/super/logs')
+    .then(r=>r.json())
+    .then(res=>{
+        document.getElementById("content").innerHTML =
+        `<pre>${JSON.stringify(res.data,null,2)}</pre>`;
+    });
+}
+
+/* ================= INIT ================= */
 
 loadDashboard();
 
