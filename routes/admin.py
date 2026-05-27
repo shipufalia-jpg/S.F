@@ -155,8 +155,20 @@ def analytics():
 @admin_bp.route("/users-page")
 @admin_required
 def users_page():
-    return render_template("admin/users.html")
 
+    admin_id = session.get("user_id")
+
+    users = User.query.filter_by(
+        controller_id=admin_id,
+        is_deleted=False
+    ).order_by(
+        User.id.desc()
+    ).all()
+
+    return render_template(
+        "admin/users.html",
+        users=users
+    )
 
 # ================= USERS API (JSON) =================
 @admin_bp.route("/api/users")
