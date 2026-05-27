@@ -2,10 +2,12 @@ from flask import Blueprint, session, jsonify, request, render_template
 from functools import wraps
 from datetime import datetime, timedelta
 from sqlalchemy import func
-
+import json
+from sqlalchemy.orm import joinedload
 from models.user import User
 from models.work_application import WorkApplication
 from models.activity_log import ActivityLog
+
 
 from extensions import db, socketio
 from services.logger import log_activity
@@ -378,6 +380,86 @@ def bulk_admin_action():
     db.session.commit()
 
     return success(message=f"Bulk {action} successful")
+
+
+@super_admin.route("/user/<int:user_id>")
+@super_admin_required
+def super_admin_user_profile(user_id):
+
+    super_admin_id = session.get("user_id")
+
+    if not super_admin_id:
+        flash("Login required", "danger")
+        return redirect("/auth/login")
+
+    # ================= USER =================
+    user = User.query.options(
+        joinedload(User.profile)
+    ).filter_by(
+        id=user_id,
+        is_deleted=False
+    ).first()
+
+    if not user:
+        flash("User not found", "danger")
+        return redirect("/super_admin/dashboard")
+
+    # ================= PROFILE =================
+    profile = Profile.query.filter_by(user_id=user.id).first()
+
+    # ================= WORKS =================
+    works = Work.query.filter_by(user_id=user.id).all()
+
+    # ================= GALLERY =================
+    gallery_images = []
+    if profile and profile.gallery:
+        try:
+            gallery_images = json.loads(profile.gallery)
+        except:
+            gallery_images = []
+
+    # ================= COUNTS =================
+    total_works = len(works)
+    total_gallery = len(gallery_images)
+
+    total_applications = WorkApplication.query.filter_by(user_id=user.id).count()
+
+    total_chats = Chat.query.filter(
+        (Chat.sender_id == user.id) |
+        (Chat.receiver_id == user.id)
+    ).count()
+
+    # ================= STATUS =================
+    online_status = "Online" if user.is_online else "Offline"
+
+    last_seen = user.last_seen.strftime("%d %b %Y %I:%M %p") if user.last_seen else None
+    joined_date = user.created_at.strftime("%d %b %Y") if user.created_at else None
+
+    # ================= PROFILE IMAGE =================
+    profile_image = "/static/default.png"
+    if profile and profile.profile_img:
+        profile_image = profile.profile_img
+
+    return render_template(
+        "super_admin/user_profile.html",
+
+        user=user,
+        profile=profile,
+        works=works,
+
+        gallery_images=gallery_images,
+
+        total_works=total_works,
+        total_gallery=total_gallery,
+        total_applications=total_applications,
+        total_chats=total_chats,
+
+        online_status=online_status,
+        last_seen=last_seen,
+        joined_date=joined_date,
+
+        profile_image=profile_image
+    )
 
 
 # =========================================================
