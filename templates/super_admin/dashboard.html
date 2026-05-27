@@ -1,496 +1,741 @@
+<!-- templates/super_admin/dashboard.html -->
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>S.F Super Admin • Production Panel</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>S.F Super Admin Panel</title>
 
-<style>
-:root {
-    --bg-main: #0b0f19;
-    --bg-sidebar: #111827;
-    --bg-card: #1f2937;
-    --accent: #3b82f6;
-    --accent-hover: #2563eb;
-    --text-main: #f3f4f6;
-    --text-muted: #9ca3af;
-    --border-color: rgba(255, 255, 255, 0.08);
-    --sidebar-width: 280px;
-}
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-*{
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
+    <!-- FONT AWESOME -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
-body{
-    margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--bg-main);
-    color: var(--text-main);
-    overflow-x: hidden;
-}
+    <!-- CHART -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-/* ================= SIDEBAR ================= */
-.sidebar{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--sidebar-width);
-    height: 100vh;
-    background: var(--bg-sidebar);
-    border-right: 1px solid var(--border-color);
-    padding: 24px;
-    z-index: 1000;
-    overflow-y: auto;
-}
+    <style>
 
-/* Sidebar sliding states */
-.sidebar.hide {
-    transform: translateX(-100%);
-}
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
 
-/* ================= MAIN CONTENT ================= */
-.main{
-    margin-left: var(--sidebar-width);
-    padding: 30px;
-    min-height: 100vh;
-}
+        body{
+            background:#0f172a;
+            font-family:Segoe UI;
+            color:white;
+            overflow-x:hidden;
+        }
 
-.main.full {
-    margin-left: 0;
-}
+        /* =========================================
+           SIDEBAR
+        ========================================= */
 
-/* ================= LOGO ================= */
-.logo{
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 32px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #fff;
-}
+        .sidebar{
+            position:fixed;
+            top:0;
+            left:0;
+            width:270px;
+            height:100vh;
+            background:#111827;
+            border-right:1px solid #1f2937;
+            transition:0.3s;
+            z-index:999;
+            overflow-y:auto;
+        }
 
-/* ================= MENU LINKS ================= */
-.menu a{
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-    color: var(--text-muted);
-    text-decoration: none;
-    border-radius: 12px;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
+        .sidebar.hide{
+            left:-270px;
+        }
 
-.menu a:hover, .menu a.active{
-    background: rgba(59, 130, 246, 0.1);
-    color: #fff;
-}
+        .sidebar-header{
+            padding:20px;
+            border-bottom:1px solid #1f2937;
+        }
 
-.menu a i {
-    font-size: 18px;
-    width: 24px;
-    text-align: center;
-}
+        .sidebar-header h3{
+            font-size:22px;
+            font-weight:700;
+            margin:0;
+        }
 
-/* Divider inside menu */
-.menu-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 15px 0;
-}
+        .menu{
+            padding:15px;
+        }
 
-/* ================= TOPBAR ================= */
-.topbar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(17, 24, 39, 0.7);
-    backdrop-filter: blur(10px);
-    padding: 16px 24px;
-    border-radius: 16px;
-    margin-bottom: 30px;
-    border: 1px solid var(--border-color);
-    gap: 15px;
-}
+        .menu-title{
+            color:#94a3b8;
+            font-size:12px;
+            margin-top:20px;
+            margin-bottom:10px;
+            text-transform:uppercase;
+        }
 
-/* ================= STYLISH BUTTONS ================= */
-.btn-toggle{
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        .menu-item{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            padding:13px 15px;
+            margin-bottom:10px;
+            border-radius:12px;
+            color:#cbd5e1;
+            text-decoration:none;
+            transition:0.3s;
+            font-size:15px;
+        }
 
-.btn-toggle:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
+        .menu-item:hover{
+            background:#1e293b;
+            color:white;
+            transform:translateX(5px);
+        }
 
-/* ================= SEARCH BOX ================= */
-.search-box{
-    flex: 1;
-    max-width: 400px;
-    position: relative;
-}
+        .menu-item.active{
+            background:#2563eb;
+            color:white;
+        }
 
-.search-box input{
-    width: 100%;
-    padding: 12px 16px 12px 42px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    outline: none;
-    background: var(--bg-sidebar);
-    color: white;
-    font-size: 14px;
-}
+        /* =========================================
+           MAIN
+        ========================================= */
 
-.search-box input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
+        .main{
+            margin-left:270px;
+            padding:20px;
+            transition:0.3s;
+        }
 
-.search-box::before {
-    content: "\f002";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-}
+        .main.full{
+            margin-left:0;
+        }
 
-/* ================= LIVE BADGE ================= */
-.badge-live{
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-    color: #10b981;
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+        /* =========================================
+           TOPBAR
+        ========================================= */
 
-.badge-live::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    background: #10b981;
-    border-radius: 50%;
-    display: inline-block;
-    animation: pulse 1.5s infinite;
-}
+        .topbar{
+            background:#111827;
+            border:1px solid #1f2937;
+            padding:15px 20px;
+            border-radius:16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            flex-wrap:wrap;
+            margin-bottom:25px;
+        }
 
-@keyframes pulse {
-    0% { transform: scale(0.9); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.5; }
-    100% { transform: scale(0.9); opacity: 1; }
-}
+        .left-top{
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
 
-/* ================= CARDS & GRID ================= */
-.grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-}
+        .toggle-btn{
+            width:45px;
+            height:45px;
+            border:none;
+            border-radius:10px;
+            background:#2563eb;
+            color:white;
+            font-size:18px;
+        }
 
-.cardx{
-    background: var(--bg-sidebar);
-    border: 1px solid var(--border-color);
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-}
+        .search-box{
+            flex:1;
+            min-width:250px;
+            position:relative;
+        }
 
-.cardx:hover {
-    transform: translateY(-4px);
-    border-color: rgba(59, 130, 246, 0.3);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-}
+        .search-box input{
+            width:100%;
+            background:#0f172a;
+            border:1px solid #1f2937;
+            border-radius:12px;
+            padding:12px 45px;
+            color:white;
+            outline:none;
+        }
 
-.cardx h3{
-    margin: 10px 0 0 0;
-    font-size: 28px;
-    font-weight: 700;
-    color: #fff;
-}
+        .search-box i{
+            position:absolute;
+            left:15px;
+            top:14px;
+            color:#94a3b8;
+        }
 
-.cardx p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 500;
-}
+        .top-right{
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
 
-/* ================= BACKDROP FOR MOBILE ================= */
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 999;
-    display: none;
-}
+        .live-badge{
+            background:#16a34a;
+            padding:7px 14px;
+            border-radius:50px;
+            font-size:13px;
+            font-weight:600;
+        }
 
-/* ================= RESPONSIVE LAYOUT ================= */
-@media(max-width: 992px){
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    .main {
-        margin-left: 0 !important;
-    }
-    .sidebar-overlay.show {
-        display: block;
-    }
-}
+        .profile-box{
+            background:#1e293b;
+            padding:8px 14px;
+            border-radius:12px;
+        }
 
-/* Loading Skeleton Animation */
-.loading-text {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-</style>
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+            gap:20px;
+            margin-bottom:25px;
+        }
+
+        .card-box{
+            background:#111827;
+            border:1px solid #1f2937;
+            border-radius:18px;
+            padding:22px;
+            transition:0.3s;
+        }
+
+        .card-box:hover{
+            transform:translateY(-5px);
+            border-color:#2563eb;
+        }
+
+        .card-top{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:15px;
+        }
+
+        .card-icon{
+            width:50px;
+            height:50px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#1e293b;
+            font-size:20px;
+        }
+
+        .card-title{
+            color:#94a3b8;
+            font-size:14px;
+        }
+
+        .card-number{
+            font-size:32px;
+            font-weight:700;
+        }
+
+        /* =========================================
+           CHART
+        ========================================= */
+
+        .chart-box{
+            background:#111827;
+            border:1px solid #1f2937;
+            border-radius:18px;
+            padding:20px;
+            margin-bottom:25px;
+        }
+
+        /* =========================================
+           TABLE
+        ========================================= */
+
+        .table-box{
+            background:#111827;
+            border:1px solid #1f2937;
+            border-radius:18px;
+            padding:20px;
+            overflow:auto;
+        }
+
+        table{
+            width:100%;
+            color:white;
+        }
+
+        table tr{
+            border-bottom:1px solid #1f2937;
+        }
+
+        table th{
+            color:#94a3b8;
+            padding:15px;
+        }
+
+        table td{
+            padding:15px;
+        }
+
+        .status{
+            padding:5px 10px;
+            border-radius:50px;
+            font-size:12px;
+            font-weight:600;
+        }
+
+        .active-status{
+            background:#16a34a;
+        }
+
+        .blocked-status{
+            background:#dc2626;
+        }
+
+        /* =========================================
+           BUTTONS
+        ========================================= */
+
+        .action-btn{
+            border:none;
+            padding:7px 12px;
+            border-radius:8px;
+            color:white;
+            margin-right:5px;
+        }
+
+        .btn-view{
+            background:#2563eb;
+        }
+
+        .btn-block{
+            background:#dc2626;
+        }
+
+        .btn-edit{
+            background:#f59e0b;
+        }
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media(max-width:900px){
+
+            .sidebar{
+                left:-270px;
+            }
+
+            .sidebar.show{
+                left:0;
+            }
+
+            .main{
+                margin-left:0;
+            }
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<!-- =========================================
+     SIDEBAR
+========================================= -->
 
 <div class="sidebar" id="sidebar">
-    <div class="logo">
-        <i class="fa-solid fa-bolt" style="color: var(--accent);"></i> SUPER ADMIN
+
+    <div class="sidebar-header">
+        <h3>🚀 S.F ADMIN</h3>
     </div>
 
     <div class="menu">
-        <a href="#" class="menu-item active" onclick="handleMenuClick(this, loadDashboard)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-        <a href="#" class="menu-item" onclick="handleMenuClick(this, loadAdmins)"><i class="fa-solid fa-user-shield"></i> Admins</a>
-        <a href="#" class="menu-item" onclick="handleMenuClick(this, loadUsers)">
-    <i class="fa-solid fa-users"></i> Users
+
+        <div class="menu-title">MAIN</div>
+
+        <a href="/super" class="menu-item active">
+            <i class="fa-solid fa-chart-line"></i>
+            Dashboard
         </a>
 
-        <div class="menu-divider"></div>
+        <a href="/super/admins" class="menu-item">
+            <i class="fa-solid fa-user-shield"></i>
+            Admin Control
+        </a>
 
-        <a href="/booking/admin" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Booking Control</a>
-        <a href="/help-line" class="menu-item"><i class="fa-solid fa-headset"></i> Help Line</a>
-        <a href="/admin/settings" class="menu-item"><i class="fa-solid fa-sliders"></i> Settings</a>
+        <a href="/super/users" class="menu-item">
+            <i class="fa-solid fa-users"></i>
+            Users
+        </a>
 
-        <div class="menu-divider"></div>
+        <a href="/super/applications" class="menu-item">
+            <i class="fa-solid fa-file-circle-check"></i>
+            Applications
+        </a>
 
-        <a href="/super/applications" class="menu-item"><i class="fa-solid fa-folder-open"></i> Applications</a>
-        <a href="#" class="menu-item" onclick="handleMenuClick(this, loadLogs)"><i class="fa-solid fa-terminal"></i> Logs</a>
-        <a href="/auth/logout" class="menu-item" style="color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="/super/logs" class="menu-item">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Activity Logs
+        </a>
+
+        <a href="/super/analytics" class="menu-item">
+            <i class="fa-solid fa-chart-pie"></i>
+            Analytics
+        </a>
+
+        <div class="menu-title">MANAGEMENT</div>
+
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-calendar-check"></i>
+            Booking Control
+        </a>
+
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-wallet"></i>
+            Payments
+        </a>
+
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-image"></i>
+            Media Control
+        </a>
+
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-bell"></i>
+            Notifications
+        </a>
+
+        <div class="menu-title">SUPPORT</div>
+
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-headset"></i>
+            Help Line
+        </a>
+
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+        </a>
+
+        <a href="/auth/logout" class="menu-item">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+
     </div>
+
 </div>
+
+<!-- =========================================
+     MAIN
+========================================= -->
 
 <div class="main" id="main">
 
-    <div class="topbar">
-        <button class="btn-toggle" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars"></i> Menu
-        </button>
+    <!-- TOPBAR -->
 
-        <div class="search-box">
-            <input type="text" placeholder="Search users, admins, logs...">
+    <div class="topbar">
+
+        <div class="left-top">
+
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div>
+                <h4 style="margin:0;">Super Admin Dashboard</h4>
+                <small style="color:#94a3b8;">
+                    Production Control Panel
+                </small>
+            </div>
+
         </div>
 
-        <span class="badge-live">LIVE SYSTEM</span>
+        <div class="search-box">
+
+            <i class="fa-solid fa-search"></i>
+
+            <input
+                type="text"
+                placeholder="Search users, admins, applications..."
+                id="searchInput"
+            >
+
+        </div>
+
+        <div class="top-right">
+
+            <div class="live-badge">
+                🟢 LIVE SERVER
+            </div>
+
+            <div class="profile-box">
+                Super Admin
+            </div>
+
+        </div>
+
     </div>
 
-    <div id="content">
-        <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Loading panel data...</div>
+    <!-- STATS -->
+
+    <div class="stats-grid">
+
+        <div class="card-box">
+
+            <div class="card-top">
+                <div>
+                    <div class="card-title">TOTAL ADMINS</div>
+                    <div class="card-number">
+                        {{ total_admins }}
+                    </div>
+                </div>
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-box">
+
+            <div class="card-top">
+                <div>
+                    <div class="card-title">TOTAL USERS</div>
+                    <div class="card-number">
+                        {{ total_users }}
+                    </div>
+                </div>
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-box">
+
+            <div class="card-top">
+                <div>
+                    <div class="card-title">ACTIVE USERS</div>
+                    <div class="card-number">
+                        {{ active_users }}
+                    </div>
+                </div>
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-box">
+
+            <div class="card-top">
+                <div>
+                    <div class="card-title">BLOCKED USERS</div>
+                    <div class="card-number">
+                        {{ blocked_users }}
+                    </div>
+                </div>
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CHART -->
+
+    <div class="chart-box">
+
+        <h5 style="margin-bottom:20px;">
+            User Growth Analytics
+        </h5>
+
+        <canvas id="growthChart"></canvas>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="table-box">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h5>Recent Users</h5>
+
+            <a href="/super/users" class="btn btn-primary">
+                View All
+            </a>
+
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for user in recent_users %}
+
+                <tr>
+
+                    <td>#{{ user.id }}</td>
+
+                    <td>{{ user.name }}</td>
+
+                    <td>{{ user.phone }}</td>
+
+                    <td>
+
+                        {% if user.status == "active" %}
+
+                        <span class="status active-status">
+                            Active
+                        </span>
+
+                        {% else %}
+
+                        <span class="status blocked-status">
+                            {{ user.status }}
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="/super/user/{{ user.id }}"
+                            class="action-btn btn-view"
+                        >
+                            View
+                        </a>
+
+                        <a
+                            href="/super/admin/{{ user.id }}/status/block"
+                            class="action-btn btn-block"
+                        >
+                            Block
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
     </div>
 
 </div>
 
 <script>
-/* ================= SIDEBAR TOGGLE LOGIC (FIXED) ================= */
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const main = document.getElementById("main");
-    const overlay = document.getElementById("sidebarOverlay");
 
-    if (window.innerWidth > 992) {
-        // Desktop Toggle
-        sidebar.classList.toggle("hide");
-        main.classList.toggle("full");
-    } else {
-        // Mobile Toggle
-        sidebar.classList.toggle("show");
-        overlay.classList.toggle("show");
+    // =========================================
+    // SIDEBAR TOGGLE
+    // =========================================
+
+    function toggleSidebar(){
+
+        const sidebar = document.getElementById("sidebar");
+
+        if(window.innerWidth < 900){
+
+            sidebar.classList.toggle("show");
+
+        }else{
+
+            sidebar.classList.toggle("hide");
+            document.getElementById("main").classList.toggle("full");
+        }
     }
-}
 
-// Active Menu styling controller
-function handleMenuClick(element, callbackFunction) {
-    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-    element.classList.add('active');
-    
-    // Close sidebar automatically on mobile after clicking an option
-    if (window.innerWidth <= 992) {
-        toggleSidebar();
-    }
-    
-    callbackFunction();
-}
+    // =========================================
+    // SEARCH FILTER
+    // =========================================
 
-/* ================= DASHBOARD DUMMY / API FETCH ================= */
-async function loadDashboard(){
-    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching analytics...</div>`;
-    try {
-        const res = await fetch("/super/analytics");
-        const json = await res.json();
-        const d = json.data;
-        renderDashboard(d);
-    } catch (e) {
-        // Mock data to prevent crash if backend URL doesn't exist yet
-        renderDashboard({
-            admins: {total: 12}, users: {total: 1420, active: 1198, blocked: 22}, applications: {total: 48}
+    document
+    .getElementById("searchInput")
+    .addEventListener("keyup", function(){
+
+        let value = this.value.toLowerCase();
+
+        let rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+
+            row.style.display =
+                row.innerText.toLowerCase().includes(value)
+                ? ""
+                : "none";
         });
-    }
-}
-
-function renderDashboard(d) {
-    document.getElementById("content").innerHTML = `
-    <div class="grid">
-        <div class="cardx"><p>Total Admins</p><h3>${d.admins.total}</h3></div>
-        <div class="cardx"><p>Total Users</p><h3>${d.users.total}</h3></div>
-        <div class="cardx"><p>Active Users</p><h3 style="color: #10b981;">${d.users.active}</h3></div>
-        <div class="cardx"><p>Blocked Users</p><h3 style="color: #ef4444;">${d.users.blocked}</h3></div>
-        <div class="cardx"><p>Applications</p><h3>${d.applications.total}</h3></div>
-    </div>`;
-}
-
-/* ================= ADMINS FETCH ================= */
-async function loadAdmins(){
-    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching admins...</div>`;
-    try {
-        const res = await fetch("/super/admins");
-        const json = await res.json();
-        renderAdmins(json.data.admins);
-    } catch(e) {
-        renderAdmins([
-            {name: "Sabbir Rahman", phone: "+8801700000000", status: "Super"},
-            {name: "Fahim Ahmed", phone: "+8801800000000", status: "Moderator"}
-        ]);
-    }
-}
-
-function renderAdmins(admins) {
-    let html = `<div class="grid">`;
-    admins.forEach(a => {
-        html += `
-        <div class="cardx">
-            <b style="font-size:16px; color:#fff;">${a.name}</b>
-            <p style="margin-top: 8px;"><i class="fa-solid fa-phone" style="font-size:12px;"></i> ${a.phone}</p>
-            <p style="margin-top: 4px;"><i class="fa-solid fa-circle-check" style="font-size:12px; color: var(--accent);"></i> Status: ${a.status}</p>
-        </div>`;
     });
-    html += `</div>`;
-    document.getElementById("content").innerHTML = html;
-}
 
-/* ================= USERS FETCH ================= */
-async function loadUsers(){
-    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching users...</div>`;
-    try {
-        const res = await fetch("/super/users");
-        const json = await res.json();
-        renderUsers(json.data.users);
-    } catch(e) {
-        renderUsers([
-            {name: "Rahat Khan", phone: "+8801911111111", role: "Premium", status: "Active"},
-            {name: "Arif Islam", phone: "+8801522222222", role: "General", status: "Suspended"}
-        ]);
-    }
-}
+    // =========================================
+    // CHART
+    // =========================================
 
-function renderUsers(users) {
-    let html = `<div class="grid">`;
-    users.forEach(u => {
-        let statusColor = u.status === 'Active' ? '#10b981' : '#ef4444';
-        html += `
-        <div class="cardx">
-            <b style="font-size:16px; color:#fff;">${u.name}</b>
-            <p style="margin-top:8px;"><i class="fa-solid fa-phone" style="font-size:12px;"></i> ${u.phone}</p>
-            <p style="margin-top:4px;">
-                <span style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 6px; font-size:12px;">${u.role}</span> | 
-                <span style="color: ${statusColor}; font-weight:600;">${u.status}</span>
-            </p>
-        </div>`;
+    const ctx = document.getElementById("growthChart");
+
+    new Chart(ctx, {
+
+        type: "line",
+
+        data: {
+
+            labels: [
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun"
+            ],
+
+            datasets: [{
+                label: "Growth",
+                data: [12, 19, 5, 22, 30, 45, 60],
+                borderWidth: 3,
+                tension: 0.4
+            }]
+        }
     });
-    html += `</div>`;
-    document.getElementById("content").innerHTML = html;
-}
 
-/* ================= LOGS FETCH ================= */
-async function loadLogs(){
-    document.getElementById("content").innerHTML = `<div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching terminal logs...</div>`;
-    try {
-        const res = await fetch("/super/logs");
-        const json = await res.json();
-        renderLogs(json.data.logs);
-    } catch(e) {
-        renderLogs([
-            {action: "update_setting", time: "2026-05-27 14:32", actor: "Sabbir", target: "System System"},
-            {action: "block_user", time: "2026-05-27 12:15", actor: "Fahim", target: "Arif Islam"}
-        ]);
-    }
-}
-
-function renderLogs(logs) {
-    let html = `<div style="display: flex; flex-direction: column; gap: 12px;">`;
-    logs.forEach(l => {
-        html += `
-        <div class="cardx" style="padding: 16px 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <b style="color: var(--accent); font-family: monospace; font-size:15px;">⚡ ${l.action.toUpperCase()}</b>
-                <span style="color: var(--text-muted); font-size: 12px;">${l.time}</span>
-            </div>
-            <p style="margin-top: 8px; font-size: 13px;">Actor: <span style="color:#fff;">${l.actor}</span> → Target: <span style="color:#fff;">${l.target}</span></p>
-        </div>`;
-    });
-    html += `</div>`;
-    document.getElementById("content").innerHTML = html;
-}
-
-/* INITIALIZE DEFAULT PAGE */
-window.onload = () => {
-    loadDashboard();
-};
 </script>
 
 </body>
-</html>
+        </html>
