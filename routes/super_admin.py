@@ -21,39 +21,7 @@ super_admin = Blueprint(
     url_prefix="/super"
 )
 
-# =========================================================
-# RESPONSE
-# =========================================================
 
-def success(data=None, message="OK"):
-    return jsonify({
-        "success": True,
-        "message": message,
-        "data": data
-    }), 200
-
-
-def error(msg="Error", code=400):
-    return jsonify({
-        "success": False,
-        "message": msg
-    }), code
-
-
-# =========================================================
-# AUTH
-# =========================================================
-
-def super_admin_required(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-
-        if session.get("role") != "super_admin":
-            return error("Unauthorized", 403)
-
-        return f(*args, **kwargs)
-
-    return wrapper
 
 
 # =========================================================
