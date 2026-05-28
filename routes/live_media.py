@@ -12,9 +12,7 @@ from flask import (
 
 from werkzeug.utils import secure_filename
 
-from datetime import datetime
-import os
-import uuid
+import cloudinary.uploader
 
 from extensions import db
 
@@ -28,18 +26,8 @@ live_media_bp = Blueprint(
 )
 
 # =========================================================
-# CONFIG
+# ALLOWED FILES
 # =========================================================
-
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-UPLOAD_FOLDER = os.path.join(
-    BASE_DIR,
-    "..",
-    "static",
-    "uploads",
-    "media_files"
-)
 
 ALLOWED_EXTENSIONS = {
     "mp4",
@@ -148,6 +136,10 @@ def create_media():
 
         file = request.files.get("file")
 
+        # =================================================
+        # VALIDATION
+        # =================================================
+
         if not file:
             flash("File required", "danger")
             return redirect(request.url)
@@ -157,45 +149,18 @@ def create_media():
             return redirect(request.url)
 
         # =================================================
-        # CREATE FOLDER SAFELY
-        # =================================================
-
-        os.makedirs(
-            UPLOAD_FOLDER,
-            exist_ok=True
-        )
-
-        # =================================================
-        # SAFE UNIQUE FILENAME
+        # CLOUDINARY UPLOAD
         # =================================================
 
         filename = secure_filename(file.filename)
 
-        ext = filename.rsplit(".", 1)[1].lower()
-
-        unique_filename = (
-            f"{uuid.uuid4().hex}.{ext}"
+        upload_result = cloudinary.uploader.upload(
+            file,
+            resource_type="auto",
+            folder="live_media"
         )
 
-        save_path = os.path.join(
-            UPLOAD_FOLDER,
-            unique_filename
-        )
-
-        # =================================================
-        # SAVE FILE
-        # =================================================
-
-        file.save(save_path)
-
-        # =================================================
-        # FILE URL
-        # =================================================
-
-        file_url = (
-            "/static/uploads/media_files/"
-            + unique_filename
-        )
+        file_url = upload_result.get("secure_url")
 
         # =================================================
         # SAVE DATABASE
@@ -213,7 +178,7 @@ def create_media():
 
             original_filename=filename,
 
-            file_size=os.path.getsize(save_path),
+            file_size=upload_result.get("bytes", 0),
 
             is_live=is_live,
 
