@@ -81,7 +81,7 @@ def dashboard():
     ).all()
 
     return render_template(
-        "live_media/dashboard.html",
+ "owner/live_media_list.html",
         medias=medias
     )
 
