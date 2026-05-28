@@ -178,7 +178,9 @@ def super_admin_users():
 
     page = request.args.get("page", 1, type=int)
 
-    users = User.query.filter(
+    users = User.query.options(
+    joinedload(User.profile)
+    ).filter(
         User.is_deleted.is_(False),
         (
             (User.role == "admin") & admin_filter
