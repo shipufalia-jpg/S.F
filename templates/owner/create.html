@@ -1,373 +1,811 @@
-<!-- ===================================================== -->
-<!-- LIVE TV UPLOAD PANEL -->
-<!-- ===================================================== -->
+{% extends "base.html" %}
 
-<div class="container-fluid py-4">
+{% block content %}
+
+<style>
+
+/* ===================================================== */
+/* BODY */
+/* ===================================================== */
+
+body{
+    background:#020617;
+}
+
+/* ===================================================== */
+/* MAIN WRAPPER */
+/* ===================================================== */
+
+.upload-wrapper{
+
+    min-height:100vh;
+}
+
+/* ===================================================== */
+/* GLASS CARD */
+/* ===================================================== */
+
+.upload-card{
+
+    background:rgba(15,23,42,0.95);
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    border-radius:35px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 15px 60px rgba(0,0,0,0.5);
+
+    backdrop-filter:blur(12px);
+}
+
+/* ===================================================== */
+/* HEADER */
+/* ===================================================== */
+
+.upload-header{
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    padding:40px;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+.upload-header::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:350px;
+    height:350px;
+
+    background:rgba(255,255,255,0.08);
+
+    border-radius:50%;
+
+    top:-150px;
+    right:-100px;
+}
+
+.upload-title{
+
+    color:white;
+
+    font-size:34px;
+
+    font-weight:800;
+}
+
+.upload-subtitle{
+
+    color:rgba(255,255,255,0.8);
+
+    font-size:15px;
+}
+
+/* ===================================================== */
+/* BADGE */
+/* ===================================================== */
+
+.live-badge{
+
+    background:#22c55e;
+
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:50px;
+
+    font-weight:700;
+
+    box-shadow:
+    0 5px 20px rgba(34,197,94,0.3);
+}
+
+/* ===================================================== */
+/* FORM */
+/* ===================================================== */
+
+.upload-body{
+
+    padding:40px;
+}
+
+.section-title{
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    margin-bottom:25px;
+}
+
+/* ===================================================== */
+/* INPUTS */
+/* ===================================================== */
+
+.form-label{
+
+    color:#e2e8f0;
+
+    font-weight:600;
+
+    margin-bottom:10px;
+}
+
+.form-control,
+.form-select{
+
+    background:#0f172a !important;
+
+    border:1px solid rgba(255,255,255,0.08) !important;
+
+    color:white !important;
+
+    min-height:58px;
+
+    border-radius:18px !important;
+
+    padding-left:18px;
+}
+
+textarea.form-control{
+
+    min-height:140px;
+}
+
+.form-control::placeholder{
+
+    color:#94a3b8;
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:#2563eb !important;
+
+    box-shadow:
+    0 0 0 4px rgba(37,99,235,0.15) !important;
+}
+
+/* ===================================================== */
+/* SWITCH BOX */
+/* ===================================================== */
+
+.switch-card{
+
+    background:#0f172a;
+
+    border-radius:22px;
+
+    padding:18px;
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    height:100%;
+
+    transition:0.3s;
+}
+
+.switch-card:hover{
+
+    transform:translateY(-4px);
+
+    border-color:#2563eb;
+}
+
+.form-check-input{
+
+    width:55px;
+    height:28px;
+
+    cursor:pointer;
+}
+
+.form-check-label{
+
+    color:white;
+
+    font-weight:600;
+
+    margin-left:10px;
+}
+
+/* ===================================================== */
+/* BUTTONS */
+/* ===================================================== */
+
+.upload-btn{
+
+    height:60px;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:0 30px;
+
+    font-weight:700;
+
+    font-size:16px;
+
+    transition:0.3s;
+}
+
+.btn-upload{
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    color:white;
+}
+
+.btn-upload:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 10px 25px rgba(37,99,235,0.4);
+}
+
+.btn-back{
+
+    background:#111827;
+
+    color:white;
+}
+
+.btn-back:hover{
+
+    background:#1e293b;
+}
+
+/* ===================================================== */
+/* INFO BOX */
+/* ===================================================== */
+
+.info-box{
+
+    background:#111827;
+
+    border-radius:25px;
+
+    padding:25px;
+
+    color:white;
+
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.info-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:15px;
+}
+
+.info-icon{
+
+    width:45px;
+    height:45px;
+
+    border-radius:14px;
+
+    background:#2563eb;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* ===================================================== */
+/* MOBILE */
+/* ===================================================== */
+
+@media(max-width:768px){
+
+    .upload-header{
+        padding:30px 25px;
+    }
+
+    .upload-title{
+        font-size:26px;
+    }
+
+    .upload-body{
+        padding:25px;
+    }
+
+}
+
+</style>
+
+<div class="container-fluid py-4 upload-wrapper">
 
     <div class="row justify-content-center">
 
-        <div class="col-lg-10">
+        <div class="col-xl-11">
 
-            <!-- CARD -->
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="upload-card">
 
+                <!-- ===================================================== -->
                 <!-- HEADER -->
-                <div class="bg-dark text-white p-4">
+                <!-- ===================================================== -->
+
+                <div class="upload-header">
 
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
                         <div>
-                            <h2 class="fw-bold mb-1">
-                                📺 Live TV Upload Center
-                            </h2>
 
-                            <small class="text-light opacity-75">
-                                Upload video, banner, audio & popup media
-                            </small>
+                            <h1 class="upload-title">
+                                📺 Live Media Upload Center
+                            </h1>
+
+                            <p class="upload-subtitle mb-0">
+
+                                Upload videos, banners, audio streams, popup ads & live TV media
+
+                            </p>
+
                         </div>
 
-                        <span class="badge bg-success fs-6 px-3 py-2 rounded-pill">
-                            🟢 Production Live
-                        </span>
+                        <div class="live-badge">
+
+                            🟢 Production Ready
+
+                        </div>
 
                     </div>
 
                 </div>
 
+                <!-- ===================================================== -->
                 <!-- BODY -->
-                <div class="card-body p-4">
+                <!-- ===================================================== -->
+
+                <div class="upload-body">
 
                     <form method="POST"
-                          action="/owner/live-tv/upload"
+                          action="/live/create"
                           enctype="multipart/form-data">
 
                         <div class="row g-4">
 
-                            <!-- TITLE -->
-                            <div class="col-md-6">
+                            <!-- LEFT -->
 
-                                <label class="form-label fw-semibold">
-                                    Media Title
-                                </label>
+                            <div class="col-lg-8">
 
-                                <input type="text"
-                                       class="form-control form-control-lg rounded-3"
-                                       name="title"
-                                       placeholder="Enter media title"
-                                       required>
+                                <!-- BASIC -->
+
+                                <div class="mb-5">
+
+                                    <h4 class="section-title">
+
+                                        🎬 Media Information
+
+                                    </h4>
+
+                                    <div class="row g-4">
+
+                                        <div class="col-md-6">
+
+                                            <label class="form-label">
+
+                                                Media Title
+
+                                            </label>
+
+                                            <input type="text"
+                                                   class="form-control"
+                                                   name="title"
+                                                   placeholder="Enter media title"
+                                                   required>
+
+                                        </div>
+
+                                        <div class="col-md-6">
+
+                                            <label class="form-label">
+
+                                                Category
+
+                                            </label>
+
+                                            <input type="text"
+                                                   class="form-control"
+                                                   name="category"
+                                                   placeholder="News / Ads / Live">
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <label class="form-label">
+
+                                                Description
+
+                                            </label>
+
+                                            <textarea class="form-control"
+                                                      name="description"
+                                                      placeholder="Write media details..."></textarea>
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <label class="form-label">
+
+                                                Media Type
+
+                                            </label>
+
+                                            <select class="form-select"
+                                                    name="media_type">
+
+                                                <option value="video">
+                                                    🎬 Video
+                                                </option>
+
+                                                <option value="banner">
+                                                    🖼 Banner
+                                                </option>
+
+                                                <option value="audio">
+                                                    🎵 Audio
+                                                </option>
+
+                                                <option value="popup">
+                                                    📢 Popup
+                                                </option>
+
+                                                <option value="live_tv">
+                                                    📺 Live TV
+                                                </option>
+
+                                            </select>
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <label class="form-label">
+
+                                                Upload File
+
+                                            </label>
+
+                                            <input type="file"
+                                                   class="form-control"
+                                                   name="file"
+                                                   required>
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <label class="form-label">
+
+                                                Thumbnail
+
+                                            </label>
+
+                                            <input type="file"
+                                                   class="form-control"
+                                                   name="thumbnail">
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <label class="form-label">
+
+                                                Stream URL
+
+                                            </label>
+
+                                            <input type="text"
+                                                   class="form-control"
+                                                   name="stream_url"
+                                                   placeholder="https://youtube.com/live/...">
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- PLAYER -->
+
+                                <div class="mb-5">
+
+                                    <h4 class="section-title">
+
+                                        📐 Player Settings
+
+                                    </h4>
+
+                                    <div class="row g-4">
+
+                                        <div class="col-md-6">
+
+                                            <label class="form-label">
+
+                                                Player Width
+
+                                            </label>
+
+                                            <input type="number"
+                                                   class="form-control"
+                                                   name="default_width"
+                                                   value="420">
+
+                                        </div>
+
+                                        <div class="col-md-6">
+
+                                            <label class="form-label">
+
+                                                Player Height
+
+                                            </label>
+
+                                            <input type="number"
+                                                   class="form-control"
+                                                   name="default_height"
+                                                   value="240">
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
-                            <!-- CATEGORY -->
-                            <div class="col-md-6">
+                            <!-- RIGHT -->
 
-                                <label class="form-label fw-semibold">
-                                    Category
-                                </label>
+                            <div class="col-lg-4">
 
-                                <input type="text"
-                                       class="form-control form-control-lg rounded-3"
-                                       name="category"
-                                       placeholder="News / Ads / Music / Live">
+                                <!-- DISPLAY CONTROLS -->
 
-                            </div>
+                                <div class="info-box mb-4">
 
-                            <!-- DESCRIPTION -->
-                            <div class="col-12">
+                                    <h4 class="section-title mb-4">
 
-                                <label class="form-label fw-semibold">
-                                    Description
-                                </label>
+                                        ⚙ Display Controls
 
-                                <textarea class="form-control rounded-3"
-                                          rows="4"
-                                          name="description"
-                                          placeholder="Write media details..."></textarea>
+                                    </h4>
 
-                            </div>
+                                    <div class="row g-3">
 
-                            <!-- MEDIA TYPE -->
-                            <div class="col-md-4">
+                                        <div class="col-12">
 
-                                <label class="form-label fw-semibold">
-                                    Media Type
-                                </label>
+                                            <div class="switch-card">
 
-                                <select class="form-select form-select-lg rounded-3"
-                                        name="media_type">
+                                                <div class="form-check form-switch">
 
-                                    <option value="video">
-                                        🎬 Video
-                                    </option>
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="force_show">
 
-                                    <option value="banner">
-                                        🖼 Banner
-                                    </option>
+                                                    <label class="form-check-label">
 
-                                    <option value="audio">
-                                        🎵 Audio
-                                    </option>
+                                                        Force Show
 
-                                    <option value="popup">
-                                        📢 Popup
-                                    </option>
+                                                    </label>
 
-                                    <option value="live_tv">
-                                        📺 Live TV
-                                    </option>
+                                                </div>
 
-                                </select>
+                                            </div>
 
-                            </div>
+                                        </div>
 
-                            <!-- FILE -->
-                            <div class="col-md-4">
+                                        <div class="col-12">
 
-                                <label class="form-label fw-semibold">
-                                    Upload File
-                                </label>
+                                            <div class="switch-card">
 
-                                <input type="file"
-                                       class="form-control form-control-lg rounded-3"
-                                       name="file"
-                                       required>
+                                                <div class="form-check form-switch">
 
-                            </div>
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="auto_play">
 
-                            <!-- THUMBNAIL -->
-                            <div class="col-md-4">
+                                                    <label class="form-check-label">
 
-                                <label class="form-label fw-semibold">
-                                    Thumbnail
-                                </label>
+                                                        Auto Play
 
-                                <input type="file"
-                                       class="form-control form-control-lg rounded-3"
-                                       name="thumbnail">
+                                                    </label>
 
-                            </div>
+                                                </div>
 
-                            <!-- STREAM URL -->
-                            <div class="col-12">
+                                            </div>
 
-                                <label class="form-label fw-semibold">
-                                    Stream URL (Optional)
-                                </label>
+                                        </div>
 
-                                <input type="text"
-                                       class="form-control rounded-3"
-                                       name="stream_url"
-                                       placeholder="https://youtube.com/live/...">
+                                        <div class="col-12">
+
+                                            <div class="switch-card">
+
+                                                <div class="form-check form-switch">
+
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="floating_mode"
+                                                           checked>
+
+                                                    <label class="form-check-label">
+
+                                                        Floating Mode
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <div class="switch-card">
+
+                                                <div class="form-check form-switch">
+
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="show_popup">
+
+                                                    <label class="form-check-label">
+
+                                                        Popup Mode
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <div class="switch-card">
+
+                                                <div class="form-check form-switch">
+
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="allow_fullscreen"
+                                                           checked>
+
+                                                    <label class="form-check-label">
+
+                                                        Fullscreen
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <div class="switch-card">
+
+                                                <div class="form-check form-switch">
+
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="allow_resize"
+                                                           checked>
+
+                                                    <label class="form-check-label">
+
+                                                        Resize
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <div class="switch-card">
+
+                                                <div class="form-check form-switch">
+
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="allow_drag"
+                                                           checked>
+
+                                                    <label class="form-check-label">
+
+                                                        Drag Move
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <div class="switch-card">
+
+                                                <div class="form-check form-switch">
+
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="allow_minimize"
+                                                           checked>
+
+                                                    <label class="form-check-label">
+
+                                                        Minimize
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
                         </div>
 
-                        <!-- ================================================= -->
-                        <!-- DISPLAY SETTINGS -->
-                        <!-- ================================================= -->
+                        <!-- BUTTONS -->
 
-                        <div class="mt-5">
-
-                            <h5 class="fw-bold mb-4">
-                                ⚙ Display Controls
-                            </h5>
-
-                            <div class="row g-3">
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="force_show">
-
-                                        <label class="form-check-label">
-                                            Force Show
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="auto_play">
-
-                                        <label class="form-check-label">
-                                            Auto Play
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="floating_mode"
-                                               checked>
-
-                                        <label class="form-check-label">
-                                            Floating Mode
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="show_popup">
-
-                                        <label class="form-check-label">
-                                            Popup Mode
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="allow_fullscreen"
-                                               checked>
-
-                                        <label class="form-check-label">
-                                            Fullscreen
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="allow_resize"
-                                               checked>
-
-                                        <label class="form-check-label">
-                                            Resize
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="allow_drag"
-                                               checked>
-
-                                        <label class="form-check-label">
-                                            Drag Move
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <div class="form-check form-switch">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               name="allow_minimize"
-                                               checked>
-
-                                        <label class="form-check-label">
-                                            Minimize
-                                        </label>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- ================================================= -->
-                        <!-- PLAYER SIZE -->
-                        <!-- ================================================= -->
-
-                        <div class="mt-5">
-
-                            <h5 class="fw-bold mb-4">
-                                📐 Player Size
-                            </h5>
-
-                            <div class="row g-3">
-
-                                <div class="col-md-6">
-
-                                    <label class="form-label">
-                                        Width
-                                    </label>
-
-                                    <input type="number"
-                                           class="form-control rounded-3"
-                                           name="default_width"
-                                           value="420">
-
-                                </div>
-
-                                <div class="col-md-6">
-
-                                    <label class="form-label">
-                                        Height
-                                    </label>
-
-                                    <input type="number"
-                                           class="form-control rounded-3"
-                                           name="default_height"
-                                           value="240">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- BUTTON -->
-                        <div class="mt-5 d-flex gap-3 flex-wrap">
+                        <div class="d-flex gap-3 flex-wrap mt-4">
 
                             <button type="submit"
-                                    class="btn btn-dark btn-lg px-5 rounded-3">
+                                    class="upload-btn btn-upload">
 
                                 🚀 Upload Media
 
                             </button>
 
-                            <a href="/owner/live-tv"
-                               class="btn btn-outline-secondary btn-lg rounded-3">
+                            <a href="/live"
+                               class="upload-btn btn-back text-decoration-none d-flex align-items-center justify-content-center">
 
-                                Back
+                                ← Back Dashboard
 
                             </a>
 
@@ -383,4 +821,6 @@
 
     </div>
 
-                              </div>
+</div>
+
+{% endblock %}
