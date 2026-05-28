@@ -122,28 +122,33 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
-
-    # 🔥 যদি file থাকে তাহলে delete করো
-    if os.path.exists(UPLOAD_PATH) and not os.path.isdir(UPLOAD_PATH):
-        os.remove(UPLOAD_PATH)
-
-        # 🔥 folder বানাও
-        os.makedirs(UPLOAD_PATH, exist_ok=True)
+    # ================= LOGIN MANAGER =================
+    login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # DATABASE
+    # ================= UPLOAD FOLDER =================
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
+
+    # যদি file থাকে তাহলে delete করো
+    if os.path.exists(UPLOAD_PATH) and not os.path.isdir(UPLOAD_PATH):
+        os.remove(UPLOAD_PATH)
+
+    # folder create (ALWAYS RUN)
+    os.makedirs(UPLOAD_PATH, exist_ok=True)
+
+    # ================= DB =================
     db.init_app(app)
 
-    # SOCKET IO
+    # ================= SOCKET IO =================
     socketio.init_app(app, cors_allowed_origins="*", async_mode="gevent")
 
-    # MIGRATION
+    # ================= MIGRATION =================
     Migrate(app, db)
+
 
     # CLOUDINARY
     cloudinary.config(
