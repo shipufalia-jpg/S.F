@@ -183,17 +183,6 @@ Admin User Profile
                 </a>
                 {% endif %}
 
-                <a href="/admin/delete_user/{{ user.id }}"
-                   class="btn btn-danger rounded-pill"
-                   onclick="return confirm('Are you sure?')">
-                    Delete User
-                </a>
-
-                <a href="/chat/{{ user.id }}"
-                   class="btn btn-primary rounded-pill">
-                    Message User
-                </a>
-
                 {% if user.is_online %}
                 <span class="btn btn-success rounded-pill disabled">
                     Online Now
