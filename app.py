@@ -28,7 +28,7 @@ from routes.user import user
 from routes.main import main
 from routes.work_routes import work
 from routes.notification import notification_bp
-
+from routes.live_media import live_media_bp
 from routes.booking import booking
 from routes.profile import profile_bp
 from routes.admin_tools import admin_tools
@@ -160,6 +160,7 @@ def create_app():
     app.register_blueprint(owner_tools)
     app.register_blueprint(application_bp)
     app.register_blueprint(notification_bp)
+    app.register_blueprint(live_media_bp)
 
     return app
 
