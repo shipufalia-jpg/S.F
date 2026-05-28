@@ -125,9 +125,12 @@ def create_app():
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
 
-    os.makedirs(UPLOAD_PATH, exist_ok=True)
+    # 🔥 যদি file থাকে তাহলে delete করো
+    if os.path.exists(UPLOAD_PATH) and not os.path.isdir(UPLOAD_PATH):
+    os.remove(UPLOAD_PATH)
 
-    login_manager.init_app(app)
+    # 🔥 folder বানাও
+    os.makedirs(UPLOAD_PATH, exist_ok=True)
 
     @login_manager.user_loader
     def load_user(user_id):
