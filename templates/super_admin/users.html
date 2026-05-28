@@ -387,9 +387,10 @@ body{
 
                             <div class="user-profile">
 
-                                <img src="{% if user.profile and user.profile.image %}{{ user.profile.image }}{% else %}/static/default.png{% endif %}"
-                                     onerror="this.src='/static/default.png'"
-                                     class="user-avatar">
+                                <img src="{{ profile_image if profile_image else '/static/default.png' }}"
+                                      onerror="this.src='/static/default.png'"
+                                      class="rounded-circle border border-4 border-white shadow"
+                                      style="width:140px;height:140px;object-fit:cover;margin-top:-70px;">
 
                                 <div>
 
