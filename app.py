@@ -129,21 +129,7 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # ================= UPLOAD FOLDER =================
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
-
-    # if file exists → delete
-    if os.path.isfile(UPLOAD_PATH):
-        os.remove(UPLOAD_PATH)
-
-    # if folder exists → delete folder
-    elif os.path.isdir(UPLOAD_PATH):
-        shutil.rmtree(UPLOAD_PATH)
-
-    # create fresh folder
-    os.makedirs(UPLOAD_PATH, exist_ok=True)
-
+    
     # ================= DB =================
     db.init_app(app)
 
