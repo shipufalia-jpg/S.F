@@ -30,7 +30,7 @@ live_media_bp = Blueprint(
 # CONFIG
 # =========================================================
 
-UPLOAD_FOLDER = "static/uploads/live_media"
+UPLOAD_FOLDER = "static/uploads/media_storage"
 
 ALLOWED_EXTENSIONS = {
     "mp4",
