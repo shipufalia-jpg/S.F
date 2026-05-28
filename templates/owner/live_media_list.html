@@ -2,225 +2,727 @@
 
 {% block content %}
 
-<div class="container-fluid py-4">
+<style>
 
-    <!-- ================= HEADER ================= -->
+/* ===================================================== */
+/* PAGE */
+/* ===================================================== */
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+body{
+    background:#0f172a;
+}
 
-        <div>
-            <h2 class="fw-bold mb-1">
-                📺 Live Media Management
-            </h2>
+.live-dashboard{
 
-            <p class="text-muted mb-0">
-                Manage videos, banners, audios & live TV streams
-            </p>
-        </div>
+    min-height:100vh;
+}
 
-        <div class="d-flex gap-2">
+/* ===================================================== */
+/* HEADER */
+/* ===================================================== */
 
-            <a href="/owner/live-tv/upload"
-               class="btn btn-primary rounded-4 px-4">
+.live-header-box{
 
-                <i class="fa-solid fa-upload"></i>
-                Upload Media
+    background:linear-gradient(
+        135deg,
+        #111827,
+        #1e293b
+    );
 
-            </a>
+    border-radius:30px;
 
-            <button class="btn btn-dark rounded-4 px-4">
+    padding:35px;
 
-                <i class="fa-solid fa-rotate"></i>
-                Refresh
+    position:relative;
 
-            </button>
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 40px rgba(0,0,0,0.35);
+}
+
+.live-header-box::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:300px;
+    height:300px;
+
+    background:rgba(255,255,255,0.05);
+
+    border-radius:50%;
+
+    top:-120px;
+    right:-80px;
+}
+
+.live-title{
+
+    color:#fff;
+
+    font-size:34px;
+
+    font-weight:800;
+}
+
+.live-subtitle{
+
+    color:rgba(255,255,255,0.7);
+
+    font-size:15px;
+}
+
+/* ===================================================== */
+/* BUTTONS */
+/* ===================================================== */
+
+.live-btn{
+
+    border:none;
+
+    padding:14px 22px;
+
+    border-radius:18px;
+
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.live-btn-primary{
+
+    background:#2563eb;
+    color:white;
+}
+
+.live-btn-primary:hover{
+
+    transform:translateY(-2px);
+
+    background:#1d4ed8;
+}
+
+.live-btn-dark{
+
+    background:#111827;
+    color:white;
+}
+
+.live-btn-dark:hover{
+
+    background:#000;
+}
+
+/* ===================================================== */
+/* STATS */
+/* ===================================================== */
+
+.stats-card{
+
+    background:rgba(17,24,39,0.9);
+
+    border-radius:24px;
+
+    padding:25px;
+
+    color:white;
+
+    position:relative;
+
+    overflow:hidden;
+
+    transition:0.3s;
+
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.stats-card:hover{
+
+    transform:translateY(-5px);
+}
+
+.stats-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:100px;
+    height:100px;
+
+    background:rgba(255,255,255,0.04);
+
+    border-radius:50%;
+
+    right:-20px;
+    top:-20px;
+}
+
+.stats-icon{
+
+    width:55px;
+    height:55px;
+
+    border-radius:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:22px;
+
+    margin-bottom:15px;
+}
+
+.bg-blue{
+    background:#2563eb;
+}
+
+.bg-green{
+    background:#16a34a;
+}
+
+.bg-red{
+    background:#dc2626;
+}
+
+.bg-yellow{
+    background:#ca8a04;
+}
+
+.stats-number{
+
+    font-size:30px;
+    font-weight:800;
+}
+
+.stats-label{
+
+    color:rgba(255,255,255,0.7);
+}
+
+/* ===================================================== */
+/* SEARCH */
+/* ===================================================== */
+
+.search-box{
+
+    background:#111827;
+
+    border-radius:24px;
+
+    padding:25px;
+
+    margin-top:30px;
+}
+
+.search-input,
+.search-select{
+
+    background:#0f172a !important;
+
+    border:none !important;
+
+    color:white !important;
+
+    height:55px;
+
+    border-radius:16px !important;
+}
+
+.search-input::placeholder{
+
+    color:#94a3b8;
+}
+
+/* ===================================================== */
+/* MEDIA CARD */
+/* ===================================================== */
+
+.media-card{
+
+    transition:0.35s;
+}
+
+.media-card:hover{
+
+    transform:translateY(-8px);
+}
+
+.media-box{
+
+    background:#111827;
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 35px rgba(0,0,0,0.3);
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    height:100%;
+}
+
+.media-image{
+
+    width:100%;
+    height:240px;
+
+    object-fit:cover;
+}
+
+.media-body{
+
+    padding:22px;
+}
+
+.media-title{
+
+    color:white;
+
+    font-weight:700;
+
+    font-size:20px;
+}
+
+.media-desc{
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+    min-height:45px;
+}
+
+.media-badge{
+
+    padding:7px 14px;
+
+    border-radius:30px;
+
+    font-size:12px;
+
+    font-weight:600;
+}
+
+.badge-live{
+
+    background:#dc2626;
+    color:white;
+}
+
+.badge-active{
+
+    background:#16a34a;
+    color:white;
+}
+
+.badge-dark{
+
+    background:#1e293b;
+    color:white;
+}
+
+/* ===================================================== */
+/* STATS ROW */
+/* ===================================================== */
+
+.media-stats{
+
+    background:#0f172a;
+
+    border-radius:20px;
+
+    padding:14px;
+
+    margin-top:15px;
+}
+
+.media-stats strong{
+
+    color:white;
+}
+
+.media-stats small{
+
+    color:#94a3b8;
+}
+
+/* ===================================================== */
+/* ACTIONS */
+/* ===================================================== */
+
+.action-btn{
+
+    border:none;
+
+    height:45px;
+
+    border-radius:14px;
+
+    color:white;
+
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.btn-edit{
+    background:#2563eb;
+}
+
+.btn-view{
+    background:#111827;
+}
+
+.btn-delete{
+    background:#dc2626;
+}
+
+.btn-toggle{
+    background:#ca8a04;
+}
+
+.action-btn:hover{
+
+    opacity:0.9;
+
+    transform:scale(1.02);
+}
+
+/* ===================================================== */
+/* FOOTER */
+/* ===================================================== */
+
+.media-footer{
+
+    border-top:1px solid rgba(255,255,255,0.05);
+
+    padding:16px 22px;
+
+    color:#94a3b8;
+
+    font-size:13px;
+}
+
+/* ===================================================== */
+/* MOBILE */
+/* ===================================================== */
+
+@media(max-width:768px){
+
+    .live-title{
+        font-size:26px;
+    }
+
+    .live-header-box{
+        padding:25px;
+    }
+
+}
+
+</style>
+
+<div class="container-fluid py-4 live-dashboard">
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <div class="live-header-box mb-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+            <div>
+
+                <h1 class="live-title">
+                    📺 Live Media Management
+                </h1>
+
+                <p class="live-subtitle mb-0">
+                    Manage videos, banners, audio streams & popup media system
+                </p>
+
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a href="/live/create"
+                   class="live-btn live-btn-primary text-decoration-none">
+
+                    <i class="fa-solid fa-upload"></i>
+                    Upload Media
+
+                </a>
+
+                <a href="/live"
+                   class="live-btn live-btn-dark text-decoration-none">
+
+                    <i class="fa-solid fa-rotate"></i>
+                    Refresh
+
+                </a>
+
+            </div>
 
         </div>
 
     </div>
 
-    <!-- ================= STATS ================= -->
-
-    <div class="row g-3 mb-4">
-
-        <div class="col-md-3 col-6">
-
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-
-                <h3 class="fw-bold text-primary">
-                    {{ medias|length }}
-                </h3>
-
-                <small class="text-muted">
-                    Total Media
-                </small>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3 col-6">
-
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-
-                <h3 class="fw-bold text-success">
-                    {{ medias|selectattr('is_active','equalto',True)|list|length }}
-                </h3>
-
-                <small class="text-muted">
-                    Active Media
-                </small>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3 col-6">
-
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-
-                <h3 class="fw-bold text-danger">
-                    {{ medias|selectattr('force_show','equalto',True)|list|length }}
-                </h3>
-
-                <small class="text-muted">
-                    Force Showing
-                </small>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3 col-6">
-
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-
-                <h3 class="fw-bold text-warning">
-                    {{ medias|selectattr('is_live','equalto',True)|list|length }}
-                </h3>
-
-                <small class="text-muted">
-                    Live Streams
-                </small>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ================= SEARCH ================= -->
-
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-
-        <div class="card-body">
-
-            <div class="row g-3">
-
-                <div class="col-md-6">
-
-                    <input type="text"
-                           id="searchInput"
-                           class="form-control rounded-4"
-                           placeholder="Search media title...">
-
-                </div>
-
-                <div class="col-md-3">
-
-                    <select class="form-select rounded-4">
-
-                        <option value="">All Types</option>
-                        <option>Video</option>
-                        <option>Banner</option>
-                        <option>Audio</option>
-                        <option>Live TV</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3">
-
-                    <select class="form-select rounded-4">
-
-                        <option value="">All Status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ================= MEDIA LIST ================= -->
+    <!-- ===================================================== -->
+    <!-- STATS -->
+    <!-- ===================================================== -->
 
     <div class="row g-4">
 
+        <div class="col-lg-3 col-md-6">
+
+            <div class="stats-card">
+
+                <div class="stats-icon bg-blue">
+
+                    <i class="fa-solid fa-photo-film"></i>
+
+                </div>
+
+                <div class="stats-number">
+
+                    {{ medias|length }}
+
+                </div>
+
+                <div class="stats-label">
+
+                    Total Media
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="stats-card">
+
+                <div class="stats-icon bg-green">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div class="stats-number">
+
+                    {{ medias|selectattr('is_active','equalto',True)|list|length }}
+
+                </div>
+
+                <div class="stats-label">
+
+                    Active Media
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="stats-card">
+
+                <div class="stats-icon bg-red">
+
+                    <i class="fa-solid fa-bolt"></i>
+
+                </div>
+
+                <div class="stats-number">
+
+                    {{ medias|selectattr('force_show','equalto',True)|list|length }}
+
+                </div>
+
+                <div class="stats-label">
+
+                    Force Showing
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="stats-card">
+
+                <div class="stats-icon bg-yellow">
+
+                    <i class="fa-solid fa-tower-broadcast"></i>
+
+                </div>
+
+                <div class="stats-number">
+
+                    {{ medias|selectattr('is_live','equalto',True)|list|length }}
+
+                </div>
+
+                <div class="stats-label">
+
+                    Live Streams
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SEARCH -->
+    <!-- ===================================================== -->
+
+    <div class="search-box">
+
+        <div class="row g-3">
+
+            <div class="col-lg-6">
+
+                <input type="text"
+                       id="searchInput"
+                       class="form-control search-input"
+                       placeholder="🔍 Search media title...">
+
+            </div>
+
+            <div class="col-lg-3">
+
+                <select class="form-select search-select">
+
+                    <option value="">
+                        All Types
+                    </option>
+
+                    <option>
+                        Video
+                    </option>
+
+                    <option>
+                        Banner
+                    </option>
+
+                    <option>
+                        Audio
+                    </option>
+
+                    <option>
+                        Live TV
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-lg-3">
+
+                <select class="form-select search-select">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option>
+                        Active
+                    </option>
+
+                    <option>
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- MEDIA LIST -->
+    <!-- ===================================================== -->
+
+    <div class="row g-4 mt-1">
+
         {% for media in medias %}
 
-        <div class="col-lg-4 col-md-6 media-card">
+        <div class="col-xl-4 col-lg-6 media-card">
 
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+            <div class="media-box">
 
                 <!-- IMAGE -->
 
                 {% if media.thumbnail %}
 
                 <img src="{{ media.thumbnail }}"
-                     class="card-img-top"
-                     style="height:220px;object-fit:cover;">
+                     class="media-image">
 
                 {% else %}
 
                 <img src="/static/images/default.png"
-                     class="card-img-top"
-                     style="height:220px;object-fit:cover;">
+                     class="media-image">
 
                 {% endif %}
 
                 <!-- BODY -->
 
-                <div class="card-body">
+                <div class="media-body">
 
-                    <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
 
-                        <h5 class="fw-bold mb-0">
-                            {{ media.title }}
-                        </h5>
+                        <div>
+
+                            <div class="media-title">
+
+                                {{ media.title }}
+
+                            </div>
+
+                        </div>
 
                         {% if media.is_active %}
 
-                        <span class="badge bg-success">
-                            Active
+                        <span class="media-badge badge-active">
+                            ACTIVE
                         </span>
 
                         {% else %}
 
-                        <span class="badge bg-danger">
-                            Inactive
+                        <span class="media-badge bg-danger text-white">
+                            OFFLINE
                         </span>
 
                         {% endif %}
 
                     </div>
 
-                    <p class="text-muted small mb-3">
+                    <div class="media-desc">
 
-                        {{ media.description[:120] if media.description else 'No description added' }}
+                        {{ media.description[:120] if media.description else 'No description available.' }}
 
-                    </p>
+                    </div>
 
-                    <!-- TYPE -->
+                    <!-- BADGES -->
 
-                    <div class="mb-3">
+                    <div class="d-flex flex-wrap gap-2 mt-3">
 
-                        <span class="badge bg-dark">
+                        <span class="media-badge badge-dark">
 
                             {{ media.media_type|upper }}
 
@@ -228,16 +730,20 @@
 
                         {% if media.force_show %}
 
-                        <span class="badge bg-danger">
-                            Force Show
+                        <span class="media-badge badge-live">
+
+                            FORCE SHOW
+
                         </span>
 
                         {% endif %}
 
                         {% if media.is_live %}
 
-                        <span class="badge bg-warning text-dark">
-                            LIVE
+                        <span class="media-badge bg-warning text-dark">
+
+                            LIVE STREAM
+
                         </span>
 
                         {% endif %}
@@ -246,51 +752,55 @@
 
                     <!-- STATS -->
 
-                    <div class="row text-center mb-3">
+                    <div class="media-stats">
 
-                        <div class="col">
+                        <div class="row text-center">
 
-                            <div class="border rounded-4 p-2">
+                            <div class="col">
 
                                 <strong>
+
                                     {{ media.total_views }}
+
                                 </strong>
 
-                                <div class="small text-muted">
+                                <br>
+
+                                <small>
                                     Views
-                                </div>
+                                </small>
 
                             </div>
 
-                        </div>
-
-                        <div class="col">
-
-                            <div class="border rounded-4 p-2">
+                            <div class="col">
 
                                 <strong>
+
                                     {{ media.total_clicks }}
+
                                 </strong>
 
-                                <div class="small text-muted">
+                                <br>
+
+                                <small>
                                     Clicks
-                                </div>
+                                </small>
 
                             </div>
 
-                        </div>
-
-                        <div class="col">
-
-                            <div class="border rounded-4 p-2">
+                            <div class="col">
 
                                 <strong>
+
                                     {{ media.total_shares }}
+
                                 </strong>
 
-                                <div class="small text-muted">
+                                <br>
+
+                                <small>
                                     Shares
-                                </div>
+                                </small>
 
                             </div>
 
@@ -298,53 +808,46 @@
 
                     </div>
 
-                    <!-- ACTION BUTTONS -->
+                    <!-- ACTIONS -->
 
-                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="row g-2 mt-3">
 
-                        <a href="/owner/live-tv/edit/{{ media.id }}"
-                           class="btn btn-primary btn-sm rounded-4 flex-fill">
+                        <div class="col-6">
 
-                            <i class="fa-solid fa-pen"></i>
-                            Edit
+                            <a href="/live/view/{{ media.id }}"
+                               class="btn action-btn btn-view w-100">
 
-                        </a>
+                                <i class="fa-solid fa-eye"></i>
+                                View
 
-                        <a href="/owner/live-tv/view/{{ media.id }}"
-                           class="btn btn-dark btn-sm rounded-4 flex-fill">
+                            </a>
 
-                            <i class="fa-solid fa-eye"></i>
-                            View
+                        </div>
 
-                        </a>
+                        <div class="col-6">
 
-                        {% if media.is_active %}
+                            <a href="/live/toggle/{{ media.id }}"
+                               class="btn action-btn btn-toggle w-100">
 
-                        <a href="/owner/live-tv/deactivate/{{ media.id }}"
-                           class="btn btn-warning btn-sm rounded-4">
+                                <i class="fa-solid fa-power-off"></i>
+                                Toggle
 
-                            <i class="fa-solid fa-ban"></i>
+                            </a>
 
-                        </a>
+                        </div>
 
-                        {% else %}
+                        <div class="col-12">
 
-                        <a href="/owner/live-tv/activate/{{ media.id }}"
-                           class="btn btn-success btn-sm rounded-4">
+                            <a href="/live/delete/{{ media.id }}"
+                               class="btn action-btn btn-delete w-100"
+                               onclick="return confirm('Delete this media?')">
 
-                            <i class="fa-solid fa-check"></i>
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Media
 
-                        </a>
+                            </a>
 
-                        {% endif %}
-
-                        <a href="/owner/live-tv/delete/{{ media.id }}"
-                           class="btn btn-danger btn-sm rounded-4"
-                           onclick="return confirm('Delete this media?')">
-
-                            <i class="fa-solid fa-trash"></i>
-
-                        </a>
+                        </div>
 
                     </div>
 
@@ -352,14 +855,12 @@
 
                 <!-- FOOTER -->
 
-                <div class="card-footer bg-white border-0">
+                <div class="media-footer">
 
-                    <small class="text-muted">
+                    <i class="fa-regular fa-calendar"></i>
 
-                        Uploaded:
-                        {{ media.created_at.strftime('%d %b %Y') }}
-
-                    </small>
+                    Uploaded:
+                    {{ media.created_at.strftime('%d %b %Y') }}
 
                 </div>
 
@@ -373,13 +874,15 @@
 
 </div>
 
-<!-- ================= SEARCH JS ================= -->
+<!-- ===================================================== -->
+<!-- SEARCH SCRIPT -->
+<!-- ===================================================== -->
 
 <script>
 
 const searchInput = document.getElementById("searchInput");
 
-searchInput.addEventListener("keyup", function() {
+searchInput.addEventListener("keyup", function(){
 
     const value = this.value.toLowerCase();
 
@@ -390,9 +893,13 @@ searchInput.addEventListener("keyup", function() {
         const text = card.innerText.toLowerCase();
 
         if(text.includes(value)){
+
             card.style.display = "block";
-        } else {
+
+        }else{
+
             card.style.display = "none";
+
         }
 
     });
