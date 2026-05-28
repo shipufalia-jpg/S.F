@@ -494,12 +494,9 @@ body{
 
                             <div class="d-flex justify-content-center gap-2 flex-wrap">
 
-                                <a href="/super_admin/user/{{ user.id }}"
+                                <a href="{{ url_for('super_admin.super_admin_user_profile', user_id=user.id) }}"
                                    class="action-btn btn-view text-decoration-none">
-
-                                    👁 View
-
-                                </a>
+                                
 
                                 <a href="/chat/{{ user.id }}"
                                    class="action-btn btn-chat text-decoration-none">
