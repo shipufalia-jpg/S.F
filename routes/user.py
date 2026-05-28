@@ -12,6 +12,8 @@ from models.chat import Chat
 from models.work_model import Work
 from extensions import db
 from decorators.auth import role_required
+from models.live_media import LiveMedia
+from extensions import db
 
 user = Blueprint("user", __name__, url_prefix="/user")
 
