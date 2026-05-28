@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 
 from datetime import datetime
 import os
+import uuid
 
 from extensions import db
 
@@ -30,7 +31,15 @@ live_media_bp = Blueprint(
 # CONFIG
 # =========================================================
 
-UPLOAD_FOLDER = "static/uploads/media_storage"
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+UPLOAD_FOLDER = os.path.join(
+    BASE_DIR,
+    "..",
+    "static",
+    "uploads",
+    "media_files"
+)
 
 ALLOWED_EXTENSIONS = {
     "mp4",
@@ -81,7 +90,7 @@ def dashboard():
     ).all()
 
     return render_template(
- "owner/live_media_list.html",
+        "owner/live_media_list.html",
         medias=medias
     )
 
@@ -147,21 +156,50 @@ def create_media():
             flash("Invalid file type", "danger")
             return redirect(request.url)
 
+        # =================================================
+        # CREATE FOLDER SAFELY
+        # =================================================
+
         os.makedirs(
             UPLOAD_FOLDER,
             exist_ok=True
         )
 
+        # =================================================
+        # SAFE UNIQUE FILENAME
+        # =================================================
+
         filename = secure_filename(file.filename)
+
+        ext = filename.rsplit(".", 1)[1].lower()
+
+        unique_filename = (
+            f"{uuid.uuid4().hex}.{ext}"
+        )
 
         save_path = os.path.join(
             UPLOAD_FOLDER,
-            filename
+            unique_filename
         )
+
+        # =================================================
+        # SAVE FILE
+        # =================================================
 
         file.save(save_path)
 
-        file_url = "/" + save_path.replace("\\", "/")
+        # =================================================
+        # FILE URL
+        # =================================================
+
+        file_url = (
+            "/static/uploads/media_files/"
+            + unique_filename
+        )
+
+        # =================================================
+        # SAVE DATABASE
+        # =================================================
 
         media = LiveMedia(
 
@@ -363,4 +401,4 @@ def fullscreen_player(id):
     return render_template(
         "live_media/fullscreen.html",
         media=media
-             )
+        )
