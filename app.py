@@ -127,10 +127,10 @@ def create_app():
 
     # 🔥 যদি file থাকে তাহলে delete করো
     if os.path.exists(UPLOAD_PATH) and not os.path.isdir(UPLOAD_PATH):
-    os.remove(UPLOAD_PATH)
+        os.remove(UPLOAD_PATH)
 
-    # 🔥 folder বানাও
-    os.makedirs(UPLOAD_PATH, exist_ok=True)
+        # 🔥 folder বানাও
+        os.makedirs(UPLOAD_PATH, exist_ok=True)
 
     @login_manager.user_loader
     def load_user(user_id):
