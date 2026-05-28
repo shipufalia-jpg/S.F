@@ -220,27 +220,6 @@ def create_media():
 
 
 # =========================================================
-# USER LIVE TV
-# =========================================================
-
-@live_media_bp.route("/tv")
-def live_tv():
-
-    medias = LiveMedia.query.filter(
-        LiveMedia.is_deleted.is_(False),
-        LiveMedia.is_active.is_(True)
-    ).order_by(
-        LiveMedia.display_order.asc(),
-        LiveMedia.id.desc()
-    ).all()
-
-    return render_template(
-        "live_media/live_tv.html",
-        medias=medias
-    )
-
-
-# =========================================================
 # UPDATE VIEW
 # =========================================================
 
