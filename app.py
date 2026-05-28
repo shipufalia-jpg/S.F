@@ -123,18 +123,15 @@ def create_app():
     app.config.from_object(Config)
 
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
+    UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
 
-os.makedirs(UPLOAD_PATH, exist_ok=True)
+    os.makedirs(UPLOAD_PATH, exist_ok=True)
 
-    
-    # ================= LOGIN =================
     login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-
 
     # DATABASE
     db.init_app(app)
