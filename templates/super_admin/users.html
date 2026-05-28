@@ -1,199 +1,552 @@
 {% extends "base.html" %}
 
-{% block title %}Super Admin Users{% endblock %}
+{% block title %}
+Super Admin Users
+{% endblock %}
 
 {% block content %}
 
+<style>
+
+body{
+    background:#0f172a;
+}
+
+/* ================= HEADER ================= */
+
+.admin-header{
+    background:linear-gradient(135deg,#111827,#1e293b);
+    border-radius:25px;
+    padding:30px;
+    color:white;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* ================= STATS ================= */
+
+.stats-card{
+    border:none;
+    border-radius:24px;
+    overflow:hidden;
+    position:relative;
+    color:white;
+    transition:0.3s;
+}
+
+.stats-card:hover{
+    transform:translateY(-5px);
+}
+
+.stats-icon{
+    width:60px;
+    height:60px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    background:rgba(255,255,255,0.15);
+}
+
+/* ================= USER TABLE ================= */
+
+.user-table{
+    background:#111827;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.table{
+    margin-bottom:0;
+    color:white;
+}
+
+.table thead{
+    background:#1e293b;
+}
+
+.table thead th{
+    border:none;
+    padding:20px;
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.table tbody tr{
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    transition:0.3s;
+}
+
+.table tbody tr:hover{
+    background:#1e293b;
+}
+
+.table tbody td{
+    padding:18px;
+    vertical-align:middle;
+    border:none;
+}
+
+/* ================= USER PROFILE ================= */
+
+.user-profile{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.user-avatar{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    object-fit:cover;
+    border:3px solid rgba(255,255,255,0.1);
+}
+
+/* ================= STATUS ================= */
+
+.status-badge{
+    padding:8px 15px;
+    border-radius:50px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.status-active{
+    background:#16a34a;
+    color:white;
+}
+
+.status-blocked{
+    background:#dc2626;
+    color:white;
+}
+
+.status-offline{
+    background:#374151;
+    color:white;
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.action-btn{
+    border:none;
+    border-radius:12px;
+    padding:8px 14px;
+    font-size:13px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.btn-view{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-chat{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-block{
+    background:#dc2626;
+    color:white;
+}
+
+.action-btn:hover{
+    transform:scale(1.05);
+    opacity:0.9;
+}
+
+/* ================= SEARCH ================= */
+
+.search-box{
+    background:#1e293b;
+    border:none;
+    color:white;
+    height:55px;
+    border-radius:18px;
+    padding-left:20px;
+}
+
+.search-box:focus{
+    background:#1e293b;
+    color:white;
+    box-shadow:none;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .table{
+        min-width:900px;
+    }
+
+}
+
+</style>
+
 <div class="container-fluid py-4">
 
-<!-- ================= HEADER ================= -->
-<div class="card border-0 shadow-sm rounded-4 mb-4">
-    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+    <!-- ================= HEADER ================= -->
 
-        <div>
-            <h3 class="fw-bold mb-1">Users Management</h3>
-            <small class="text-muted">Super Admin Control Panel</small>
+    <div class="admin-header mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-7">
+
+                <h2 class="fw-bold mb-2">
+                    👑 Super Admin Users Panel
+                </h2>
+
+                <p class="opacity-75 mb-0">
+                    Manage all platform users, monitor activity, chats and security
+                </p>
+
+            </div>
+
+            <div class="col-lg-5 mt-4 mt-lg-0">
+
+                <input type="text"
+                       id="searchInput"
+                       class="form-control search-box"
+                       placeholder="🔍 Search users by name, phone or status">
+
+            </div>
+
         </div>
 
-        <input type="text" id="searchInput"
-               class="form-control mt-3 mt-md-0 rounded-pill"
-               style="max-width:300px"
-               placeholder="Search users...">
-
     </div>
-</div>
 
-<!-- ================= STATS ================= -->
-<div class="row g-3 mb-4">
+    <!-- ================= STATS ================= -->
 
-    <!-- TOTAL USERS -->
-    <div class="col-6 col-md-3">
-        <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
-            <h4 class="fw-bold text-primary">
-                {{ users.total if users.total is defined else users|length }}
-            </h4>
-            <small>Total Users</small>
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3 col-6">
+
+            <div class="stats-card p-4"
+                 style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h2 class="fw-bold">
+
+                            {{ users.total if users.total is defined else users|length }}
+
+                        </h2>
+
+                        <div class="opacity-75">
+                            Total Users
+                        </div>
+
+                    </div>
+
+                    <div class="stats-icon">
+                        👥
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-    </div>
 
-    <!-- ONLINE USERS -->
-    <div class="col-6 col-md-3">
-        <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
-            <h4 class="fw-bold text-success">
-                {{ users.items|selectattr('status','equalto','active')|list|length if users.items is defined else users|selectattr('status','equalto','active')|list|length }}
-            </h4>
-            <small>Online</small>
+        <div class="col-md-3 col-6">
+
+            <div class="stats-card p-4"
+                 style="background:linear-gradient(135deg,#16a34a,#15803d);">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h2 class="fw-bold">
+
+                            {{ users.items|selectattr('status','equalto','active')|list|length if users.items is defined else users|selectattr('status','equalto','active')|list|length }}
+
+                        </h2>
+
+                        <div class="opacity-75">
+                            Active Users
+                        </div>
+
+                    </div>
+
+                    <div class="stats-icon">
+                        🟢
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-    </div>
 
-    <!-- BLOCKED USERS -->
-    <div class="col-6 col-md-3">
-        <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
-            <h4 class="fw-bold text-danger">
-                {{ users.items|selectattr('status','equalto','blocked')|list|length if users.items is defined else users|selectattr('status','equalto','blocked')|list|length }}
-            </h4>
-            <small>Blocked</small>
+        <div class="col-md-3 col-6">
+
+            <div class="stats-card p-4"
+                 style="background:linear-gradient(135deg,#dc2626,#b91c1c);">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h2 class="fw-bold">
+
+                            {{ users.items|selectattr('status','equalto','blocked')|list|length if users.items is defined else users|selectattr('status','equalto','blocked')|list|length }}
+
+                        </h2>
+
+                        <div class="opacity-75">
+                            Blocked Users
+                        </div>
+
+                    </div>
+
+                    <div class="stats-icon">
+                        🚫
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-    </div>
 
-    <!-- ACTIVE USERS -->
-    <div class="col-6 col-md-3">
-        <div class="card shadow-sm border-0 rounded-4 p-3 text-center">
-            <h4 class="fw-bold text-dark">
-                {{ users.items|selectattr('status','equalto','active')|list|length if users.items is defined else users|selectattr('status','equalto','active')|list|length }}
-            </h4>
-            <small>Active</small>
+        <div class="col-md-3 col-6">
+
+            <div class="stats-card p-4"
+                 style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h2 class="fw-bold">
+
+                            {{ users|selectattr('is_online','equalto',True)|list|length if users.items is not defined else users.items|selectattr('is_online','equalto',True)|list|length }}
+
+                        </h2>
+
+                        <div class="opacity-75">
+                            Online Now
+                        </div>
+
+                    </div>
+
+                    <div class="stats-icon">
+                        ⚡
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
+    </div>
+
+    <!-- ================= USER TABLE ================= -->
+
+    <div class="user-table">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>User</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Online</th>
+                        <th>Joined</th>
+                        <th class="text-center">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for user in users %}
+
+                    <tr class="user-row">
+
+                        <!-- USER -->
+
+                        <td>
+
+                            <div class="user-profile">
+
+                                <img src="{% if user.profile and user.profile.image %}{{ user.profile.image }}{% else %}/static/default.png{% endif %}"
+                                     onerror="this.src='/static/default.png'"
+                                     class="user-avatar">
+
+                                <div>
+
+                                    <div class="fw-bold">
+
+                                        {{ user.name }}
+
+                                    </div>
+
+                                    <small class="text-light opacity-75">
+
+                                        ID: #{{ user.id }}
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <!-- PHONE -->
+
+                        <td>
+
+                            {{ user.phone or 'N/A' }}
+
+                        </td>
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if user.status == "active" %}
+
+                                <span class="status-badge status-active">
+
+                                    Active
+
+                                </span>
+
+                            {% elif user.status == "blocked" %}
+
+                                <span class="status-badge status-blocked">
+
+                                    Blocked
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-offline">
+
+                                    {{ user.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- ONLINE -->
+
+                        <td>
+
+                            {% if user.is_online %}
+
+                                <span class="badge bg-success px-3 py-2 rounded-pill">
+
+                                    ● Online
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary px-3 py-2 rounded-pill">
+
+                                    Offline
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- JOINED -->
+
+                        <td>
+
+                            {{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}
+
+                        </td>
+
+                        <!-- ACTIONS -->
+
+                        <td>
+
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+                                <a href="/super_admin/user/{{ user.id }}"
+                                   class="action-btn btn-view text-decoration-none">
+
+                                    👁 View
+
+                                </a>
+
+                                <a href="/chat/{{ user.id }}"
+                                   class="action-btn btn-chat text-decoration-none">
+
+                                    💬 Chat
+
+                                </a>
+
+                                <a href="/super_admin/block_user/{{ user.id }}"
+                                   class="action-btn btn-block text-decoration-none"
+                                   onclick="return confirm('Block this user?')">
+
+                                    🚫 Block
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
 
 </div>
-<!-- ================= TABLE ================= -->
-<div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-<div class="table-responsive">
+<!-- ================= SEARCH FILTER ================= -->
 
-<table class="table table-hover align-middle mb-0">
-
-<thead class="table-dark">
-<tr>
-    <th>User</th>
-    <th>Phone</th>
-    <th>Status</th>
-    <th>Online</th>
-    <th>Joined</th>
-    <th class="text-center">Actions</th>
-</tr>
-</thead>
-
-<tbody>
-
-{% for user in users %}
-<tr class="user-row">
-
-<!-- USER -->
-<td>
-<div class="d-flex align-items-center">
-
-    <img src="{% if user.profile and user.profile.image %}
-                {{ user.profile.image }}
-              {% else %}
-                /static/default.png
-              {% endif %}"
-         class="rounded-circle border shadow-sm"
-         width="50" height="50"
-         style="object-fit:cover;">
-
-    <div class="ms-3">
-        <div class="fw-bold">{{ user.name }}</div>
-        <small class="text-muted">ID: {{ user.id }}</small>
-    </div>
-
-</div>
-</td>
-
-<!-- PHONE -->
-<td>{{ user.phone or "N/A" }}</td>
-
-<!-- STATUS -->
-<td>
-{% if user.status == "active" %}
-    <span class="badge bg-success px-3">Active</span>
-{% elif user.status == "blocked" %}
-    <span class="badge bg-danger px-3">Blocked</span>
-{% else %}
-    <span class="badge bg-secondary px-3">{{ user.status }}</span>
-{% endif %}
-</td>
-
-<!-- ONLINE -->
-<td>
-{% if user.is_online %}
-    <span class="badge bg-success">● Online</span>
-{% else %}
-    <span class="badge bg-light text-dark border">Offline</span>
-{% endif %}
-</td>
-
-<!-- JOINED -->
-<td>
-{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}
-</td>
-
-<!-- ACTIONS -->
-<td class="text-center">
-
-<div class="dropdown">
-  <button class="btn btn-sm btn-outline-dark dropdown-toggle rounded-pill px-3"
-          data-bs-toggle="dropdown">
-      Actions
-  </button>
-
-  <ul class="dropdown-menu">
-
-    <li>
-      <a class="dropdown-item" href="/super_admin/user/{{ user.id }}">
-        👁 View Profile
-      </a>
-    </li>
-
-    <li>
-      <a class="dropdown-item" href="/chat/{{ user.id }}">
-        💬 Chat
-      </a>
-    </li>
-
-    <li>
-      <a class="dropdown-item text-danger"
-         href="/super_admin/block_user/{{ user.id }}">
-        🚫 Block User
-      </a>
-    </li>
-
-  </ul>
-</div>
-
-</td>
-
-</tr>
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-</div>
-
-</div>
-
-<!-- ================= SEARCH JS ================= -->
 <script>
-document.getElementById("searchInput").addEventListener("keyup", function () {
+
+document.getElementById("searchInput").addEventListener("keyup", function(){
+
     let value = this.value.toLowerCase();
+
     document.querySelectorAll(".user-row").forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+
+        row.style.display = row.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+
     });
+
 });
+
 </script>
 
 {% endblock %}
