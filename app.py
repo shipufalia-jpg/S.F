@@ -133,13 +133,13 @@ def create_app():
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     UPLOAD_PATH = os.path.join(BASE_DIR, "static", "uploads", "live_media")
 
-    # যদি file থাকে তাহলে delete করো
-    if os.path.exists(UPLOAD_PATH) and not os.path.isdir(UPLOAD_PATH):
-        os.remove(UPLOAD_PATH)
+    if os.path.exists(UPLOAD_PATH):
+        if os.path.isfile(UPLOAD_PATH):
+            os.remove(UPLOAD_PATH)
+        else:
+            shutil.rmtree(UPLOAD_PATH)
 
-    # folder create (ALWAYS RUN)
     os.makedirs(UPLOAD_PATH, exist_ok=True)
-
     # ================= DB =================
     db.init_app(app)
 
