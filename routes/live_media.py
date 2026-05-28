@@ -215,7 +215,7 @@ def create_media():
         return redirect("/live")
 
     return render_template(
-        "live_media/create.html"
+        "owner/create.html"
     )
 
 
