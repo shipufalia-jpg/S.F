@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Super Admin User Profile
+Admin User Profile
 {% endblock %}
 
 {% block content %}
@@ -12,32 +12,24 @@ Super Admin User Profile
 
     <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
 
-        <!-- COVER IMAGE -->
+        <!-- COVER IMAGE (FIXED SAFE) -->
         <div style="
             height:220px;
             background: url('{{ profile.cover_img if profile and profile.cover_img else '/static/default_cover.jpg' }}') center/cover no-repeat,
                         linear-gradient(135deg,#0d6efd,#6610f2);
         "></div>
 
-        <!-- PROFILE SECTION -->
+        <!-- PROFILE -->
         <div class="px-4 pb-4 position-relative text-center">
 
-            <div class="badge bg-dark mb-2 px-3 py-2">
-                SUPER ADMIN VIEW ONLY
-            </div>
+            <!-- PROFILE IMAGE (FIXED SAFE) -->
+            <img src="{{ profile_image }}"
+                 class="rounded-circle border border-4 border-white shadow"
+                 style="width:140px;height:140px;object-fit:cover;margin-top:-70px;">
 
-            <!-- PROFILE IMAGE SAFE -->
-            <div class="px-4 pb-4 position-relative text-center">
-
-    <!-- PROFILE IMAGE -->
-
-    <img src="{{ profile_image if profile_image else '/static/default.png' }}"
-         onerror="this.src='/static/default.png'"
-         class="rounded-circle border border-4 border-white shadow"
-         style="width:140px;height:140px;object-fit:cover;margin-top:-70px;">
-            <!-- NAME SAFE -->
+            <!-- NAME (SAFE FALLBACK) -->
             <h2 class="fw-bold mt-3 mb-1">
-                {{ user.name or "Unknown User" }}
+                {{ profile.name if profile and profile.name else user.name }}
             </h2>
 
             <p class="text-muted mb-2">
@@ -59,28 +51,28 @@ Super Admin User Profile
 
         <div class="col-6 col-md-3">
             <div class="card shadow-sm rounded-4 text-center p-3">
-                <h3 class="fw-bold text-primary">{{ total_works or 0 }}</h3>
+                <h3 class="fw-bold text-primary">{{ total_works }}</h3>
                 <small>Works</small>
             </div>
         </div>
 
         <div class="col-6 col-md-3">
             <div class="card shadow-sm rounded-4 text-center p-3">
-                <h3 class="fw-bold text-success">{{ total_gallery or 0 }}</h3>
+                <h3 class="fw-bold text-success">{{ total_gallery }}</h3>
                 <small>Gallery</small>
             </div>
         </div>
 
         <div class="col-6 col-md-3">
             <div class="card shadow-sm rounded-4 text-center p-3">
-                <h3 class="fw-bold text-danger">{{ total_applications or 0 }}</h3>
+                <h3 class="fw-bold text-danger">{{ total_applications }}</h3>
                 <small>Applications</small>
             </div>
         </div>
 
         <div class="col-6 col-md-3">
             <div class="card shadow-sm rounded-4 text-center p-3">
-                <h3 class="fw-bold text-dark">{{ total_chats or 0 }}</h3>
+                <h3 class="fw-bold text-dark">{{ total_chats }}</h3>
                 <small>Chats</small>
             </div>
         </div>
@@ -107,18 +99,15 @@ Super Admin User Profile
                     <div class="fw-semibold">{{ user.email or "N/A" }}</div>
                 </div>
 
+                <!-- PROFILE FIELDS (FIXED FROM PROFILE) -->
                 <div class="col-md-6 mb-3">
-                    <label class="text-muted small">Work Description</label>
-                    <div class="fw-semibold">
-                        {{ profile.work_desc if profile and profile.work_desc else "N/A" }}
-                    </div>
+                    <label class="text-muted small">Skill</label>
+                    <div class="fw-semibold">{{ profile.work_desc if profile and profile.work_desc else "N/A" }}</div>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="text-muted small">Area</label>
-                    <div class="fw-semibold">
-                        {{ profile.area if profile and profile.area else "N/A" }}
-                    </div>
+                    <div class="fw-semibold">{{ profile.area if profile and profile.area else "N/A" }}</div>
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -126,17 +115,15 @@ Super Admin User Profile
                     <div>
                         {% if user.status == "active" %}
                             <span class="badge bg-success">Active</span>
-                        {% elif user.status == "blocked" %}
-                            <span class="badge bg-danger">Blocked</span>
                         {% else %}
-                            <span class="badge bg-secondary">{{ user.status }}</span>
+                            <span class="badge bg-danger">{{ user.status }}</span>
                         {% endif %}
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="text-muted small">Joined</label>
-                    <div class="fw-semibold">{{ joined_date or "N/A" }}</div>
+                    <div class="fw-semibold">{{ joined_date }}</div>
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -159,17 +146,18 @@ Super Admin User Profile
 
             <div class="row g-3">
 
-                {% if gallery_images and gallery_images|length > 0 %}
+                {% for img in gallery_images %}
 
-                    {% for img in gallery_images %}
-                        <div class="col-6 col-md-3">
-                            <img src="{{ img }}"
-                                 class="img-fluid rounded-4 shadow-sm"
-                                 style="height:200px;width:100%;object-fit:cover;">
-                        </div>
-                    {% endfor %}
+                    <div class="col-6 col-md-3">
 
-                {% else %}
+                        <img src="{{ img }}"
+                             class="img-fluid rounded-4 shadow-sm"
+                             style="height:200px;width:100%;object-fit:cover;">
+                    </div>
+
+                {% endfor %}
+
+                {% if not gallery_images %}
                     <p class="text-muted">No gallery images found</p>
                 {% endif %}
 
@@ -178,18 +166,32 @@ Super Admin User Profile
         </div>
     </div>
 
-    <!-- ================= FOOTER NOTE ================= -->
+    <!-- ================= ADMIN ACTIONS ================= -->
 
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card shadow-sm rounded-4">
 
-        <div class="card-body p-4 text-center">
+        <div class="card-body p-4">
 
-            <div class="text-muted">
-                🔒 Super Admin view-only profile (no edit/delete access)
+            <h4 class="fw-bold mb-3">Admin Controls</h4>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                {% if user.status != "blocked" %}
+                <a href="/admin/block_user/{{ user.id }}"
+                   class="btn btn-warning rounded-pill">
+                    Block User
+                </a>
+                {% endif %}
+
+                {% if user.is_online %}
+                <span class="btn btn-success rounded-pill disabled">
+                    Online Now
+                </span>
+                {% endif %}
+
             </div>
 
         </div>
-
     </div>
 
 </div>
