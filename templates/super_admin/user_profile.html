@@ -27,10 +27,14 @@ Super Admin User Profile
             </div>
 
             <!-- PROFILE IMAGE SAFE -->
-            <img src="{{ profile_image or '/static/default.png' }}"
-                 class="rounded-circle border border-4 border-white shadow"
-                 style="width:140px;height:140px;object-fit:cover;margin-top:-70px;">
+            <div class="px-4 pb-4 position-relative text-center">
 
+    <!-- PROFILE IMAGE -->
+
+    <img src="{{ profile_image if profile_image else '/static/default.png' }}"
+         onerror="this.src='/static/default.png'"
+         class="rounded-circle border border-4 border-white shadow"
+         style="width:140px;height:140px;object-fit:cover;margin-top:-70px;">
             <!-- NAME SAFE -->
             <h2 class="fw-bold mt-3 mb-1">
                 {{ user.name or "Unknown User" }}
