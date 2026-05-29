@@ -122,6 +122,8 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
+
     # ================= LOGIN MANAGER =================
     login_manager.init_app(app)
 
