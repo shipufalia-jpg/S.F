@@ -191,8 +191,7 @@ class User(UserMixin, db.Model):
     back_populates="user",
     lazy=True
     )
-
-    class User(db.Model):
+class User(db.Model):
 
     __tablename__ = "user"
 
