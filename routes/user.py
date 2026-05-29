@@ -313,7 +313,7 @@ def login_required(f):
 # WALLET DASHBOARD (UPGRADED)
 # =====================================================
 
-@user_bp.route("/wallet")
+@user.route("/wallet")
 @login_required
 def wallet():
 
@@ -381,7 +381,7 @@ def wallet():
 )
 
 
-@owner_bp.route("/withdraw/approve/<int:id>")
+@owner.route("/withdraw/approve/<int:id>")
 def approve_withdraw(id):
 
     try:
