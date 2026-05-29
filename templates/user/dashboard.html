@@ -573,7 +573,9 @@ body{
 
     <a class="sidebar-btn" href="/profile">👤 My Profile</a>
 
-    <a class="sidebar-btn" href="/gallery">🖼️ Gallery</a>
+    <a href="{{ url_for('user.wallet') }}" class="btn btn-primary">
+    Wallet
+    </a>
 
     <a class="sidebar-btn" href="/user/post_work">➕ Create Work Post</a>
 
