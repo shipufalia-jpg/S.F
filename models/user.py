@@ -100,27 +100,27 @@ class User(UserMixin, db.Model):
     )
 
     # ======================
-    # REFERRAL SYSTEM
+    # REFERRAL SYSTEM FIXED
     # ======================
 
     referred_by = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
-        nullable=True
+        nullable=True,
+        index=True
     )
 
-    # 👉 Who referred THIS user (single object)
     referrer = db.relationship(
         "User",
         foreign_keys=[referred_by],
-        remote_side=[id]
+        remote_side="User.id",
+        back_populates="referrals"
     )
 
-    # 👉 Users referred BY THIS user (list)
     referrals = db.relationship(
         "User",
+        back_populates="referrer",
         foreign_keys=[referred_by],
-        backref="referrer_user",
         lazy="dynamic"
     )
     # ======================
