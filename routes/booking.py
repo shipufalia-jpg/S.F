@@ -235,36 +235,6 @@ def super_admin_bookings():
         bookings=bookings
     )
 
-# =====================================
-# SUPER ADMIN NOTIFICATION
-# =====================================
-
-super_admins = User.query.filter_by(
-    role="super_admin",
-    is_deleted=False
-).all()
-
-for admin in super_admins:
-
-    send_notification(
-
-        user_id=admin.id,
-
-        sender_id=user_id,
-
-        title="New Booking Activity",
-
-        message="A new booking request was created.",
-
-        type="booking",
-
-        icon="briefcase",
-
-        priority="high",
-
-        action_url="/super-admin/bookings"
-    )
-
 
 # =========================================
 # ADMIN BOOKINGS
