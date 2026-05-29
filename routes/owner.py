@@ -758,4 +758,114 @@ def works_partial():
         status=status,
         search=search
     )
-    
+
+
+@owner_bp.route("/withdraw/approve/<int:id>")
+def approve_withdraw(id):
+
+    try:
+
+        owner_id = session.get("user_id")
+
+        req = WithdrawRequest.query.get(id)
+
+        # ================= VALIDATION =================
+
+        if not req:
+            return "Request not found"
+
+        if req.status != "pending":
+            return "Invalid request"
+
+        user = User.query.get(req.user_id)
+
+        if not user:
+            return "User not found"
+
+        # ================= DOUBLE SAFETY =================
+
+        if req.amount <= 0:
+            return "Invalid amount"
+
+        if (user.wallet_balance or 0) < req.amount:
+            return "Insufficient wallet balance"
+
+        # ================= UPDATE WALLET =================
+
+        user.wallet_balance = float(user.wallet_balance or 0) - req.amount
+
+        if user.wallet_balance < 0:
+            user.wallet_balance = 0
+
+        # ================= UPDATE REQUEST =================
+
+        req.status = "approved"
+        req.approved_by = owner_id
+        req.processed_at = datetime.utcnow()
+
+        db.session.commit()
+
+        # ================= NOTIFICATION =================
+
+        send_notification(
+            user_id=user.id,
+            title="Withdraw Approved",
+            message=f"₹{req.amount} has been approved",
+            type="withdraw",
+            icon="check",
+            action_url="/wallet",
+            priority="high"
+        )
+
+        return "Withdraw Approved"
+
+    except Exception as e:
+
+        db.session.rollback()
+        print("Approve Withdraw Error:", e)
+        return "Error occurred"
+
+@owner_bp.route("/withdraw/reject/<int:id>", methods=["POST"])
+def reject_withdraw(id):
+
+    try:
+
+        owner_id = session.get("user_id")
+
+        req = WithdrawRequest.query.get(id)
+
+        # ================= VALIDATION =================
+
+        if not req:
+            return "Request not found"
+
+        if req.status != "pending":
+            return "Already processed"
+
+        # ================= UPDATE REQUEST =================
+
+        req.status = "rejected"
+        req.approved_by = owner_id
+        req.processed_at = datetime.utcnow()
+
+        db.session.commit()
+
+        # ================= NOTIFICATION =================
+
+        send_notification(
+            user_id=req.user_id,
+            title="Withdraw Rejected",
+            message=f"₹{req.amount} withdraw request rejected",
+            type="withdraw",
+            icon="warning",
+            action_url="/wallet",
+            priority="high"
+        )
+
+        return "Withdraw Rejected"
+
+    except Exception as e:
+
+        db.session.rollback()
+        print("Reject Withdraw Error:", e)
+        return "Error occurred"
