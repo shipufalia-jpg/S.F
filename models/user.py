@@ -99,31 +99,30 @@ class User(UserMixin, db.Model):
         nullable=True
     )
 
-# ======================
-# REFERRAL SYSTEM
-# ======================
+    # ======================
+    # REFERRAL SYSTEM
+    # ======================
 
-referred_by = db.Column(
-    db.Integer,
-    db.ForeignKey("user.id"),
-    nullable=True
-)
-
-# 👉 Who referred THIS user (single object)
-referrer = db.relationship(
-    "User",
-    foreign_keys=[referred_by],
-    remote_side=[id]
-)
-
-# 👉 Users referred BY THIS user (list)
-referrals = db.relationship(
-    "User",
-    foreign_keys=[referred_by],
-    backref="referrer_user",
-    lazy="dynamic"
+    referred_by = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
     )
 
+    # 👉 Who referred THIS user (single object)
+    referrer = db.relationship(
+        "User",
+        foreign_keys=[referred_by],
+        remote_side=[id]
+    )
+
+    # 👉 Users referred BY THIS user (list)
+    referrals = db.relationship(
+        "User",
+        foreign_keys=[referred_by],
+        backref="referrer_user",
+        lazy="dynamic"
+    )
     # ======================
     # CONTROLLER SYSTEM
     # ======================
