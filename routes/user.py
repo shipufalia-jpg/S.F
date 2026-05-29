@@ -345,13 +345,7 @@ def wallet():
 
     # ================= PAGINATION =================
 
-    transactions = query.order_by(
-        Transaction.id.desc()
-    ).paginate(
-        page=page,
-        per_page=per_page,
-        error_out=False
-    )
+    transactions = query.order_by(Transaction.id.desc()).limit(50).all()
 
     # ================= CALCULATIONS =================
 
