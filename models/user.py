@@ -99,28 +99,29 @@ class User(UserMixin, db.Model):
         nullable=True
     )
 
-    # ======================
-    # REFERRAL SYSTEM
-    # ======================
+# ======================
+# REFERRAL SYSTEM
+# ======================
 
-    referred_by = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=True
-    )
+referred_by = db.Column(
+    db.Integer,
+    db.ForeignKey("user.id"),
+    nullable=True
+)
 
-    referrer = db.relationship(
-        "User",
-        remote_side=[id],
-        foreign_keys=[referred_by],
-        back_populates="referrals"
-    )
+# 👉 Who referred THIS user (single object)
+referrer = db.relationship(
+    "User",
+    foreign_keys=[referred_by],
+    remote_side=[id]
+)
 
-    referrals = db.relationship(
-        "User",
-        foreign_keys=[referred_by],
-        back_populates="referrer",
-        lazy="dynamic"
+# 👉 Users referred BY THIS user (list)
+referrals = db.relationship(
+    "User",
+    foreign_keys=[referred_by],
+    backref="referrer_user",
+    lazy="dynamic"
     )
 
     # ======================
