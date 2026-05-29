@@ -760,7 +760,7 @@ def works_partial():
     )
 
 
-@owner_bp.route("/withdraw/approve/<int:id>")
+@owner.route("/withdraw/approve/<int:id>")
 def approve_withdraw(id):
 
     try:
@@ -825,7 +825,7 @@ def approve_withdraw(id):
         print("Approve Withdraw Error:", e)
         return "Error occurred"
 
-@owner_bp.route("/withdraw/reject/<int:id>", methods=["POST"])
+@owner.route("/withdraw/reject/<int:id>", methods=["POST"])
 def reject_withdraw(id):
 
     try:
@@ -893,7 +893,7 @@ def owner_required(f):
 # WITHDRAW LIST (UPGRADED)
 # =====================================================
 
-@owner_bp.route("/withdraws")
+@owner.route("/withdraws")
 @owner_required
 def withdraw_list():
 
@@ -928,7 +928,7 @@ def withdraw_list():
 from datetime import datetime
 
 
-@owner_bp.route("/withdraw/paid/<int:id>")
+@owner.route("/withdraw/paid/<int:id>")
 @owner_required
 def mark_paid(id):
 
