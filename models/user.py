@@ -102,7 +102,6 @@ class User(UserMixin, db.Model):
     # ======================
     # REFERRAL SYSTEM FIXED
     # ======================
-
     referred_by = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
@@ -112,14 +111,15 @@ class User(UserMixin, db.Model):
 
     referrer = db.relationship(
         "User",
-        remote_side=[id],
         foreign_keys=[referred_by],
-        backref="referrals"
-)
+        backref=db.backref(
+            "referrals",
+            remote_side="User.id"
+        )
+    )
     # ======================
     # CONTROLLER SYSTEM
     # ======================
-
     controller_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
@@ -129,11 +129,12 @@ class User(UserMixin, db.Model):
 
     controller = db.relationship(
         "User",
-        remote_side=[id],
         foreign_keys=[controller_id],
-        backref="controlled_users"
+        backref=db.backref(
+            "controlled_users",
+            remote_side="User.id"
+        )
     )
-
     # ======================
     # SOFT DELETE
     # ======================
