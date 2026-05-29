@@ -151,16 +151,45 @@ def create_media():
         # =================================================
         # CLOUDINARY UPLOAD
         # =================================================
-
         filename = secure_filename(file.filename)
 
-        upload_result = cloudinary.uploader.upload(
-            file,
-            resource_type="auto",
-            folder="live_media"
-        )
+        # ================= EXTENSION =================
 
-        file_url = upload_result.get("secure_url")
+        ext = filename.rsplit(".", 1)[1].lower()
+
+        video_extensions = [
+           "mp4",
+           "mov",
+           "avi",
+           "mkv",
+           "webm"
+       ]
+
+       # ================= VIDEO UPLOAD =================
+
+if ext in video_extensions:
+
+    upload_result = cloudinary.uploader.upload_large(
+        file,
+        resource_type="video",
+        folder="live_media",
+        chunk_size=6000000
+    )
+
+# ================= IMAGE UPLOAD =================
+
+else:
+
+    upload_result = cloudinary.uploader.upload(
+        file,
+        resource_type="image",
+        folder="live_media"
+    )
+
+# ================= FILE URL =================
+
+file_url = upload_result["secure_url"]
+        
 
         # =================================================
         # SAVE DATABASE
