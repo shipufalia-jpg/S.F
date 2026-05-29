@@ -192,6 +192,9 @@ class User(UserMixin, db.Model):
     lazy=True
     )
 
+    wallet_balance = db.Column(db.Float, default=0.0)
+    total_earnings = db.Column(db.Float, default=0.0)
+
 
     # ======================
     # STRING
