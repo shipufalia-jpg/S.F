@@ -149,23 +149,24 @@ def create_media():
             return redirect(request.url)
 
         # =================================================
-        # CLOUDINARY UPLOAD
-        # =================================================
-        filename = secure_filename(file.filename)
+# CLOUDINARY UPLOAD
+# =================================================
 
-        # ================= EXTENSION =================
+filename = secure_filename(file.filename)
 
-        ext = filename.rsplit(".", 1)[1].lower()
+# ================= EXTENSION =================
 
-        video_extensions = [
-           "mp4",
-           "mov",
-           "avi",
-           "mkv",
-           "webm"
-       ]
+ext = filename.rsplit(".", 1)[1].lower()
 
-       # ================= VIDEO UPLOAD =================
+video_extensions = [
+    "mp4",
+    "mov",
+    "avi",
+    "mkv",
+    "webm"
+]
+
+# ================= VIDEO UPLOAD =================
 
 if ext in video_extensions:
 
@@ -189,66 +190,61 @@ else:
 # ================= FILE URL =================
 
 file_url = upload_result["secure_url"]
-        
 
-        # =================================================
-        # SAVE DATABASE
-        # =================================================
+# =================================================
+# SAVE DATABASE
+# =================================================
 
-        media = LiveMedia(
+media = LiveMedia(
 
-            title=title,
-            description=description,
+    title=title,
+    description=description,
 
-            media_type=media_type,
-            category=category,
+    media_type=media_type,
+    category=category,
 
-            file_url=file_url,
+    file_url=file_url,
 
-            original_filename=filename,
+    original_filename=filename,
 
-            file_size=upload_result.get("bytes", 0),
+    file_size=upload_result.get("bytes", 0),
 
-            is_live=is_live,
+    is_live=is_live,
 
-            force_show=force_show,
+    force_show=force_show,
 
-            floating_mode=floating_mode,
+    floating_mode=floating_mode,
 
-            auto_play=auto_play,
+    auto_play=auto_play,
 
-            allow_resize=allow_resize,
+    allow_resize=allow_resize,
 
-            allow_drag=allow_drag,
+    allow_drag=allow_drag,
 
-            allow_minimize=allow_minimize,
+    allow_minimize=allow_minimize,
 
-            allow_fullscreen=allow_fullscreen,
+    allow_fullscreen=allow_fullscreen,
 
-            default_width=default_width,
+    default_width=default_width,
 
-            default_height=default_height,
+    default_height=default_height,
 
-            popup_delay=popup_delay,
+    popup_delay=popup_delay,
 
-            stream_url=stream_url,
+    stream_url=stream_url,
 
-            owner_id=session.get("user_id")
-        )
+    owner_id=session.get("user_id")
+)
 
-        db.session.add(media)
-        db.session.commit()
+db.session.add(media)
+db.session.commit()
 
-        flash(
-            "Live media uploaded successfully",
-            "success"
-        )
+flash(
+    "Live media uploaded successfully",
+    "success"
+)
 
-        return redirect("/live")
-
-    return render_template(
-        "owner/create.html"
-    )
+return redirect("/live")
 
 
 # =========================================================
