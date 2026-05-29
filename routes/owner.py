@@ -869,3 +869,93 @@ def reject_withdraw(id):
         db.session.rollback()
         print("Reject Withdraw Error:", e)
         return "Error occurred"
+
+# =====================================================
+# OWNER REQUIRED
+# =====================================================
+
+def owner_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        if "user_id" not in session:
+            return redirect("/auth/login")
+
+        if session.get("role") != "owner":
+            return "Access denied"
+
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+# =====================================================
+# WITHDRAW LIST (UPGRADED)
+# =====================================================
+
+@owner_bp.route("/withdraws")
+@owner_required
+def withdraw_list():
+
+    status = request.args.get("status")   # pending/approved/rejected
+    page = request.args.get("page", 1, type=int)
+    per_page = 20
+
+    query = WithdrawRequest.query
+
+    # ================= FILTER =================
+
+    if status:
+        query = query.filter_by(status=status)
+
+    # ================= PAGINATION =================
+
+    withdraws = query.order_by(
+        WithdrawRequest.id.desc()
+    ).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+
+    return render_template(
+        "owner/withdraw_list.html",
+        withdraws=withdraws,
+        status=status
+    )
+
+
+from datetime import datetime
+
+
+@owner_bp.route("/withdraw/paid/<int:id>")
+@owner_required
+def mark_paid(id):
+
+    try:
+
+        req = WithdrawRequest.query.get(id)
+
+        if not req:
+            return "Not found"
+
+        if req.status != "approved":
+            return "Only approved requests can be marked paid"
+
+        if req.payment_status == "paid":
+            return "Already marked as paid"
+
+        # ================= UPDATE =================
+
+        req.payment_status = "paid"
+        req.processed_at = datetime.utcnow()
+
+        db.session.commit()
+
+        return "Marked as Paid successfully"
+
+    except Exception as e:
+
+        db.session.rollback()
+        print("Mark Paid Error:", e)
+        return "Error occurred"
