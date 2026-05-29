@@ -72,6 +72,31 @@ def fix_db(app):
                 ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
             """))
 
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS workers VARCHAR(100);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS salary VARCHAR(100);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS date VARCHAR(100);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS time VARCHAR(100);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE works
+                ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+            """))
+
             # ================= BOOKINGS TABLE FIX =================
             db.session.execute(text("""
                 ALTER TABLE bookings
@@ -82,30 +107,28 @@ def fix_db(app):
                 ALTER TABLE bookings
                 ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
             """))
+
+            # ================= USER WALLET FIX =================
             db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS workers VARCHAR(100)
-           """))
+                ALTER TABLE "user"
+                ADD COLUMN IF NOT EXISTS wallet_balance FLOAT DEFAULT 0;
+            """))
 
             db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS salary VARCHAR(100)
-           """))
+                ALTER TABLE "user"
+                ADD COLUMN IF NOT EXISTS total_earnings FLOAT DEFAULT 0;
+            """))
+
+            # ================= USER CONTROL SYSTEM FIX =================
+            db.session.execute(text("""
+                ALTER TABLE "user"
+                ADD COLUMN IF NOT EXISTS referred_by INTEGER;
+            """))
 
             db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS date VARCHAR(100)
-           """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS time VARCHAR(100)
-           """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS phone VARCHAR(20)
-           """))
+                ALTER TABLE "user"
+                ADD COLUMN IF NOT EXISTS controller_id INTEGER;
+            """))
 
             db.session.commit()
 
@@ -114,8 +137,7 @@ def fix_db(app):
         except Exception as e:
 
             db.session.rollback()
-            print("DB FIX ERROR:", e)
-
+            print("❌ DB FIX ERROR:", e)
 # ================= APP FACTORY =================
 def create_app():
 
