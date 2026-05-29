@@ -16,6 +16,7 @@ from models.live_media import LiveMedia
 from extensions import db
 from functools import wraps
 from flask import request
+from models.transaction import Transaction
 
 user = Blueprint("user", __name__, url_prefix="/user")
 
