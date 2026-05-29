@@ -12,7 +12,7 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 
 from extensions import db, socketio
-
+from models.withdraw import WithdrawRequest
 from models.user import User
 from models.work_model import Work
 from models.booking import Booking
