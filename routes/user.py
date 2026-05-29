@@ -14,6 +14,7 @@ from extensions import db
 from decorators.auth import role_required
 from models.live_media import LiveMedia
 from extensions import db
+from functools import wraps
 
 user = Blueprint("user", __name__, url_prefix="/user")
 
