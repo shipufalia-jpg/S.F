@@ -231,7 +231,7 @@ def super_admin_bookings():
     ).all()
 
     return render_template(
-        "super_admin/bookings.html",
+        "bookings.html",
         bookings=bookings
     )
 
