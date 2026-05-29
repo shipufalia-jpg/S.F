@@ -198,6 +198,74 @@ def create_booking(work_id):
     return redirect("/my-bookings")
 
 
+@booking.route("/super-admin/bookings")
+def super_admin_bookings():
+
+    if not login_required():
+        return redirect("/auth/login")
+
+    if not is_super_admin():
+        abort(403)
+
+    admins = User.query.filter_by(
+        role="admin",
+        created_by=session.get("user_id"),
+        is_deleted=False
+    ).all()
+
+    admin_ids = [a.id for a in admins]
+
+    users = User.query.filter(
+        User.created_by.in_(admin_ids),
+        User.role == "user",
+        User.is_deleted == False
+    ).all()
+
+    user_ids = [u.id for u in users]
+
+    bookings = Booking.query.filter(
+        Booking.user_id.in_(user_ids),
+        Booking.is_deleted == False
+    ).order_by(
+        desc(Booking.id)
+    ).all()
+
+    return render_template(
+        "super_admin/bookings.html",
+        bookings=bookings
+    )
+
+# =====================================
+# SUPER ADMIN NOTIFICATION
+# =====================================
+
+super_admins = User.query.filter_by(
+    role="super_admin",
+    is_deleted=False
+).all()
+
+for admin in super_admins:
+
+    send_notification(
+
+        user_id=admin.id,
+
+        sender_id=user_id,
+
+        title="New Booking Activity",
+
+        message="A new booking request was created.",
+
+        type="booking",
+
+        icon="briefcase",
+
+        priority="high",
+
+        action_url="/super-admin/bookings"
+    )
+
+
 # =========================================
 # ADMIN BOOKINGS
 # =========================================
