@@ -112,17 +112,10 @@ class User(UserMixin, db.Model):
 
     referrer = db.relationship(
         "User",
+        remote_side=[id],
         foreign_keys=[referred_by],
-        remote_side="User.id",
-        back_populates="referrals"
-    )
-
-    referrals = db.relationship(
-        "User",
-        back_populates="referrer",
-        foreign_keys=[referred_by],
-        lazy="dynamic"
-    )
+        backref="referrals"
+)
     # ======================
     # CONTROLLER SYSTEM
     # ======================
@@ -130,21 +123,15 @@ class User(UserMixin, db.Model):
     controller_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
-        nullable=True
+        nullable=True,
+        index=True
     )
 
     controller = db.relationship(
         "User",
         remote_side=[id],
         foreign_keys=[controller_id],
-        back_populates="controlled_users"
-    )
-
-    controlled_users = db.relationship(
-        "User",
-        foreign_keys=[controller_id],
-        back_populates="controller",
-        lazy="dynamic"
+        backref="controlled_users"
     )
 
     # ======================
