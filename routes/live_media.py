@@ -149,104 +149,106 @@ def create_media():
             return redirect(request.url)
 
         # =================================================
-# CLOUDINARY UPLOAD
-# =================================================
+        # CLOUDINARY UPLOAD
+        # =================================================
 
-filename = secure_filename(file.filename)
+        filename = secure_filename(file.filename)
 
-# ================= EXTENSION =================
+        # ================= EXTENSION =================
 
-ext = filename.rsplit(".", 1)[1].lower()
+        ext = filename.rsplit(".", 1)[1].lower()
 
-video_extensions = [
-    "mp4",
-    "mov",
-    "avi",
-    "mkv",
-    "webm"
-]
+        video_extensions = [
+            "mp4",
+            "mov",
+            "avi",
+            "mkv",
+            "webm"
+        ]
 
-# ================= VIDEO UPLOAD =================
+        # ================= VIDEO UPLOAD =================
 
-if ext in video_extensions:
+        if ext in video_extensions:
 
-    upload_result = cloudinary.uploader.upload_large(
-        file,
-        resource_type="video",
-        folder="live_media",
-        chunk_size=6000000
-    )
+            upload_result = cloudinary.uploader.upload_large(
+                file,
+                resource_type="video",
+                folder="live_media",
+                chunk_size=6000000
+            )
 
-# ================= IMAGE UPLOAD =================
+        # ================= IMAGE UPLOAD =================
 
-else:
+        else:
 
-    upload_result = cloudinary.uploader.upload(
-        file,
-        resource_type="image",
-        folder="live_media"
-    )
+            upload_result = cloudinary.uploader.upload(
+                file,
+                resource_type="image",
+                folder="live_media"
+            )
 
-# ================= FILE URL =================
+        # ================= FILE URL =================
 
-file_url = upload_result["secure_url"]
+        file_url = upload_result["secure_url"]
 
-# =================================================
-# SAVE DATABASE
-# =================================================
+        # =================================================
+        # SAVE DATABASE
+        # =================================================
 
-media = LiveMedia(
+        media = LiveMedia(
 
-    title=title,
-    description=description,
+            title=title,
+            description=description,
 
-    media_type=media_type,
-    category=category,
+            media_type=media_type,
+            category=category,
 
-    file_url=file_url,
+            file_url=file_url,
 
-    original_filename=filename,
+            original_filename=filename,
 
-    file_size=upload_result.get("bytes", 0),
+            file_size=upload_result.get("bytes", 0),
 
-    is_live=is_live,
+            is_live=is_live,
 
-    force_show=force_show,
+            force_show=force_show,
 
-    floating_mode=floating_mode,
+            floating_mode=floating_mode,
 
-    auto_play=auto_play,
+            auto_play=auto_play,
 
-    allow_resize=allow_resize,
+            allow_resize=allow_resize,
 
-    allow_drag=allow_drag,
+            allow_drag=allow_drag,
 
-    allow_minimize=allow_minimize,
+            allow_minimize=allow_minimize,
 
-    allow_fullscreen=allow_fullscreen,
+            allow_fullscreen=allow_fullscreen,
 
-    default_width=default_width,
+            default_width=default_width,
 
-    default_height=default_height,
+            default_height=default_height,
 
-    popup_delay=popup_delay,
+            popup_delay=popup_delay,
 
-    stream_url=stream_url,
+            stream_url=stream_url,
 
-    owner_id=session.get("user_id")
-)
+            owner_id=session.get("user_id")
+        )
 
-db.session.add(media)
-db.session.commit()
+        db.session.add(media)
+        db.session.commit()
 
-flash(
-    "Live media uploaded successfully",
-    "success"
-)
+        flash(
+            "Live media uploaded successfully",
+            "success"
+        )
 
-return redirect("/live")
+        return redirect("/live")
 
-
+    return render_template(
+        "owner/create.html"
+        )
 # =========================================================
 # UPDATE VIEW
 # =========================================================
