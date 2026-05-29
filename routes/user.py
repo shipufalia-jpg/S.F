@@ -291,3 +291,91 @@ def inbox():
             }
 
     return render_template("inbox.html", inbox=inbox_data.values())
+
+
+# =====================================================
+# LOGIN REQUIRED DECORATOR
+# =====================================================
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        if "user_id" not in session:
+            return redirect("/auth/login")
+
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+# =====================================================
+# WALLET DASHBOARD (UPGRADED)
+# =====================================================
+
+@user_bp.route("/wallet")
+@login_required
+def wallet():
+
+    user_id = session.get("user_id")
+
+    # ================= GET USER =================
+
+    user = User.query.get_or_404(user_id)
+
+    # ================= FILTER PARAMS =================
+
+    tx_type = request.args.get("type")  # credit / debit / transfer / withdraw
+    page = request.args.get("page", 1, type=int)
+    per_page = 20
+
+    # ================= BASE QUERY =================
+
+    query = Transaction.query.filter_by(
+        user_id=user_id
+    )
+
+    # ================= FILTER BY TYPE =================
+
+    if tx_type:
+        query = query.filter_by(type=tx_type)
+
+    # ================= PAGINATION =================
+
+    transactions = query.order_by(
+        Transaction.id.desc()
+    ).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+
+    # ================= CALCULATIONS =================
+
+    wallet_balance = float(user.wallet_balance or 0)
+
+    total_credit = db.session.query(
+        db.func.sum(Transaction.amount)
+    ).filter_by(
+        user_id=user_id,
+        type="credit"
+    ).scalar() or 0
+
+    total_debit = db.session.query(
+        db.func.sum(Transaction.amount)
+    ).filter_by(
+        user_id=user_id,
+        type="debit"
+    ).scalar() or 0
+
+    # ================= RESPONSE =================
+
+    return render_template(
+        "wallet.html",
+        user=user,
+        wallet_balance=wallet_balance,
+        transactions=transactions,
+        total_credit=total_credit,
+        total_debit=total_debit,
+        tx_type=tx_type
+)
