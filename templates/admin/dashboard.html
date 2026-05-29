@@ -749,7 +749,7 @@ body{
                 Manage all booking requests and statuses.
             </p>
 
-            <a href="/booking/admin" class="btn">
+            <a href="{{ url_for('booking.admin_bookings') }}" class="btn">
                 Manage Bookings
             </a>
 
@@ -803,8 +803,7 @@ body{
 
         </a>
 
-        <a href="/booking/admin" class="quick-btn">
-
+        <a href="/bookings" class="quick-btn">
             <div class="icon">📅</div>
 
             <h3>Bookings</h3>
