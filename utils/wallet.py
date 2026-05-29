@@ -1,5 +1,3 @@
-utils/wallet.py
-
 import uuid
 
 from extensions import db
@@ -8,6 +6,13 @@ from models.user import User
 from models.transaction import Transaction
 
 from utils.notification import send_notification
+
+
+# =====================================================
+# CONFIG
+# =====================================================
+
+MIN_WITHDRAW_AMOUNT = 100
 
 
 # =====================================================
@@ -20,18 +25,29 @@ def generate_transaction_id():
 
 
 # =====================================================
+# GET USER BALANCE
+# =====================================================
+
+def get_user_balance(user):
+
+    if not user:
+        return 0.0
+
+    balance = user.wallet_balance or 0
+
+    if balance < 0:
+        return 0.0
+
+    return round(float(balance), 2)
+
+
+# =====================================================
 # ADD MONEY
 # =====================================================
 
-def add_money(
-    user,
-    amount,
-    reason="Wallet Credit"
-):
+def add_money(user, amount, reason="Wallet Credit"):
 
     try:
-
-        # ================= VALIDATION =================
 
         if not user:
             return False
@@ -41,51 +57,25 @@ def add_money(
         if amount <= 0:
             return False
 
-        # ================= UPDATE WALLET =================
-
-        current_balance = float(
-            user.wallet_balance or 0
-        )
-
-        current_earnings = float(
-            user.total_earnings or 0
-        )
-
-        user.wallet_balance = (
-            current_balance + amount
-        )
-
-        user.total_earnings = (
-            current_earnings + amount
-        )
-
-        # ================= SAFETY =================
+        user.wallet_balance = float(user.wallet_balance or 0) + amount
+        user.total_earnings = float(user.total_earnings or 0) + amount
 
         if user.wallet_balance < 0:
             user.wallet_balance = 0
 
-        # ================= TRANSACTION =================
-
         transaction = Transaction(
 
             transaction_id=generate_transaction_id(),
-
             user_id=user.id,
-
             amount=amount,
-
             type="credit",
-
             status="success",
-
             reason=reason
+
         )
 
         db.session.add(transaction)
-
         db.session.flush()
-
-        # ================= NOTIFICATION =================
 
         send_notification(
             user_id=user.id,
@@ -97,18 +87,13 @@ def add_money(
             priority="normal"
         )
 
-        # ================= COMMIT =================
-
         db.session.commit()
-
         return True
 
     except Exception as e:
 
         db.session.rollback()
-
         print("Add Money Error:", e)
-
         return False
 
 
@@ -116,15 +101,9 @@ def add_money(
 # DEDUCT MONEY
 # =====================================================
 
-def deduct_money(
-    user,
-    amount,
-    reason="Wallet Debit"
-):
+def deduct_money(user, amount, reason="Wallet Debit"):
 
     try:
-
-        # ================= VALIDATION =================
 
         if not user:
             return False
@@ -134,46 +113,29 @@ def deduct_money(
         if amount <= 0:
             return False
 
-        current_balance = float(
-            user.wallet_balance or 0
-        )
+        current_balance = float(user.wallet_balance or 0)
 
         if current_balance < amount:
             return False
 
-        # ================= UPDATE WALLET =================
-
-        user.wallet_balance = (
-            current_balance - amount
-        )
-
-        # ================= SAFETY =================
+        user.wallet_balance = current_balance - amount
 
         if user.wallet_balance < 0:
             user.wallet_balance = 0
 
-        # ================= TRANSACTION =================
-
         transaction = Transaction(
 
             transaction_id=generate_transaction_id(),
-
             user_id=user.id,
-
             amount=amount,
-
             type="debit",
-
             status="success",
-
             reason=reason
+
         )
 
         db.session.add(transaction)
-
         db.session.flush()
-
-        # ================= NOTIFICATION =================
 
         send_notification(
             user_id=user.id,
@@ -185,18 +147,13 @@ def deduct_money(
             priority="normal"
         )
 
-        # ================= COMMIT =================
-
         db.session.commit()
-
         return True
 
     except Exception as e:
 
         db.session.rollback()
-
         print("Deduct Money Error:", e)
-
         return False
 
 
@@ -204,15 +161,9 @@ def deduct_money(
 # TRANSFER MONEY
 # =====================================================
 
-def transfer_money(
-    sender,
-    receiver,
-    amount
-):
+def transfer_money(sender, receiver, amount):
 
     try:
-
-        # ================= VALIDATION =================
 
         if not sender or not receiver:
             return False
@@ -222,74 +173,41 @@ def transfer_money(
         if amount <= 0:
             return False
 
-        # ================= SELF TRANSFER BLOCK =================
-
         if sender.id == receiver.id:
             return False
 
-        sender_balance = float(
-            sender.wallet_balance or 0
-        )
+        sender_balance = float(sender.wallet_balance or 0)
 
         if sender_balance < amount:
             return False
 
-        # ================= DEDUCT =================
-
-        sender.wallet_balance = (
-            sender_balance - amount
-        )
-
-        # ================= ADD =================
-
-        receiver.wallet_balance = (
-            float(receiver.wallet_balance or 0)
-            + amount
-        )
-
-        # ================= SAFETY =================
+        sender.wallet_balance = sender_balance - amount
+        receiver.wallet_balance = float(receiver.wallet_balance or 0) + amount
 
         if sender.wallet_balance < 0:
             sender.wallet_balance = 0
 
-        # ================= TRANSACTIONS =================
-
-        sender_transaction = Transaction(
-
+        sender_tx = Transaction(
             transaction_id=generate_transaction_id(),
-
             user_id=sender.id,
-
             amount=amount,
-
             type="transfer_out",
-
             status="success",
-
             reason=f"Transfer to {receiver.name}"
         )
 
-        receiver_transaction = Transaction(
-
+        receiver_tx = Transaction(
             transaction_id=generate_transaction_id(),
-
             user_id=receiver.id,
-
             amount=amount,
-
             type="transfer_in",
-
             status="success",
-
             reason=f"Received from {sender.name}"
         )
 
-        db.session.add(sender_transaction)
-        db.session.add(receiver_transaction)
-
+        db.session.add(sender_tx)
+        db.session.add(receiver_tx)
         db.session.flush()
-
-        # ================= NOTIFICATIONS =================
 
         send_notification(
             user_id=sender.id,
@@ -309,18 +227,13 @@ def transfer_money(
             action_url="/wallet"
         )
 
-        # ================= COMMIT =================
-
         db.session.commit()
-
         return True
 
     except Exception as e:
 
         db.session.rollback()
-
         print("Transfer Money Error:", e)
-
         return False
 
 
@@ -328,84 +241,59 @@ def transfer_money(
 # WITHDRAW MONEY
 # =====================================================
 
-def withdraw_money(
-    user,
-    amount
-):
+def withdraw_money(user, amount):
 
     try:
-
-        # ================= VALIDATION =================
 
         if not user:
             return False
 
         amount = float(amount)
 
-        if amount <= 0:
+        # ================= MINIMUM WITHDRAW RULE =================
+
+        if amount < MIN_WITHDRAW_AMOUNT:
             return False
 
-        balance = float(
-            user.wallet_balance or 0
-        )
+        balance = float(user.wallet_balance or 0)
 
         if balance < amount:
             return False
 
-        # ================= UPDATE WALLET =================
-
-        user.wallet_balance = (
-            balance - amount
-        )
-
-        # ================= SAFETY =================
+        user.wallet_balance = balance - amount
 
         if user.wallet_balance < 0:
             user.wallet_balance = 0
 
-        # ================= TRANSACTION =================
-
         transaction = Transaction(
 
             transaction_id=generate_transaction_id(),
-
             user_id=user.id,
-
             amount=amount,
-
             type="withdraw",
-
             status="pending",
-
             reason="Wallet Withdraw"
+
         )
 
         db.session.add(transaction)
-
         db.session.flush()
-
-        # ================= NOTIFICATION =================
 
         send_notification(
             user_id=user.id,
             title="Withdraw Requested",
-            message=f"₹{amount} withdraw request submitted",
+            message=f"₹{amount} withdraw request submitted (Min ₹{MIN_WITHDRAW_AMOUNT})",
             type="payment",
             icon="money",
             action_url="/wallet",
             priority="high"
         )
 
-        # ================= COMMIT =================
-
         db.session.commit()
-
         return True
 
     except Exception as e:
 
         db.session.rollback()
-
         print("Withdraw Error:", e)
-
         return False
