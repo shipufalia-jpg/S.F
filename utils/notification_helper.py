@@ -1,95 +1,75 @@
 from extensions import db, socketio
-
 from models.notification import Notification
 
 
 def send_notification(
 
     user_id,
-
     title,
-
     message,
-
     type="general",
-
     icon="bell",
-
     action_url=None,
-
     sender_id=None,
-
     priority="normal",
-
     device="web",
-
     realtime=True
+
 ):
 
     try:
 
+        # ================= CREATE NOTIFICATION =================
+
         notification = Notification(
 
             user_id=user_id,
-
             sender_id=sender_id,
-
             title=title,
-
             message=message,
 
             type=type,
-
             icon=icon,
 
             action_url=action_url,
-
             priority=priority,
-
             device=device,
 
             is_sent=realtime
+
         )
 
         db.session.add(notification)
+        db.session.flush()  # safer than commit first
+
+        # ================= COMMIT =================
 
         db.session.commit()
 
-        # =========================
-        # REALTIME SOCKET EVENT
-        # =========================
+        # ================= REALTIME SOCKET EVENT =================
 
-        if realtime:
+        if realtime and socketio:
 
             socketio.emit(
 
-                "new_notification",
+                "notification:new",
 
                 {
 
                     "id": notification.id,
-
-                    "app_name": "S.F WORKS HUB",
-
                     "title": notification.title,
-
                     "message": notification.message,
-
                     "type": notification.type,
-
                     "icon": notification.icon,
-
                     "action_url": notification.action_url,
-
                     "priority": notification.priority,
 
-                    "created_at": notification.created_at.strftime(
-                        "%d %b %Y %I:%M %p"
-                    )
+                    "created_at": notification.created_at.isoformat()
 
                 },
 
                 room=f"user_{user_id}"
+
             )
 
         return notification
