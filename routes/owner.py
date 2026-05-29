@@ -762,7 +762,7 @@ def works_partial():
 
 @owner.route("/withdraw/approve/<int:id>")
 def approve_withdraw(id):
-
+    ...
     try:
 
         owner_id = session.get("user_id")
@@ -825,9 +825,9 @@ def approve_withdraw(id):
         print("Approve Withdraw Error:", e)
         return "Error occurred"
 
-@owner.route("/withdraw/reject/<int:id>", methods=["POST"])
+@owner.route("/withdraw/reject/<int:id>")
 def reject_withdraw(id):
-
+    ...
     try:
 
         owner_id = session.get("user_id")
@@ -894,8 +894,8 @@ def owner_required(f):
 # =====================================================
 
 @owner.route("/withdraws")
-@owner_required
 def withdraw_list():
+    ...
 
     status = request.args.get("status")   # pending/approved/rejected
     page = request.args.get("page", 1, type=int)
@@ -929,8 +929,8 @@ from datetime import datetime
 
 
 @owner.route("/withdraw/paid/<int:id>")
-@owner_required
 def mark_paid(id):
+    ...
 
     try:
 
