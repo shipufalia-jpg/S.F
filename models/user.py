@@ -193,13 +193,15 @@ class User(UserMixin, db.Model):
     )
 
     class User(db.Model):
+
+    __tablename__ = "user"
+
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String(100))
 
-    # ================= WALLET =================
     wallet_balance = db.Column(db.Float, default=0.0)
     total_earnings = db.Column(db.Float, default=0.0)
-
     # ======================
     # STRING
     # ======================
