@@ -600,7 +600,9 @@ body{
 
         <a href="/admin/applications">📋 Application Approval</a>
 
-        <a href="/booking/admin">📅 Booking Control</a>
+        <a href="{{ url_for('booking.admin_bookings') }}">
+             📅 Booking Control
+        </a>
 
         <a href="/admin/analytics">📊 Analytics</a>
 
