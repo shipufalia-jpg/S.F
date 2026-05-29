@@ -378,3 +378,119 @@ def wallet():
 )
 
 
+
+
+
+@user.route(
+    "/payment-method",
+    methods=["GET", "POST"]
+)
+@login_required
+def payment_method():
+
+    # ================= USER =================
+
+    user_id = session.get("user_id")
+
+    # ================= GET OLD METHOD =================
+
+    payment = UserPaymentMethod.query.filter_by(
+        user_id=user_id,
+        is_default=True
+    ).first()
+
+    # ================= SAVE PAYMENT METHOD =================
+
+    if request.method == "POST":
+
+        method = request.form.get("method")
+        account_name = request.form.get("account_name")
+        account_number = request.form.get("account_number")
+        ifsc = request.form.get("ifsc")
+        upi_id = request.form.get("upi_id")
+
+        # ================= VALIDATION =================
+
+        if not method:
+
+            flash(
+                "Payment method is required",
+                "danger"
+            )
+
+            return redirect("/user/payment-method")
+
+        # ================= UPI VALIDATION =================
+
+        if method == "upi" and not upi_id:
+
+            flash(
+                "UPI ID is required",
+                "danger"
+            )
+
+            return redirect("/user/payment-method")
+
+        # ================= BANK VALIDATION =================
+
+        if method == "bank":
+
+            if not account_number or not ifsc:
+
+                flash(
+                    "Bank account details required",
+                    "danger"
+                )
+
+                return redirect("/user/payment-method")
+
+        # ================= UPDATE EXISTING =================
+
+        if payment:
+
+            payment.method = method
+            payment.account_name = account_name
+            payment.account_number = account_number
+            payment.ifsc = ifsc
+            payment.upi_id = upi_id
+
+        # ================= CREATE NEW =================
+
+        else:
+
+            payment = UserPaymentMethod(
+
+                user_id=user_id,
+
+                method=method,
+
+                account_name=account_name,
+
+                account_number=account_number,
+
+                ifsc=ifsc,
+
+                upi_id=upi_id,
+
+                is_default=True
+            )
+
+            db.session.add(payment)
+
+        # ================= SAVE =================
+
+        db.session.commit()
+
+        flash(
+            "Payment method updated successfully",
+            "success"
+        )
+
+        return redirect("/user/wallet")
+
+    # ================= RESPONSE =================
+
+    return render_template(
+        "wallet.html",
+        payment=payment
+            )
