@@ -925,37 +925,101 @@ def withdraw_list():
     )
 
 
-from datetime import datetime
-
-
-@owner.route("/withdraw/paid/<int:id>")
+@owner.route(
+    "/withdraw/paid/<int:id>",
+    methods=["POST"]
+)
+@owner_required
 def mark_paid(id):
-    ...
 
     try:
 
-        req = WithdrawRequest.query.get(id)
+        req = WithdrawRequest.query.get_or_404(id)
 
-        if not req:
-            return "Not found"
+        # ================= VALIDATION =================
 
         if req.status != "approved":
-            return "Only approved requests can be marked paid"
+
+            flash(
+                "Withdrawal must be approved first.",
+                "danger"
+            )
+
+            return redirect("/owner/withdraws")
 
         if req.payment_status == "paid":
-            return "Already marked as paid"
+
+            flash(
+                "Already marked as paid.",
+                "warning"
+            )
+
+            return redirect("/owner/withdraws")
+
+        # ================= FORM DATA =================
+
+        utr_number = request.form.get(
+            "utr_number",
+            ""
+        ).strip()
+
+        admin_note = request.form.get(
+            "admin_note",
+            ""
+        ).strip()
 
         # ================= UPDATE =================
 
         req.payment_status = "paid"
+
         req.processed_at = datetime.utcnow()
+
+        req.paid_at = datetime.utcnow()
+
+        req.utr_number = utr_number
+
+        req.admin_note = admin_note
+
+        req.paid_by = session.get(
+            "user_id"
+        )
+
+        # ================= TRANSACTION UPDATE =================
+
+        txn = Transaction.query.filter_by(
+            reference_id=req.id,
+            reference_type="withdraw"
+        ).first()
+
+        if txn:
+
+            txn.status = "success"
 
         db.session.commit()
 
-        return "Marked as Paid successfully"
+        flash(
+            "Withdrawal marked as paid successfully.",
+            "success"
+        )
+
+        return redirect(
+            "/owner/withdraws"
+        )
 
     except Exception as e:
 
         db.session.rollback()
-        print("Mark Paid Error:", e)
-        return "Error occurred"
+
+        print(
+            "Mark Paid Error:",
+            str(e)
+        )
+
+        flash(
+            "Something went wrong.",
+            "danger"
+        )
+
+        return redirect(
+            "/owner/withdraws"
+            )
