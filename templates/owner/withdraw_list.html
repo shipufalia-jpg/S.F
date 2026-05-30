@@ -2,208 +2,374 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Withdraw Control Panel</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
+<title>Withdraw Control Panel</title>
 
-        body {
-            background: #f4f6f9;
-        }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        .top-bar {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-        .card-box {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin-bottom: 12px;
-            transition: 0.2s;
-        }
+<style>
 
-        .card-box:hover {
-            transform: translateY(-2px);
-        }
+body{
+    background:#f4f7fc;
+}
 
-        .badge {
-            font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 8px;
-        }
+.header-card{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    color:white;
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
 
-        .pending { background: orange; color: white; }
-        .approved { background: green; color: white; }
-        .rejected { background: red; color: white; }
-        .paid { background: blue; color: white; }
+.withdraw-card{
+    background:white;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:18px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+    transition:.2s;
+}
 
-        .btn-small {
-            font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 6px;
-        }
+.withdraw-card:hover{
+    transform:translateY(-2px);
+}
 
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+.status-badge{
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:700;
+}
 
-        .summary div {
-            background: white;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
+.pending{
+    background:#fff3cd;
+    color:#856404;
+}
 
-        .summary h5 {
-            margin: 0;
-        }
+.approved{
+    background:#d1e7dd;
+    color:#0f5132;
+}
 
-        @media(max-width:768px){
-            .summary{
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+.rejected{
+    background:#f8d7da;
+    color:#842029;
+}
 
-    </style>
+.paid{
+    background:#cfe2ff;
+    color:#084298;
+}
+
+.info-box{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:12px;
+    margin-top:10px;
+    border:1px solid #edf2f7;
+}
+
+.info-box div{
+    margin-bottom:6px;
+}
+
+.amount{
+    font-size:24px;
+    font-weight:800;
+    color:#16a34a;
+}
+
+.section-title{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="container mt-4">
+<div class="container py-4">
 
-    <!-- ================= TOP BAR ================= -->
-    <div class="top-bar d-flex justify-content-between align-items-center flex-wrap">
+<div class="header-card">
 
-        <h5>Withdraw Control Panel</h5>
+    <h3 class="mb-2">
+        <i class="fa-solid fa-money-bill-transfer"></i>
+        Withdraw Control Panel
+    </h3>
 
-        <div class="mt-2 mt-md-0">
+    <p class="mb-0">
+        Manage and process withdrawal requests
+    </p>
 
-            <a href="/owner/withdraws" class="btn btn-sm btn-dark">All</a>
-            <a href="/owner/withdraws?status=pending" class="btn btn-sm btn-warning">Pending</a>
-            <a href="/owner/withdraws?status=approved" class="btn btn-sm btn-success">Approved</a>
-            <a href="/owner/withdraws?status=rejected" class="btn btn-sm btn-danger">Rejected</a>
+</div>
 
-        </div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 
-    </div>
+{% for w in withdraws %}
 
-    <!-- ================= SUMMARY ================= -->
-    <div class="summary">
+<div class="withdraw-card">
 
-        <div>
-            <h5>{{ withdraws|selectattr("status","equalto","pending")|list|length }}</h5>
-            <small>Pending</small>
-        </div>
-
-        <div>
-            <h5>{{ withdraws|selectattr("status","equalto","approved")|list|length }}</h5>
-            <small>Approved</small>
-        </div>
-
-        <div>
-            <h5>{{ withdraws|selectattr("status","equalto","rejected")|list|length }}</h5>
-            <small>Rejected</small>
-        </div>
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
 
         <div>
-            <h5>{{ withdraws|selectattr("payment_status","equalto","paid")|list|length }}</h5>
-            <small>Paid</small>
+
+            <h5 class="mb-2">
+                Withdraw #{{ w.id }}
+            </h5>
+
+            {% if w.status == "pending" %}
+            <span class="status-badge pending">
+                Pending
+            </span>
+            {% elif w.status == "approved" %}
+            <span class="status-badge approved">
+                Approved
+            </span>
+            {% else %}
+            <span class="status-badge rejected">
+                Rejected
+            </span>
+            {% endif %}
+
+            {% if w.payment_status == "paid" %}
+            <span class="status-badge paid">
+                Paid
+            </span>
+            {% endif %}
+
         </div>
 
-    </div>
+        <div class="text-end">
 
-    <!-- ================= LIST ================= -->
-
-    {% for w in withdraws %}
-
-    <div class="card-box">
-
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-
-            <!-- LEFT INFO -->
-            <div>
-
-                <h6>User ID: {{ w.user_id }}</h6>
-
-                <p class="mb-1">
-                    Amount: <strong>₹{{ w.amount }}</strong>
-                </p>
-
-                <small class="text-muted">
-                    {{ w.created_at }}
-                </small>
-
+            <div class="amount">
+                ₹{{ w.amount }}
             </div>
 
-            <!-- RIGHT ACTION -->
-            <div class="text-end">
+            <small class="text-muted">
+                {{ w.created_at }}
+            </small>
 
-                <!-- STATUS -->
-                {% if w.status == "pending" %}
-                    <span class="badge pending">Pending</span>
-                {% elif w.status == "approved" %}
-                    <span class="badge approved">Approved</span>
-                {% else %}
-                    <span class="badge rejected">Rejected</span>
-                {% endif %}
+        </div>
 
-                {% if w.payment_status == "paid" %}
-                    <span class="badge paid">Paid</span>
-                {% endif %}
+    </div>
 
-                <br><br>
+    <hr>
 
-                <!-- ACTIONS -->
-                {% if w.status == "pending" %}
+    <div class="row">
 
-                    <a href="/owner/withdraw/approve/{{ w.id }}"
-                       class="btn btn-success btn-small">
-                        Approve
-                    </a>
+        <div class="col-md-6">
 
-                    <a href="/owner/withdraw/reject/{{ w.id }}"
-                       class="btn btn-danger btn-small">
-                        Reject
-                    </a>
+            <div class="info-box">
 
-                {% endif %}
+                <div class="section-title">
+                    User Information
+                </div>
 
-                {% if w.status == "approved" and w.payment_status != "paid" %}
+                <div>
+                    <strong>User ID:</strong>
+                    {{ w.user_id }}
+                </div>
 
-                    <a href="/owner/withdraw/paid/{{ w.id }}"
-                       class="btn btn-primary btn-small">
-                        Mark Paid
-                    </a>
+                <div>
+                    <strong>Method:</strong>
+                    {{ w.payment_method or "-" }}
+                </div>
 
-                {% endif %}
+                <div>
+                    <strong>Account:</strong>
+                    {{ w.payment_account or "-" }}
+                </div>
+
+                <div>
+                    <strong>Status:</strong>
+                    {{ w.status }}
+                </div>
 
             </div>
 
         </div>
 
+        <div class="col-md-6">
+
+            <div class="info-box">
+
+                <div class="section-title">
+                    Processing Information
+                </div>
+
+                <div>
+                    <strong>Approved By:</strong>
+                    {{ w.approved_by or "-" }}
+                </div>
+
+                <div>
+                    <strong>Processed At:</strong>
+                    {{ w.processed_at or "-" }}
+                </div>
+
+                {% if w.rejected_reason %}
+                <div class="text-danger">
+                    <strong>Reject Reason:</strong>
+                    {{ w.rejected_reason }}
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
     </div>
 
-    {% else %}
+    {% if w.payment_status == "paid" %}
 
-    <div class="text-center text-muted mt-5">
-        No withdraw requests found
+    <div class="info-box mt-3">
+
+        <div class="section-title">
+            Payment Information
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <div>
+                    <strong>Paid At:</strong>
+                    {{ w.paid_at }}
+                </div>
+
+                <div>
+                    <strong>Paid By:</strong>
+                    {{ w.paid_by }}
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div>
+                    <strong>UTR Number:</strong>
+                    {{ w.utr_number or "-" }}
+                </div>
+
+                <div>
+                    <strong>Admin Note:</strong>
+                    {{ w.admin_note or "-" }}
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    {% endfor %}
+    {% endif %}
+
+    <hr>
+
+    {% if w.status == "pending" %}
+
+    <div class="d-flex gap-2 flex-wrap">
+
+        <a
+            href="/owner/withdraw/approve/{{ w.id }}"
+            class="btn btn-success">
+
+            <i class="fa-solid fa-check"></i>
+            Approve
+
+        </a>
+
+        <a
+            href="/owner/withdraw/reject/{{ w.id }}"
+            class="btn btn-danger">
+
+            <i class="fa-solid fa-xmark"></i>
+            Reject
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+    {% if w.status == "approved" and w.payment_status != "paid" %}
+
+    <form
+        method="POST"
+        action="/owner/withdraw/paid/{{ w.id }}"
+        class="mt-3">
+
+        <div class="row">
+
+            <div class="col-md-4 mb-2">
+
+                <input
+                    type="text"
+                    name="utr_number"
+                    class="form-control"
+                    placeholder="UTR Number">
+
+            </div>
+
+            <div class="col-md-5 mb-2">
+
+                <input
+                    type="text"
+                    name="admin_note"
+                    class="form-control"
+                    placeholder="Payment Note">
+
+            </div>
+
+            <div class="col-md-3 mb-2">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary w-100">
+
+                    <i class="fa-solid fa-money-check-dollar"></i>
+                    Mark Paid
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+    {% endif %}
+
+</div>
+
+{% else %}
+
+<div class="alert alert-secondary text-center">
+
+    No Withdrawal Requests Found
+
+</div>
+
+{% endfor %}
 
 </div>
 
 </body>
-</html>
+    </html>
