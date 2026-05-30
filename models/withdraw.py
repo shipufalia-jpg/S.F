@@ -66,6 +66,16 @@ class WithdrawRequest(db.Model):
         nullable=True
     )
 
+    utr_number = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    admin_note = db.Column(
+        db.Text,
+        nullable=True
+    )
+
     # ================= ADMIN CONTROL =================
 
     approved_by = db.Column(
