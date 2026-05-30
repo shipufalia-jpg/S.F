@@ -47,25 +47,10 @@ body{
     font-weight:700;
 }
 
-.pending{
-    background:#fff3cd;
-    color:#856404;
-}
-
-.approved{
-    background:#d1e7dd;
-    color:#0f5132;
-}
-
-.rejected{
-    background:#f8d7da;
-    color:#842029;
-}
-
-.paid{
-    background:#cfe2ff;
-    color:#084298;
-}
+.pending{ background:#fff3cd; color:#856404; }
+.approved{ background:#d1e7dd; color:#0f5132; }
+.rejected{ background:#f8d7da; color:#842029; }
+.paid{ background:#cfe2ff; color:#084298; }
 
 .info-box{
     background:#f8fafc;
@@ -130,41 +115,27 @@ body{
 
         <div>
 
-            <h5 class="mb-2">
-                Withdraw #{{ w.id }}
-            </h5>
+            <h5 class="mb-2">Withdraw #{{ w.id }}</h5>
 
             {% if w.status == "pending" %}
-            <span class="status-badge pending">
-                Pending
-            </span>
+                <span class="status-badge pending">Pending</span>
             {% elif w.status == "approved" %}
-            <span class="status-badge approved">
-                Approved
-            </span>
+                <span class="status-badge approved">Approved</span>
             {% else %}
-            <span class="status-badge rejected">
-                Rejected
-            </span>
+                <span class="status-badge rejected">Rejected</span>
             {% endif %}
 
             {% if w.payment_status == "paid" %}
-            <span class="status-badge paid">
-                Paid
-            </span>
+                <span class="status-badge paid">Paid</span>
             {% endif %}
 
         </div>
 
         <div class="text-end">
 
-            <div class="amount">
-                ₹{{ w.amount }}
-            </div>
+            <div class="amount">₹{{ w.amount }}</div>
 
-            <small class="text-muted">
-                {{ w.created_at }}
-            </small>
+            <small class="text-muted">{{ w.created_at }}</small>
 
         </div>
 
@@ -174,18 +145,25 @@ body{
 
     <div class="row">
 
+        <!-- ================= USER INFO ================= -->
         <div class="col-md-6">
 
             <div class="info-box">
 
-                <div class="section-title">
-                    User Information
-                </div>
+                <div class="section-title">User Information</div>
 
-                <div>
-                    <strong>User ID:</strong>
-                    {{ w.user_id }}
-                </div>
+                <div><strong>User ID:</strong> {{ w.user_id }}</div>
+
+                <div><strong>Status:</strong> {{ w.status }}</div>
+
+                <div><strong>Method:</strong> {{ w.payment_method or "-" }}</div>
+
+            </div>
+
+            <!-- ✅ PAYMENT DETAILS (NEW ADDED) -->
+            <div class="info-box mt-2">
+
+                <div class="section-title">Payment Details</div>
 
                 <div>
                     <strong>Method:</strong>
@@ -193,26 +171,52 @@ body{
                 </div>
 
                 <div>
-                    <strong>Account:</strong>
-                    {{ w.payment_account or "-" }}
+                    <strong>Account Name:</strong>
+                    {{ w.payment_account_name or "-" }}
                 </div>
 
                 <div>
-                    <strong>Status:</strong>
-                    {{ w.status }}
+                    <strong>Account Number:</strong>
+                    {{ w.payment_account_number or w.payment_account or "-" }}
+                </div>
+
+                <div>
+                    <strong>IFSC Code:</strong>
+                    {{ w.ifsc or "-" }}
+                </div>
+
+                <div>
+                    <strong>UPI ID:</strong>
+                    {{ w.upi_id or "-" }}
+                </div>
+
+            </div>
+
+            <!-- ✅ AMOUNT BOX (NEW ADDED) -->
+            <div class="info-box mt-2">
+
+                <div class="section-title">Withdrawal Info</div>
+
+                <div>
+                    <strong>Requested Amount:</strong>
+                    ₹{{ w.amount }}
+                </div>
+
+                <div>
+                    <strong>Net Payable:</strong>
+                    ₹{{ w.amount }}
                 </div>
 
             </div>
 
         </div>
 
+        <!-- ================= PROCESS INFO ================= -->
         <div class="col-md-6">
 
             <div class="info-box">
 
-                <div class="section-title">
-                    Processing Information
-                </div>
+                <div class="section-title">Processing Info</div>
 
                 <div>
                     <strong>Approved By:</strong>
@@ -224,85 +228,46 @@ body{
                     {{ w.processed_at or "-" }}
                 </div>
 
-                {% if w.rejected_reason %}
-                <div class="text-danger">
-                    <strong>Reject Reason:</strong>
-                    {{ w.rejected_reason }}
-                </div>
-                {% endif %}
+            </div>
+
+            {% if w.payment_status == "paid" %}
+
+            <div class="info-box mt-2">
+
+                <div class="section-title">Payment Info</div>
+
+                <div><strong>Paid At:</strong> {{ w.paid_at }}</div>
+
+                <div><strong>Paid By:</strong> {{ w.paid_by }}</div>
+
+                <div><strong>UTR:</strong> {{ w.utr_number or "-" }}</div>
+
+                <div><strong>Note:</strong> {{ w.admin_note or "-" }}</div>
 
             </div>
+
+            {% endif %}
 
         </div>
 
     </div>
-
-    {% if w.payment_status == "paid" %}
-
-    <div class="info-box mt-3">
-
-        <div class="section-title">
-            Payment Information
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-6">
-
-                <div>
-                    <strong>Paid At:</strong>
-                    {{ w.paid_at }}
-                </div>
-
-                <div>
-                    <strong>Paid By:</strong>
-                    {{ w.paid_by }}
-                </div>
-
-            </div>
-
-            <div class="col-md-6">
-
-                <div>
-                    <strong>UTR Number:</strong>
-                    {{ w.utr_number or "-" }}
-                </div>
-
-                <div>
-                    <strong>Admin Note:</strong>
-                    {{ w.admin_note or "-" }}
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    {% endif %}
 
     <hr>
 
+    <!-- ================= ACTIONS ================= -->
+
     {% if w.status == "pending" %}
 
-    <div class="d-flex gap-2 flex-wrap">
+    <div class="d-flex gap-2">
 
-        <a
-            href="/owner/withdraw/approve/{{ w.id }}"
-            class="btn btn-success">
-
-            <i class="fa-solid fa-check"></i>
+        <a href="/owner/withdraw/approve/{{ w.id }}"
+           class="btn btn-success">
             Approve
-
         </a>
 
-        <a
-            href="/owner/withdraw/reject/{{ w.id }}"
-            class="btn btn-danger">
-
-            <i class="fa-solid fa-xmark"></i>
+        <a href="/owner/withdraw/reject/{{ w.id }}"
+           class="btn btn-danger">
             Reject
-
         </a>
 
     </div>
@@ -311,44 +276,22 @@ body{
 
     {% if w.status == "approved" and w.payment_status != "paid" %}
 
-    <form
-        method="POST"
-        action="/owner/withdraw/paid/{{ w.id }}"
-        class="mt-3">
+    <form method="POST" action="/owner/withdraw/paid/{{ w.id }}" class="mt-3">
 
         <div class="row">
 
             <div class="col-md-4 mb-2">
-
-                <input
-                    type="text"
-                    name="utr_number"
-                    class="form-control"
-                    placeholder="UTR Number">
-
+                <input type="text" name="utr_number" class="form-control" placeholder="UTR Number">
             </div>
 
             <div class="col-md-5 mb-2">
-
-                <input
-                    type="text"
-                    name="admin_note"
-                    class="form-control"
-                    placeholder="Payment Note">
-
+                <input type="text" name="admin_note" class="form-control" placeholder="Admin Note">
             </div>
 
             <div class="col-md-3 mb-2">
-
-                <button
-                    type="submit"
-                    class="btn btn-primary w-100">
-
-                    <i class="fa-solid fa-money-check-dollar"></i>
+                <button type="submit" class="btn btn-primary w-100">
                     Mark Paid
-
                 </button>
-
             </div>
 
         </div>
@@ -362,9 +305,7 @@ body{
 {% else %}
 
 <div class="alert alert-secondary text-center">
-
     No Withdrawal Requests Found
-
 </div>
 
 {% endfor %}
@@ -372,4 +313,4 @@ body{
 </div>
 
 </body>
-    </html>
+</html>
