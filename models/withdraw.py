@@ -46,6 +46,26 @@ class WithdrawRequest(db.Model):
         nullable=True
     )
 
+    # ================= PAYMENT CONTROL =================
+
+    payment_status = db.Column(
+        db.String(20),
+        default="unpaid",
+        index=True
+    )
+    # unpaid / paid
+
+    paid_by = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    paid_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
     # ================= ADMIN CONTROL =================
 
     approved_by = db.Column(
@@ -89,4 +109,9 @@ class WithdrawRequest(db.Model):
     approver = db.relationship(
         "User",
         foreign_keys=[approved_by]
+    )
+
+    payer = db.relationship(
+        "User",
+        foreign_keys=[paid_by]
     )
