@@ -492,6 +492,6 @@ def payment_method():
     # ================= RESPONSE =================
 
     return render_template(
-        "wallet.html",
+        "payment_method.html",
         payment=payment
             )
