@@ -118,6 +118,30 @@ def fix_db(app):
                 ALTER TABLE "user"
                 ADD COLUMN IF NOT EXISTS total_earnings FLOAT DEFAULT 0;
             """))
+            db.session.execute(text("""
+                ALTER TABLE withdraw_requests
+                ADD COLUMN IF NOT EXISTS payment_status VARCHAR(20) DEFAULT 'unpaid';
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE withdraw_requests
+                ADD COLUMN IF NOT EXISTS paid_by INTEGER;
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE withdraw_requests
+                ADD COLUMN IF NOT EXISTS paid_at TIMESTAMP;
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE withdraw_requests
+                ADD COLUMN IF NOT EXISTS utr_number VARCHAR(100);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE withdraw_requests
+                ADD COLUMN IF NOT EXISTS admin_note TEXT;
+            """))
 
             db.session.commit()
 
