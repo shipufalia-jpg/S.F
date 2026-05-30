@@ -17,6 +17,7 @@ from extensions import db
 from functools import wraps
 from flask import request
 from models.transaction import Transaction
+from models.user_payment_method import UserPaymentMethod
 
 user = Blueprint("user", __name__, url_prefix="/user")
 
