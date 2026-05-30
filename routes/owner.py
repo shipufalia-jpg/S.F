@@ -894,32 +894,47 @@ def owner_required(f):
 # =====================================================
 
 @owner.route("/withdraws")
+@owner_required
 def withdraw_list():
-    ...
 
-    status = request.args.get("status")   # pending/approved/rejected
-    page = request.args.get("page", 1, type=int)
-    per_page = 20
+    try:
 
-    query = WithdrawRequest.query
+        status = request.args.get("status")   # pending / approved / rejected / paid
+        page = request.args.get("page", 1, type=int)
+        per_page = 20
 
-    # ================= FILTER =================
+        # ================= BASE QUERY =================
 
-    if status:
-        query = query.filter_by(status=status)
+        query = WithdrawRequest.query
 
-    # ================= PAGINATION =================
+        # ================= FILTER =================
 
-    withdraws = WithdrawRequest.query.order_by(
-    WithdrawRequest.id.desc()
-    ).all()
+        if status:
+            query = query.filter_by(status=status)
 
-    return render_template(
-        "owner/withdraw_list.html",
-        withdraws=withdraws,
-        status=status
-    )
+        # ================= ORDER =================
 
+        query = query.order_by(WithdrawRequest.id.desc())
+
+        # ================= PAGINATION =================
+
+        withdraws = query.paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
+
+        return render_template(
+            "owner/withdraw_list.html",
+            withdraws=withdraws,
+            status=status
+        )
+
+    except Exception as e:
+
+        print("Withdraw List Error:", str(e))
+
+        return "Error loading withdraws"
 
 @owner.route(
     "/withdraw/paid/<int:id>",
@@ -935,50 +950,49 @@ def mark_paid(id):
         # ================= VALIDATION =================
 
         if req.status != "approved":
-
-            flash(
-                "Withdrawal must be approved first.",
-                "danger"
-            )
-
+            flash("Withdrawal must be approved first.", "danger")
             return redirect("/owner/withdraws")
 
         if req.payment_status == "paid":
+            flash("Already marked as paid.", "warning")
+            return redirect("/owner/withdraws")
 
-            flash(
-                "Already marked as paid.",
-                "warning"
-            )
+        # ================= USER CHECK =================
 
+        user = User.query.get(req.user_id)
+
+        if not user:
+            flash("User not found", "danger")
+            return redirect("/owner/withdraws")
+
+        # ================= BALANCE CHECK =================
+
+        if (user.wallet_balance or 0) < req.amount:
+            flash("Insufficient balance", "danger")
             return redirect("/owner/withdraws")
 
         # ================= FORM DATA =================
 
-        utr_number = request.form.get(
-            "utr_number",
-            ""
-        ).strip()
+        utr_number = request.form.get("utr_number", "").strip()
+        admin_note = request.form.get("admin_note", "").strip()
 
-        admin_note = request.form.get(
-            "admin_note",
-            ""
-        ).strip()
+        # ================= FINAL DEDUCTION =================
 
-        # ================= UPDATE =================
+        user.wallet_balance = float(user.wallet_balance or 0) - req.amount
+
+        if user.wallet_balance < 0:
+            user.wallet_balance = 0
+
+        # ================= UPDATE REQUEST =================
 
         req.payment_status = "paid"
-
-        req.processed_at = datetime.utcnow()
-
         req.paid_at = datetime.utcnow()
+        req.paid_by = session.get("user_id")
 
         req.utr_number = utr_number
-
         req.admin_note = admin_note
 
-        req.paid_by = session.get(
-            "user_id"
-        )
+        req.processed_at = datetime.utcnow()
 
         # ================= TRANSACTION UPDATE =================
 
@@ -988,34 +1002,21 @@ def mark_paid(id):
         ).first()
 
         if txn:
-
             txn.status = "success"
+
+        # ================= SAVE =================
 
         db.session.commit()
 
-        flash(
-            "Withdrawal marked as paid successfully.",
-            "success"
-        )
+        flash("Withdrawal marked as paid successfully.", "success")
 
-        return redirect(
-            "/owner/withdraws"
-        )
+        return redirect("/owner/withdraws")
 
     except Exception as e:
 
         db.session.rollback()
+        print("Mark Paid Error:", str(e))
 
-        print(
-            "Mark Paid Error:",
-            str(e)
-        )
+        flash("Something went wrong.", "danger")
 
-        flash(
-            "Something went wrong.",
-            "danger"
-        )
-
-        return redirect(
-            "/owner/withdraws"
-            )
+        return redirect("/owner/withdraws")
