@@ -910,13 +910,9 @@ def withdraw_list():
 
     # ================= PAGINATION =================
 
-    withdraws = query.order_by(
-        WithdrawRequest.id.desc()
-    ).paginate(
-        page=page,
-        per_page=per_page,
-        error_out=False
-    )
+    withdraws = WithdrawRequest.query.order_by(
+    WithdrawRequest.id.desc()
+    ).all()
 
     return render_template(
         "owner/withdraw_list.html",
