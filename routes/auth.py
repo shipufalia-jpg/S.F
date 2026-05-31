@@ -85,6 +85,11 @@ def signup():
         status=status
     )
 
+    # ================= SAVE REFERRER =================
+
+if referrer:
+    user.referred_by = referrer.id
+
     # ================= CONTROL SYSTEM =================
     # referral hierarchy logic
     assign_control(user, referrer)
