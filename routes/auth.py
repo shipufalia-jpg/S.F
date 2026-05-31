@@ -87,8 +87,8 @@ def signup():
 
     # ================= SAVE REFERRER =================
 
-if referrer:
-    user.referred_by = referrer.id
+    if referrer:
+        user.referred_by = referrer.id
 
     # ================= CONTROL SYSTEM =================
     # referral hierarchy logic
