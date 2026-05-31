@@ -1,57 +1,169 @@
-<div class="card"><h3>🔗 My Referral Link</h3>
+<div class="referral-card">
 
-<input
-    type="text"
-    id="refLink"
-    value="{{ url_for('auth.signup', ref=session['user_id'], _external=True) }}"
-    readonly
-    class="form-control"
->
+    <div class="referral-header">
+        <h3>🔗 My Referral Link</h3>
+        <p>Invite your friends and grow your network.</p>
+    </div>
 
-<div style="margin-top:10px; display:flex; gap:10px;">
+    <div class="referral-input-box">
 
-    <button type="button" onclick="copyReferralLink()">
-        📋 Copy Link
-    </button>
+        <input
+            type="text"
+            id="refLink"
+            value="{{ url_for('auth.signup', ref=session['user_id'], _external=True) }}"
+            readonly
+        >
 
-    <button type="button" onclick="shareReferral()">
-        🚀 Share Referral
-    </button>
+        <button class="copy-btn" onclick="copyReferralLink()">
+            📋 Copy
+        </button>
+
+    </div>
+
+    <div class="referral-actions">
+
+        <button class="share-btn" onclick="shareReferral()">
+            🚀 Share Referral
+        </button>
+
+    </div>
+
+    <div id="copyMessage" class="copy-message">
+        ✅ Referral link copied successfully
+    </div>
 
 </div>
 
-</div><script>
+<style>
 
-function copyReferralLink() {
+.referral-card{
+    background:#fff;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+.referral-header h3{
+    margin:0;
+    font-size:22px;
+    font-weight:700;
+}
+
+.referral-header p{
+    margin-top:6px;
+    color:#777;
+    font-size:14px;
+}
+
+.referral-input-box{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.referral-input-box input{
+    flex:1;
+    border:2px solid #e5e5e5;
+    border-radius:12px;
+    padding:12px;
+    font-size:14px;
+    outline:none;
+}
+
+.copy-btn{
+    border:none;
+    background:#2563eb;
+    color:#fff;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.3s;
+}
+
+.copy-btn:hover{
+    transform:translateY(-2px);
+}
+
+.referral-actions{
+    margin-top:15px;
+}
+
+.share-btn{
+    width:100%;
+    border:none;
+    background:#10b981;
+    color:#fff;
+    padding:14px;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.share-btn:hover{
+    transform:translateY(-2px);
+}
+
+.copy-message{
+    display:none;
+    margin-top:15px;
+    color:#10b981;
+    font-weight:600;
+    text-align:center;
+}
+
+</style>
+
+<script>
+
+function copyReferralLink(){
 
     const link =
         document.getElementById("refLink").value;
 
     navigator.clipboard.writeText(link);
 
-    alert("Referral link copied!");
+    document.getElementById("copyMessage").style.display =
+        "block";
 
+    setTimeout(() => {
+
+        document.getElementById("copyMessage").style.display =
+            "none";
+
+    }, 2500);
 }
 
-function shareReferral() {
+function shareReferral(){
 
     const link =
         document.getElementById("refLink").value;
 
-    if (navigator.share) {
+    if(navigator.share){
 
         navigator.share({
-            title: "S.F Works Hub",
-            text: "Join S.F Works Hub using my referral link and start earning.",
-            url: link
+            title:"S.F Works Hub",
+            text:"Join S.F Works Hub using my referral link and start earning.",
+            url:link
         });
 
-    } else {
+    }else{
 
         navigator.clipboard.writeText(link);
 
-        alert("Referral link copied!");
+        document.getElementById("copyMessage").style.display =
+            "block";
+
+        setTimeout(() => {
+
+            document.getElementById("copyMessage").style.display =
+                "none";
+
+        }, 2500);
     }
 }
 
-      </script>
+</script>
