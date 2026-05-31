@@ -1,0 +1,57 @@
+<div class="card"><h3>🔗 My Referral Link</h3>
+
+<input
+    type="text"
+    id="refLink"
+    value="{{ url_for('auth.signup', ref=session['user_id'], _external=True) }}"
+    readonly
+    class="form-control"
+>
+
+<div style="margin-top:10px; display:flex; gap:10px;">
+
+    <button type="button" onclick="copyReferralLink()">
+        📋 Copy Link
+    </button>
+
+    <button type="button" onclick="shareReferral()">
+        🚀 Share Referral
+    </button>
+
+</div>
+
+</div><script>
+
+function copyReferralLink() {
+
+    const link =
+        document.getElementById("refLink").value;
+
+    navigator.clipboard.writeText(link);
+
+    alert("Referral link copied!");
+
+}
+
+function shareReferral() {
+
+    const link =
+        document.getElementById("refLink").value;
+
+    if (navigator.share) {
+
+        navigator.share({
+            title: "S.F Works Hub",
+            text: "Join S.F Works Hub using my referral link and start earning.",
+            url: link
+        });
+
+    } else {
+
+        navigator.clipboard.writeText(link);
+
+        alert("Referral link copied!");
+    }
+}
+
+      </script>
