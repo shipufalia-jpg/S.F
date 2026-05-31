@@ -594,7 +594,10 @@ body{
     Live TV
     </a>
 
-    <a class="sidebar-btn" href="/referral">🔗 Referral</a>
+    <a class="sidebar-btn"
+    href="{{ url_for('auth.signup', ref=session['user_id'], _external=True) }}">
+    🔗 My Referral Link
+    </a>
 
     <a class="sidebar-btn" href="/help-line">☎️ Help Line</a>
 
