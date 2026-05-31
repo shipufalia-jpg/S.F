@@ -495,3 +495,24 @@ def payment_method():
         "payment_method.html",
         payment=payment
             )
+
+@user.route("/referral")
+@login_required
+def referral():
+
+    current_user = User.query.get(
+        session["user_id"]
+    )
+
+    referred_users = User.query.filter_by(
+        referred_by=current_user.id
+    ).order_by(
+        User.id.desc()
+    ).all()
+
+    return render_template(
+        "user/referral.html",
+        referred_users=referred_users,
+        referral_count=current_user.total_referrals or 0,
+        referral_earnings=current_user.referral_earnings or 0
+    )
