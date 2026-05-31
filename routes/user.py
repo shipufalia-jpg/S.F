@@ -513,6 +513,6 @@ def referral():
     return render_template(
         "user/referral.html",
         referred_users=referred_users,
-        referral_count=current_user.total_referrals or 0,
+        referral_count=len(current_user.referrals),
         referral_earnings=current_user.referral_earnings or 0
     )
