@@ -9,6 +9,8 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <style>
 
@@ -98,9 +100,9 @@ input:focus{
     top:50%;
     transform:translateY(-50%);
     cursor:pointer;
-    font-size:18px;
     color:#666;
-    user-select:none;
+    font-size:18px;
+    z-index:100;
 }
 
 button{
@@ -170,11 +172,11 @@ button:hover{
                 required
             >
 
-            <span
-                class="toggle-password"
+            <i
+                id="toggleIcon"
+                class="fa-solid fa-eye toggle-password"
                 onclick="togglePassword()">
-                👁️
-            </span>
+            </i>
 
         </div>
 
@@ -200,13 +202,22 @@ function togglePassword(){
     const password =
         document.getElementById("password");
 
+    const icon =
+        document.getElementById("toggleIcon");
+
     if(password.type === "password"){
 
         password.type = "text";
 
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+
     }else{
 
         password.type = "password";
+
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
 
     }
 }
