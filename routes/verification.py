@@ -28,7 +28,6 @@ verification = Blueprint(
 # =========================
 
 @verification.route("/request", methods=["GET", "POST"])
-@login_required
 def request_verification():
 
     user = User.query.get_or_404(
@@ -89,7 +88,6 @@ def request_verification():
 # =========================
 
 @verification.route("/my-requests")
-@login_required
 def my_requests():
 
     requests = VerificationRequest.query.filter_by(
