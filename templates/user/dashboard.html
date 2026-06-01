@@ -537,7 +537,45 @@ body{
     color:#94a3b8;
 }
 
-.
+.sf-verified-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    background:#fff3b0;   /* soft yellow */
+    padding:6px 10px;
+    border-radius:999px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    z-index:999;
+}
+
+.sf-badge-circle{
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:#facc15;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* LOGO FIX */
+.sf-logo{
+    width:16px;
+    height:16px;
+    object-fit:cover;
+}
+
+/* TEXT */
+.sf-verified-badge span{
+    font-size:12px;
+    font-weight:700;
+    color:#92400e;
+}
     
 
 /* ================= MOBILE ================= */
@@ -555,48 +593,7 @@ body{
     .search-bar input{
         width:100%;
     }
-    .sf-verified-badge{
-    position:absolute;
-    top:10px;
-    right:10px;
-
-    display:flex;
-    align-items:center;
-    gap:6px;
-
-    background:#fff7cc;   /* light yellow bg */
-    padding:6px 10px;
-    border-radius:999px;
-
-    box-shadow:0 4px 12px rgba(0,0,0,0.12);
-    z-index:10;
-}
-
-/* YELLOW CIRCLE */
-.sf-badge-circle{
-    width:22px;
-    height:22px;
-    border-radius:50%;
-    background:#facc15;   /* yellow */
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-/* LOGO FIX */
-.sf-logo{
-    width:14px;
-    height:14px;
-    object-fit:cover;
-    border-radius:50%;
-}
-
-/* TEXT */
-.sf-verified-badge span{
-    font-size:12px;
-    font-weight:700;
-    color:#b45309;
-}
+    
  
 }
 
