@@ -35,6 +35,7 @@ from routes.admin_tools import admin_tools
 from werkzeug.security import generate_password_hash
 from routes.owner_tools import owner_tools
 from routes.application_routes import application_bp
+from routes.verification import verification
 import cloudinary
 
 
@@ -199,6 +200,7 @@ def create_app():
     app.register_blueprint(application_bp)
     app.register_blueprint(notification_bp)
     app.register_blueprint(live_media_bp)
+    app.register_blueprint(verification)
 
     return app
 
