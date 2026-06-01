@@ -537,6 +537,42 @@ body{
     color:#94a3b8;
 }
 
+.user-card{
+    position:relative;
+}
+
+.sf-verified-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
+
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    background:#e7f3ff;
+    padding:6px 10px;
+    border-radius:999px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    z-index:10;
+}
+
+.sf-logo{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.sf-verified-badge span{
+    font-size:12px;
+    font-weight:700;
+    color:#1d9bf0;
+}
+
+    
+
 /* ================= MOBILE ================= */
 
 @media(max-width:768px){
@@ -720,6 +756,17 @@ body{
 
         <div class="user-card">
 
+            <!-- ✅ VERIFIED BADGE (CORRECT PLACE) -->
+            {% if p.user and p.user.is_verified %}
+            <div class="sf-verified-badge">
+
+                <img src="{{ url_for('static', filename='logo.png') }}" class="sf-logo">
+
+                <span>Verified</span>
+
+            </div>
+            {% endif %}
+
             <div class="user-cover"></div>
 
             <div class="user-profile">
@@ -749,6 +796,15 @@ body{
 
             </div>
 
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+</div>
             <!-- UPDATED STATS -->
             <div class="user-stats">
 
