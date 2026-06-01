@@ -756,7 +756,7 @@ body{
 
         <div class="user-card">
 
-            <!-- ✅ VERIFIED BADGE (CORRECT PLACE) -->
+            <!-- VERIFIED BADGE -->
             {% if p.user and p.user.is_verified %}
             <div class="sf-verified-badge">
 
@@ -767,8 +767,10 @@ body{
             </div>
             {% endif %}
 
+            <!-- COVER -->
             <div class="user-cover"></div>
 
+            <!-- PROFILE IMAGE -->
             <div class="user-profile">
 
                 <img src="{{ p.profile_img if p.profile_img else '/static/default.png' }}">
@@ -776,6 +778,7 @@ body{
 
             </div>
 
+            <!-- USER INFO -->
             <div class="user-info">
 
                 <h3>{{ p.name if p.name else 'User' }}</h3>
@@ -796,31 +799,19 @@ body{
 
             </div>
 
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    {% endif %}
-
-</div>
-            <!-- UPDATED STATS -->
+            <!-- STATS -->
             <div class="user-stats">
 
-                <!-- AREA -->
                 <div class="stat-box">
                     <b>{{ p.address if p.address else 'No Area' }}</b>
                     <small>Area</small>
                 </div>
 
-                <!-- SKILLS -->
                 <div class="stat-box">
                     <b>{{ p.skills if p.skills else 'No Skills' }}</b>
                     <small>Skills</small>
                 </div>
 
-                <!-- ID -->
                 <div class="stat-box">
                     <b>#{{ p.user.id if p.user else 0 }}</b>
                     <small>ID</small>
@@ -828,6 +819,7 @@ body{
 
             </div>
 
+            <!-- ACTION BUTTONS -->
             <div class="user-actions">
 
                 <a href="/profile/{{ p.user.id if p.user else 0 }}" class="profile-btn">
@@ -857,6 +849,7 @@ body{
     {% endif %}
 
 </div>
+            
 
 <!-- ================= SCRIPT ================= -->
 
