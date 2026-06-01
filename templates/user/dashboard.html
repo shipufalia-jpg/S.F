@@ -537,40 +537,7 @@ body{
     color:#94a3b8;
 }
 
-.user-card{
-    position:relative;
-}
-
-.sf-verified-badge{
-    position:absolute;
-    top:10px;
-    right:10px;
-
-    display:flex;
-    align-items:center;
-    gap:6px;
-
-    background:#e7f3ff;
-    padding:6px 10px;
-    border-radius:999px;
-
-    box-shadow:0 4px 12px rgba(0,0,0,0.12);
-    z-index:10;
-}
-
-.sf-logo{
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    object-fit:cover;
-}
-
-.sf-verified-badge span{
-    font-size:12px;
-    font-weight:700;
-    color:#1d9bf0;
-}
-
+.
     
 
 /* ================= MOBILE ================= */
@@ -588,7 +555,49 @@ body{
     .search-bar input{
         width:100%;
     }
+    .sf-verified-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
 
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    background:#fff7cc;   /* light yellow bg */
+    padding:6px 10px;
+    border-radius:999px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    z-index:10;
+}
+
+/* YELLOW CIRCLE */
+.sf-badge-circle{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#facc15;   /* yellow */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* LOGO FIX */
+.sf-logo{
+    width:14px;
+    height:14px;
+    object-fit:cover;
+    border-radius:50%;
+}
+
+/* TEXT */
+.sf-verified-badge span{
+    font-size:12px;
+    font-weight:700;
+    color:#b45309;
+}
+ 
 }
 
 </style>
@@ -760,12 +769,14 @@ body{
             {% if p.user and p.user.is_verified %}
             <div class="sf-verified-badge">
 
-                <img src="{{ url_for('static', filename='logo.png') }}" class="sf-logo">
+          <div class="sf-badge-circle">
+          <img src="{{ url_for('static', filename='logo.png') }}" class="sf-logo">
+        </div>
 
-                <span>Verified</span>
+       <span>Verified</span>
 
-            </div>
-            {% endif %}
+       </div>
+         {% endif %}
 
             <!-- COVER -->
             <div class="user-cover"></div>
