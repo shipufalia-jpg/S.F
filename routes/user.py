@@ -516,3 +516,8 @@ def referral():
     referral_count=len(referred_users),
     referral_earnings=0
     )
+
+@user.route("/settings")
+@login_required
+def settings():
+    return render_template("user/settings.html")
