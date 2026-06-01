@@ -364,6 +364,58 @@ body{
         grid-template-columns:1fr;
     }
 
+/* আগের সব CSS এখানে থাকবে */
+
+.profile-section{
+    position:relative;
+}
+
+.premium-card-badge{
+    position:absolute;
+    top:18px;
+    right:18px;
+    z-index:100;
+}
+
+.profile-img-wrapper{
+    position:relative;
+    display:inline-block;
+}
+
+.premium-photo-badge{
+    position:absolute;
+    right:8px;
+    bottom:8px;
+    z-index:50;
+}
+
+.verified-svg{
+    width:42px;
+    height:42px;
+    filter:drop-shadow(0 4px 12px rgba(37,99,235,.35));
+}
+
+.premium-photo-badge .verified-svg{
+    width:38px;
+    height:38px;
+}
+
+@media(max-width:768px){
+
+    .verified-svg{
+        width:36px;
+        height:36px;
+    }
+
+    .premium-photo-badge .verified-svg{
+        width:32px;
+        height:32px;
+    }
+
+}
+
+
+
 }
 
 @media(max-width:768px){
@@ -455,18 +507,58 @@ body{
 
     <!-- ================= PROFILE SECTION ================= -->
 
-    <h1>Profile Page</h1>
+<h1>Profile Page</h1>
 
 <div class="profile-section">
 
+    <!-- ✅ CARD VERIFIED BADGE (UI corner) -->
+    {% if user.is_verified %}
+    <div class="premium-card-badge">
+
+        <svg class="verified-svg" viewBox="0 0 24 24" fill="none">
+
+            <circle cx="12" cy="12" r="12" fill="#1D9BF0"/>
+
+            <path
+            d="M10.2 15.6L6.9 12.3L8.2 11L10.2 13L15.8 7.4L17.1 8.7L10.2 15.6Z"
+            fill="white"
+            />
+
+        </svg>
+
+    </div>
+    {% endif %}
+
     <div class="profile-header">
 
-        <!-- PROFILE IMAGE -->
-        <img
-            class="profile-img"
-            src="{{ profile.profile_img if profile and profile.profile_img else url_for('static', filename='default.png') }}"
-            onclick="openImage(this.src)"
-        >
+        <!-- PROFILE IMAGE WRAPPER -->
+        <div class="profile-img-wrapper">
+
+            <img
+                class="profile-img"
+                src="{{ profile.profile_img if profile and profile.profile_img else url_for('static', filename='default.png') }}"
+                onclick="openImage(this.src)"
+            >
+
+            <!-- ✅ PHOTO BADGE (image corner) -->
+            {% if user.is_verified %}
+            <div class="premium-photo-badge">
+
+                <svg class="verified-svg" viewBox="0 0 24 24" fill="none">
+
+                    <circle cx="12" cy="12" r="12" fill="#1D9BF0"/>
+
+                    <path
+                    d="M10.2 15.6L6.9 12.3L8.2 11L10.2 13L15.8 7.4L17.1 8.7L10.2 15.6Z"
+                    fill="white"
+                    />
+
+                </svg>
+
+            </div>
+            {% endif %}
+
+        </div>
 
         <!-- USER INFO -->
         <div class="user-info">
