@@ -12,7 +12,7 @@ from extensions import db
 from models.user import User
 from models.verification_request import VerificationRequest
 
-from decorators.login_required import login_required
+
 from decorators.owner_required import owner_required
 
 
