@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from extensions import db
 from models.user import User
 from models.verification_request import VerificationRequest
-
+from utils.decorators import login_required
 
 
 
@@ -107,7 +107,7 @@ def my_requests():
 # =========================
 
 @verification.route("/admin/requests")
-@owner_required
+@login_required
 def admin_requests():
 
     requests = VerificationRequest.query.order_by(
@@ -145,7 +145,7 @@ def admin_requests():
 @verification.route(
     "/admin/approve/<int:request_id>"
 )
-@owner_required
+@login_required
 def approve_verification(request_id):
 
     verification_request = (
@@ -198,7 +198,7 @@ def approve_verification(request_id):
     "/admin/reject/<int:request_id>",
     methods=["POST"]
 )
-@owner_required
+@login_required
 def reject_verification(request_id):
 
     verification_request = (
@@ -236,7 +236,7 @@ def reject_verification(request_id):
 @verification.route(
     "/admin/remove/<int:user_id>"
 )
-@owner_required
+@login_required
 def remove_verification(user_id):
 
     user = User.query.get_or_404(
