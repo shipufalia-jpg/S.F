@@ -159,6 +159,15 @@ class User(UserMixin, db.Model):
         nullable=True
     )
 
+    is_verified = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    verification_expiry = db.Column(
+        db.DateTime
+    )
+
     # ======================
     # TIMESTAMPS
     # ======================
