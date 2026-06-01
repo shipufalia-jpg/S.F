@@ -144,6 +144,16 @@ def fix_db(app):
                 ADD COLUMN IF NOT EXISTS admin_note TEXT;
             """))
 
+            db.session.execute(text("""
+                ALTER TABLE "user"
+                ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE "user"
+                ADD COLUMN IF NOT EXISTS verification_expiry TIMESTAMP;
+            """))
+
             db.session.commit()
 
             print("✅ DB FIXED SUCCESSFULLY")
