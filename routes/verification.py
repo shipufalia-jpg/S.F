@@ -13,7 +13,7 @@ from models.user import User
 from models.verification_request import VerificationRequest
 
 
-from decorators.owner_required import owner_required
+
 
 
 verification = Blueprint(
