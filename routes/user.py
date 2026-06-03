@@ -2,7 +2,7 @@ from flask import (
     Blueprint,
     session,
     redirect,
-    render_template
+    render_template,
     flash
 )
 from sqlalchemy import or_, and_, func
