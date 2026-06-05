@@ -1,401 +1,261 @@
-<style>
+<!-- =========================
+     DOCTORS LIST
+========================= --><div class="mt-5"><div class="d-flex justify-content-between align-items-center mb-4">
 
-:root{
-    --primary:#2563eb;
-    --secondary:#4f46e5;
+    <h3 class="fw-bold">
+        👨‍⚕️ Available Doctors
+    </h3>
+
+    <span class="badge bg-primary">
+        {{ total_doctors }} Doctors
+    </span>
+
+</div>
+
+<div class="row g-4">
+
+    {% for doctor in doctors %}
+
+    <div class="col-lg-4 col-md-6">
+
+        <a href="/doctors/profile/{{ doctor.id }}"
+           class="text-decoration-none">
+
+            <div class="doctor-profile-card">
+
+                <!-- COVER -->
+
+                <div class="doctor-cover">
+
+                    <img
+                        src="{{ doctor.cover_photo or '/static/images/doctor-cover.jpg' }}"
+                        alt="{{ doctor.name }}"
+                    >
+
+                </div>
+
+                <!-- PROFILE -->
+
+                <div class="doctor-profile-content">
+
+                    <div class="doctor-avatar">
+
+                        <img
+                            src="{{ doctor.profile_photo or '/static/images/default-doctor.png' }}"
+                            alt="{{ doctor.name }}"
+                        >
+
+                    </div>
+
+                    <h5 class="doctor-name">
+
+                        {{ doctor.name }}
+
+                        {% if doctor.verified %}
+                        <span class="verified-badge">
+                            ✔
+                        </span>
+                        {% endif %}
+
+                    </h5>
+
+                    <div class="doctor-degree">
+                        {{ doctor.degree }}
+                    </div>
+
+                    <div class="doctor-specialist">
+                        🩺 {{ doctor.specialization }}
+                    </div>
+
+                    {% if doctor.hospital %}
+                    <div class="doctor-hospital">
+                        🏥 {{ doctor.hospital }}
+                    </div>
+                    {% endif %}
+
+                    <div class="doctor-stats">
+
+                        <div>
+                            ⭐ {{ doctor.ratings|length }}
+                            Reviews
+                        </div>
+
+                        <div>
+                            👁 {{ doctor.views }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</div><style>
+
+.doctor-profile-card{
+
+    background:#fff;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    transition:.35s;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.08);
+
+    height:100%;
 }
 
-body{
-    background:#f4f7fb;
+.doctor-profile-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 18px 40px rgba(37,99,235,.18);
 }
 
-/* =========================
-   TOP BAR
-========================= */
+.doctor-cover{
 
-.doctor-topbar{
-    position:sticky;
-    top:0;
-    z-index:999;
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    background:rgba(255,255,255,.75);
-    border-bottom:1px solid rgba(255,255,255,.4);
-    padding:14px 20px;
+    height:140px;
+
+    overflow:hidden;
+
+    position:relative;
 }
 
-.topbar-title{
-    font-size:20px;
-    font-weight:700;
+.doctor-cover img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+.doctor-profile-content{
+
+    padding:20px;
+
+    text-align:center;
+
+    position:relative;
+}
+
+.doctor-avatar{
+
+    width:95px;
+    height:95px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    border:5px solid #fff;
+
+    margin:auto;
+
+    margin-top:-68px;
+
+    background:#fff;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.15);
+}
+
+.doctor-avatar img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+.doctor-name{
+
+    margin-top:12px;
+
+    font-weight:800;
+
     color:#111827;
 }
 
-/* =========================
-   HERO
-========================= */
+.verified-badge{
 
-.doctor-hero{
+    color:#2563eb;
 
-    background:linear-gradient(
+    font-size:14px;
+}
+
+.doctor-degree{
+
+    color:#4f46e5;
+
+    font-weight:600;
+
+    margin-top:5px;
+}
+
+.doctor-specialist{
+
+    margin-top:8px;
+
+    color:#374151;
+
+    font-size:14px;
+}
+
+.doctor-hospital{
+
+    margin-top:8px;
+
+    color:#6b7280;
+
+    font-size:14px;
+}
+
+.doctor-stats{
+
+    margin-top:15px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    background:#f8fafc;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.doctor-topbar{
+
+    background:
+    linear-gradient(
         135deg,
         #2563eb,
         #4f46e5
-    );
+    ) !important;
 
     color:#fff;
-
-    padding:35px;
-
-    border-radius:25px;
-
-    margin-bottom:25px;
-
-    position:relative;
-
-    overflow:hidden;
 }
 
-.doctor-hero::before{
-    content:"";
-    position:absolute;
-    width:250px;
-    height:250px;
-    background:rgba(255,255,255,.08);
-    border-radius:50%;
-    right:-80px;
-    top:-80px;
-}
+.topbar-title{
 
-.doctor-hero::after{
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    background:rgba(255,255,255,.05);
-    border-radius:50%;
-    left:-50px;
-    bottom:-50px;
-}
-
-.hero-title{
-    font-size:30px;
-    font-weight:800;
-}
-
-.hero-desc{
-    opacity:.9;
-    max-width:500px;
-}
-
-/* =========================
-   GLASS STATS
-========================= */
-
-.quick-stats{
-
-    background:rgba(255,255,255,.75);
-
-    backdrop-filter:blur(20px);
-
-    border:1px solid rgba(255,255,255,.5);
-
-    border-radius:25px;
-
-    padding:22px;
-
-    margin-bottom:25px;
-
-    box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
-}
-
-.stat-number{
-    font-size:28px;
-    font-weight:800;
-    color:#111827;
-}
-
-.stat-label{
-    color:#6b7280;
-    font-size:13px;
-}
-
-/* =========================
-   CARDS
-========================= */
-
-.doctor-card{
-
-    background:rgba(255,255,255,.75);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,.4);
-
-    border-radius:22px;
-
-    padding:22px;
-
-    text-decoration:none;
-
-    display:block;
-
-    height:100%;
-
-    transition:.3s;
-
-    box-shadow:
-    0 8px 20px rgba(0,0,0,.06);
-}
-
-.doctor-card:hover{
-
-    transform:translateY(-6px);
-
-    box-shadow:
-    0 15px 30px rgba(0,0,0,.12);
-}
-
-.icon-box{
-
-    width:60px;
-    height:60px;
-
-    border-radius:18px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:28px;
-
-    margin-bottom:15px;
-}
-
-.bg-blue{
-    background:#e8f0ff;
-}
-
-.bg-green{
-    background:#e8fff1;
-}
-
-.bg-yellow{
-    background:#fff8dd;
-}
-
-.bg-cyan{
-    background:#e8fbff;
-}
-
-.bg-gray{
-    background:#f3f4f6;
-}
-
-.bg-dark2{
-    background:#ececff;
-}
-
-.doctor-title{
-    font-size:18px;
-    font-weight:700;
-    color:#111827;
-}
-
-.doctor-desc{
-    color:#6b7280;
-    font-size:14px;
-    margin-top:6px;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:768px){
-
-    .hero-title{
-        font-size:24px;
-    }
-
-    .doctor-card{
-        padding:18px;
-    }
-
-    .stat-number{
-        font-size:22px;
-    }
+    color:#fff !important;
 }
 
 </style>
-
-<!-- TOP BAR -->
-<div class="doctor-topbar d-flex justify-content-between align-items-center">
-
-    <div class="topbar-title">
-        🩺 Doctors Chamber
-    </div>
-
-    <a href="/doctors/search" class="btn btn-primary btn-sm">
-        Search
-    </a>
-
-</div>
-
-<div class="container py-4">
-
-    <!-- HERO -->
-
-    <div class="doctor-hero">
-
-        <div class="hero-title">
-            Doctors Chamber
-        </div>
-
-        <div class="hero-desc mt-2">
-            Find trusted doctors, chamber schedules,
-            hospitals, ratings and contact details.
-        </div>
-
-    </div>
-
-    <!-- STATS -->
-
-    <div class="quick-stats">
-
-        <div class="row text-center">
-
-            <div class="col-4">
-                <div class="stat-number">
-                    {{ total_doctors }}
-                </div>
-                <div class="stat-label">
-                    Doctors
-                </div>
-            </div>
-
-            <div class="col-4">
-                <div class="stat-number">
-                    {{ verified_doctors }}
-                </div>
-                <div class="stat-label">
-                    Verified
-                </div>
-            </div>
-
-            <div class="col-4">
-                <div class="stat-number">
-                    {{ total_views }}
-                </div>
-                <div class="stat-label">
-                    Views
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- MENU -->
-
-    <div class="row g-4">
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors/search" class="doctor-card">
-
-                <div class="icon-box bg-blue">🔍</div>
-
-                <div class="doctor-title">
-                    Search Doctor
-                </div>
-
-                <div class="doctor-desc">
-                    Search by name, area or specialization
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors?verified=1" class="doctor-card">
-
-                <div class="icon-box bg-green">✔️</div>
-
-                <div class="doctor-title">
-                    Verified Doctors
-                </div>
-
-                <div class="doctor-desc">
-                    Trusted and approved doctors
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors?sort=rating" class="doctor-card">
-
-                <div class="icon-box bg-yellow">⭐</div>
-
-                <div class="doctor-title">
-                    Top Rated
-                </div>
-
-                <div class="doctor-desc">
-                    Highest rated doctors
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors?sort=views" class="doctor-card">
-
-                <div class="icon-box bg-cyan">👁</div>
-
-                <div class="doctor-title">
-                    Most Viewed
-                </div>
-
-                <div class="doctor-desc">
-                    Popular doctor profiles
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors" class="doctor-card">
-
-                <div class="icon-box bg-gray">👨‍⚕️</div>
-
-                <div class="doctor-title">
-                    All Doctors
-                </div>
-
-                <div class="doctor-desc">
-                    Browse all available doctors
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors/admin/create" class="doctor-card">
-
-                <div class="icon-box bg-dark2">➕</div>
-
-                <div class="doctor-title">
-                    Create Profile
-                </div>
-
-                <div class="doctor-desc">
-                    Add your doctor chamber profile
-                </div>
-
-            </a>
-        </div>
-
-    </div>
-
-</div>
