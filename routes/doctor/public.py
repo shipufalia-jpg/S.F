@@ -1,5 +1,5 @@
 from . import doctor_bp
-from models import Doctor
+from models.doctor import Doctor
 from flask import render_template
 
 
