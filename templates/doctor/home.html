@@ -1,134 +1,156 @@
-<!-- =========================
-     DOCTORS LIST
-========================= --><div class="mt-5"><div class="d-flex justify-content-between align-items-center mb-4">
+<style>
 
-    <h3 class="fw-bold">
-        👨‍⚕️ Available Doctors
-    </h3>
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+}
 
-    <span class="badge bg-primary">
-        {{ total_doctors }} Doctors
-    </span>
+body{
+    background:linear-gradient(
+        135deg,
+        #eef4ff,
+        #f8faff
+    );
+}
 
-</div>
+/* =====================
+   TOP BAR
+===================== */
 
-<div class="row g-4">
+.sf-topbar{
 
-    {% for doctor in doctors %}
+    position:sticky;
+    top:0;
+    z-index:999;
 
-    <div class="col-lg-4 col-md-6">
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5,
+        #7c3aed
+    );
 
-        <a href="/doctors/profile/{{ doctor.id }}"
-           class="text-decoration-none">
+    padding:15px 20px;
 
-            <div class="doctor-profile-card">
+    border-radius:0 0 25px 25px;
 
-                <!-- COVER -->
+    box-shadow:
+    0 15px 35px rgba(79,70,229,.25);
+}
 
-                <div class="doctor-cover">
+.sf-logo{
 
-                    <img
-                        src="{{ doctor.cover_photo or '/static/images/doctor-cover.jpg' }}"
-                        alt="{{ doctor.name }}"
-                    >
+    width:55px;
+    height:55px;
 
-                </div>
+    border-radius:16px;
 
-                <!-- PROFILE -->
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-                <div class="doctor-profile-content">
+    font-size:20px;
+    font-weight:800;
 
-                    <div class="doctor-avatar">
+    color:#fff;
 
-                        <img
-                            src="{{ doctor.profile_photo or '/static/images/default-doctor.png' }}"
-                            alt="{{ doctor.name }}"
-                        >
+    background:
+    rgba(255,255,255,.15);
 
-                    </div>
+    backdrop-filter:blur(20px);
+}
 
-                    <h5 class="doctor-name">
+.sf-brand{
 
-                        {{ doctor.name }}
+    color:#fff;
 
-                        {% if doctor.verified %}
-                        <span class="verified-badge">
-                            ✔
-                        </span>
-                        {% endif %}
+    font-size:22px;
 
-                    </h5>
+    font-weight:800;
+}
 
-                    <div class="doctor-degree">
-                        {{ doctor.degree }}
-                    </div>
+.sf-sub{
 
-                    <div class="doctor-specialist">
-                        🩺 {{ doctor.specialization }}
-                    </div>
+    color:rgba(255,255,255,.85);
 
-                    {% if doctor.hospital %}
-                    <div class="doctor-hospital">
-                        🏥 {{ doctor.hospital }}
-                    </div>
-                    {% endif %}
+    font-size:13px;
+}
 
-                    <div class="doctor-stats">
+/* =====================
+   SEARCH BAR
+===================== */
 
-                        <div>
-                            ⭐ {{ doctor.ratings|length }}
-                            Reviews
-                        </div>
+.search-glass{
 
-                        <div>
-                            👁 {{ doctor.views }}
-                        </div>
+    margin-top:-15px;
 
-                    </div>
+    background:
+    rgba(255,255,255,.85);
 
-                </div>
+    backdrop-filter:blur(25px);
 
-            </div>
+    padding:15px;
 
-        </a>
-
-    </div>
-
-    {% endfor %}
-
-</div>
-
-</div><style>
-
-.doctor-profile-card{
-
-    background:#fff;
-
-    border-radius:24px;
-
-    overflow:hidden;
-
-    transition:.35s;
+    border-radius:20px;
 
     box-shadow:
     0 10px 25px rgba(0,0,0,.08);
 
+    border:
+    1px solid rgba(255,255,255,.6);
+}
+
+.search-input{
+
+    border:none;
+
+    background:transparent;
+
+    width:100%;
+
+    padding:12px;
+}
+
+.search-input:focus{
+
+    outline:none;
+}
+
+/* =====================
+   DOCTOR CARD
+===================== */
+
+.doctor-card{
+
+    background:
+    rgba(255,255,255,.85);
+
+    backdrop-filter:blur(25px);
+
+    border-radius:25px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+    transition:.35s;
+
     height:100%;
 }
 
-.doctor-profile-card:hover{
+.doctor-card:hover{
 
     transform:translateY(-8px);
 
     box-shadow:
-    0 18px 40px rgba(37,99,235,.18);
+    0 20px 45px rgba(37,99,235,.18);
 }
 
 .doctor-cover{
 
     height:140px;
-
-    overflow:hidden;
 
     position:relative;
 }
@@ -141,16 +163,16 @@
     object-fit:cover;
 }
 
-.doctor-profile-content{
-
-    padding:20px;
+.doctor-profile{
 
     text-align:center;
+
+    padding:20px;
 
     position:relative;
 }
 
-.doctor-avatar{
+.profile-img{
 
     width:95px;
     height:95px;
@@ -163,7 +185,7 @@
 
     margin:auto;
 
-    margin-top:-68px;
+    margin-top:-70px;
 
     background:#fff;
 
@@ -171,7 +193,7 @@
     0 8px 20px rgba(0,0,0,.15);
 }
 
-.doctor-avatar img{
+.profile-img img{
 
     width:100%;
     height:100%;
@@ -181,81 +203,211 @@
 
 .doctor-name{
 
-    margin-top:12px;
+    font-size:20px;
 
     font-weight:800;
 
     color:#111827;
+
+    margin-top:12px;
 }
 
-.verified-badge{
+.verified{
 
     color:#2563eb;
-
-    font-size:14px;
 }
 
-.doctor-degree{
+.degree{
 
     color:#4f46e5;
 
     font-weight:600;
-
-    margin-top:5px;
 }
 
-.doctor-specialist{
-
-    margin-top:8px;
+.specialist{
 
     color:#374151;
 
-    font-size:14px;
+    margin-top:6px;
 }
 
-.doctor-hospital{
-
-    margin-top:8px;
+.hospital{
 
     color:#6b7280;
 
+    margin-top:6px;
+
     font-size:14px;
 }
 
-.doctor-stats{
-
-    margin-top:15px;
+.stats{
 
     display:flex;
 
     justify-content:space-between;
 
-    background:#f8fafc;
+    margin-top:15px;
 
-    padding:12px;
+    background:#f8fafc;
 
     border-radius:14px;
 
-    font-size:14px;
+    padding:12px;
 
     font-weight:600;
 }
 
-.doctor-topbar{
+.view-btn{
+
+    display:block;
+
+    width:100%;
+
+    margin-top:15px;
 
     background:
     linear-gradient(
         135deg,
         #2563eb,
         #4f46e5
-    ) !important;
+    );
+
+    color:#fff;
+
+    text-decoration:none;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    font-weight:700;
+}
+
+.view-btn:hover{
 
     color:#fff;
 }
 
-.topbar-title{
+</style><!-- TOP BAR --><div class="sf-topbar"><div class="d-flex align-items-center gap-3">
 
-    color:#fff !important;
-}
+    <div class="sf-logo">
+        S.F
+    </div>
 
-</style>
+    <div>
+
+        <div class="sf-brand">
+            S.F Doctors Chamber
+        </div>
+
+        <div class="sf-sub">
+            Professional Healthcare Directory
+        </div>
+
+    </div>
+
+</div>
+
+</div><div class="container py-4"><!-- SEARCH -->
+
+<div class="search-glass mb-4">
+
+    <form action="/doctors/search">
+
+        <div class="d-flex align-items-center">
+
+            <span class="me-2">🔍</span>
+
+            <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Search doctor, specialization, hospital..."
+            >
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- DOCTORS -->
+
+<div class="row g-4">
+
+    {% for doctor in doctors %}
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="doctor-card">
+
+            <div class="doctor-cover">
+
+                <img
+                    src="{{ doctor.cover_photo or '/static/images/doctor-cover.jpg' }}"
+                >
+
+            </div>
+
+            <div class="doctor-profile">
+
+                <div class="profile-img">
+
+                    <img
+                        src="{{ doctor.profile_photo or '/static/images/default-doctor.png' }}"
+                    >
+
+                </div>
+
+                <div class="doctor-name">
+
+                    {{ doctor.name }}
+
+                    {% if doctor.verified %}
+                    <span class="verified">✔</span>
+                    {% endif %}
+
+                </div>
+
+                <div class="degree">
+                    {{ doctor.degree }}
+                </div>
+
+                <div class="specialist">
+                    🩺 {{ doctor.specialization }}
+                </div>
+
+                <div class="hospital">
+                    🏥 {{ doctor.hospital }}
+                </div>
+
+                <div class="stats">
+
+                    <div>
+                        ⭐ {{ doctor.ratings|length }}
+                    </div>
+
+                    <div>
+                        👁 {{ doctor.views }}
+                    </div>
+
+                </div>
+
+                <a
+                    href="/doctors/profile/{{ doctor.id }}"
+                    class="view-btn"
+                >
+                    View Profile
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</div>
