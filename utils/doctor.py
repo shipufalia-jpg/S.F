@@ -1,5 +1,5 @@
 from flask import session
-from models import db
+from extensions import db
 
 
 def increase_view(doctor):
