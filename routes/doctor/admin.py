@@ -1,6 +1,6 @@
 from . import doctor_bp
 from flask import request, render_template, redirect
-from models import Doctor, db
+from models.doctor import Doctor
 
 
 @doctor_bp.route("/admin/create", methods=["GET", "POST"])
