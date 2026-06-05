@@ -20,3 +20,25 @@ def doctor_profile(doctor_id):
         doctor=doctor,
         rating=rating
     )
+
+
+@doctor_bp.route("/")
+def doctors_home():
+
+    total_doctors = Doctor.query.count()
+
+    verified_doctors = Doctor.query.filter_by(
+        verified=True
+    ).count()
+
+    total_views = sum(
+        doctor.views or 0
+        for doctor in Doctor.query.all()
+    )
+
+    return render_template(
+        "doctor/home.html",
+        total_doctors=total_doctors,
+        verified_doctors=verified_doctors,
+        total_views=total_views
+    )
