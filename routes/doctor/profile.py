@@ -1,5 +1,5 @@
 from . import doctor_bp
-from models import Doctor, db
+from models.doctor import Doctor
 from flask import render_template
 from utils.doctor import increase_view
 from utils.rating import get_avg_rating
