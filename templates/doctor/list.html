@@ -1,171 +1,351 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Find Doctors</title>
+<!DOCTYPE html><html lang="en">
+<head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>S.F Doctor Chamber</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><style>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+    --bg:#f4f7fc;
+}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+body{
+    background:var(--bg);
+    font-family:Inter,sans-serif;
+}
 
-    <style>
+/* HERO */
 
-        body {
-            background: #f5f7fb;
-        }
+.hero{
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
 
-        /* SEARCH BOX */
-        .search-box {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
+    color:white;
+    border-radius:30px;
+    padding:40px;
+    margin-bottom:30px;
 
-        .doctor-card {
-            border: none;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-            transition: 0.3s;
-            background: white;
-        }
+    box-shadow:
+    0 15px 40px rgba(37,99,235,.25);
+}
 
-        .doctor-card:hover {
-            transform: translateY(-6px);
-        }
+.hero h1{
+    font-weight:800;
+    margin-bottom:10px;
+}
 
-        .doctor-img {
-            height: 190px;
-            object-fit: cover;
-        }
+/* SEARCH */
 
-        .badge-verified {
-            background: #28a745;
-            color: white;
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 12px;
-        }
+.search-box{
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(12px);
+    border-radius:20px;
+    padding:18px;
+}
 
-        .rating {
-            color: #f5a623;
-            font-weight: 600;
-        }
+/* CHIPS */
 
-        .views {
-            font-size: 13px;
-            color: #666;
-        }
+.chip{
+    display:inline-block;
+    background:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:50px;
+    font-size:14px;
+    font-weight:600;
+    margin:4px;
+    transition:.3s;
+    cursor:pointer;
+}
 
-        /* FILTER CHIPS */
-        .chip {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: #fff;
-            border: 1px solid #ddd;
-            font-size: 13px;
-            margin-right: 5px;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
+.chip:hover{
+    background:var(--primary);
+    color:white;
+}
 
-        .chip:hover {
-            background: #007bff;
-            color: white;
-        }
+/* CARD */
 
-    </style>
-</head>
+.doctor-card{
 
-<body>
+    border:none;
+    overflow:hidden;
+    border-radius:28px;
 
-<div class="container py-3">
+    background:white;
 
-    <!-- HEADER -->
-    <h3 class="mb-3">🩺 Find Doctors</h3>
+    box-shadow:
+    0 12px 35px rgba(0,0,0,.08);
 
-    <!-- SEARCH BOX -->
-    <form class="search-box mb-3">
+    transition:.35s;
+}
 
-        <div class="row g-2">
+.doctor-card:hover{
 
-            <div class="col-8">
-                <input name="q" class="form-control" placeholder="Search doctor, specialization...">
-            </div>
+    transform:
+    translateY(-8px);
 
-            <div class="col-4">
-                <button class="btn btn-primary w-100">Search</button>
-            </div>
+    box-shadow:
+    0 20px 45px rgba(0,0,0,.12);
+}
 
-        </div>
+/* COVER */
 
-        <input name="area" class="form-control mt-2" placeholder="Enter area (Kandi, Berhampore...)">
+.cover-wrap{
+    position:relative;
+}
 
-    </form>
+.cover-img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+}
 
-    <!-- FILTER CHIPS -->
-    <div class="mb-3">
+/* PROFILE */
 
-        <span class="chip">Medicine</span>
-        <span class="chip">Child</span>
-        <span class="chip">ENT</span>
-        <span class="chip">Heart</span>
-        <span class="chip">Skin</span>
+.profile-img{
 
+    width:95px;
+    height:95px;
+
+    border-radius:50%;
+    border:5px solid white;
+
+    object-fit:cover;
+
+    position:absolute;
+
+    bottom:-45px;
+    left:20px;
+
+    background:white;
+}
+
+/* BODY */
+
+.card-content{
+    padding:60px 20px 20px;
+}
+
+.doc-name{
+    font-size:20px;
+    font-weight:800;
+}
+
+.doc-speciality{
+    color:var(--primary);
+    font-weight:600;
+}
+
+.verified{
+    background:#16a34a;
+    color:white;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+}
+
+.stats div{
+    text-align:center;
+}
+
+.stats strong{
+    display:block;
+}
+
+.btn-profile{
+
+    border-radius:14px;
+    padding:10px;
+
+    font-weight:700;
+}
+
+/* TOP NAV */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:900;
+    color:#2563eb;
+}
+
+@media(max-width:768px){
+
+.hero{
+    padding:25px;
+}
+
+.hero h1{
+    font-size:28px;
+}
+
+}
+
+</style></head><body><div class="container py-4"><!-- TOPBAR -->
+
+<div class="topbar">
+
+    <div class="logo">
+        🩺 S.F Doctor Chamber
     </div>
 
-    <!-- DOCTOR LIST -->
-    <div class="row">
-
-        {% for doctor in doctors %}
-
-        <div class="col-md-4 col-12 mb-3">
-
-            <div class="card doctor-card">
-
-                <img src="{{ doctor.cover_photo }}" class="doctor-img w-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-center">
-
-                        <h5 class="mb-0">{{ doctor.name }}</h5>
-
-                        {% if doctor.verified %}
-                            <span class="badge-verified">✔ Verified</span>
-                        {% endif %}
-
-                    </div>
-
-                    <p class="text-muted mb-1">{{ doctor.specialization }}</p>
-                    <small class="text-muted">{{ doctor.hospital }}</small>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between">
-
-                        <span class="rating">⭐ {{ doctor.rating if doctor.rating else 0 }}</span>
-
-                        <span class="views">👁 {{ doctor.views }} views</span>
-
-                    </div>
-
-                    <a href="/doctors/{{ doctor.id }}" class="btn btn-primary btn-sm mt-3 w-100">
-                        View Profile
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
+    <a href="/" class="btn btn-outline-primary">
+        Home
+    </a>
 
 </div>
 
-</body>
-  </html>
+<!-- HERO -->
+
+<div class="hero">
+
+    <h1>Find Trusted Doctors</h1>
+
+    <p>
+        Search doctors, clinics and specialists near you.
+    </p>
+
+    <form class="search-box mt-3">
+
+        <div class="row g-2">
+
+            <div class="col-md-5">
+                <input
+                    type="text"
+                    name="q"
+                    class="form-control"
+                    placeholder="Doctor name / specialization">
+            </div>
+
+            <div class="col-md-5">
+                <input
+                    type="text"
+                    name="area"
+                    class="form-control"
+                    placeholder="Area / City">
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-light w-100">
+                    Search
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- FILTERS -->
+
+<div class="mb-4">
+
+    <span class="chip">Medicine</span>
+    <span class="chip">Child</span>
+    <span class="chip">ENT</span>
+    <span class="chip">Heart</span>
+    <span class="chip">Skin</span>
+    <span class="chip">Orthopedic</span>
+    <span class="chip">Eye</span>
+
+</div>
+
+<!-- DOCTORS -->
+
+<div class="row">
+
+    {% for doctor in doctors %}
+
+    <div class="col-lg-4 col-md-6 mb-4">
+
+        <div class="doctor-card">
+
+            <div class="cover-wrap">
+
+                <img
+                    src="{{ doctor.cover_photo }}"
+                    class="cover-img">
+
+                <img
+                    src="{{ doctor.profile_photo }}"
+                    class="profile-img">
+
+            </div>
+
+            <div class="card-content">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <div class="doc-name">
+                            {{ doctor.name }}
+                        </div>
+
+                        <div class="doc-speciality">
+                            {{ doctor.specialization }}
+                        </div>
+
+                    </div>
+
+                    {% if doctor.verified %}
+                    <span class="verified">
+                        ✔ Verified
+                    </span>
+                    {% endif %}
+
+                </div>
+
+                <div class="text-muted mt-2">
+                    {{ doctor.hospital }}
+                </div>
+
+                <div class="stats">
+
+                    <div>
+                        <strong>⭐ {{ doctor.rating or 0 }}</strong>
+                        Rating
+                    </div>
+
+                    <div>
+                        <strong>👁 {{ doctor.views or 0 }}</strong>
+                        Views
+                    </div>
+
+                </div>
+
+                <a
+                href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
+                class="btn btn-primary btn-profile w-100 mt-3">
+
+                View Doctor Profile
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</div></body>
+</html>
