@@ -213,7 +213,7 @@ def create_app():
     app.register_blueprint(live_media_bp)
     app.register_blueprint(verification)
     app.register_blueprint(doctor_bp)
-    print(app.url_map)
+    
 
     return app
 
