@@ -1,33 +1,124 @@
-<style>
+<!-- =========================
+     PREMIUM GLASS UI CSS
+========================= --><style>
 
 :root{
     --primary:#2563eb;
     --secondary:#4f46e5;
+    --dark:#111827;
+    --text:#6b7280;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-    background:#f4f7fb;
+    min-height:100vh;
+    background:
+    radial-gradient(circle at top left,#60a5fa22,transparent 35%),
+    radial-gradient(circle at bottom right,#8b5cf622,transparent 35%),
+    linear-gradient(135deg,#eef4ff,#f8faff);
+    overflow-x:hidden;
+}
+
+/* Floating Glow */
+
+body::before{
+    content:"";
+    position:fixed;
+    width:350px;
+    height:350px;
+    border-radius:50%;
+    background:#2563eb22;
+    top:-120px;
+    left:-120px;
+    filter:blur(80px);
+    z-index:-1;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    background:#7c3aed22;
+    right:-100px;
+    bottom:-100px;
+    filter:blur(80px);
+    z-index:-1;
 }
 
 /* =========================
-   TOP BAR
+   TOPBAR
 ========================= */
 
 .doctor-topbar{
+
     position:sticky;
-    top:0;
+    top:10px;
     z-index:999;
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    background:rgba(255,255,255,.75);
-    border-bottom:1px solid rgba(255,255,255,.4);
-    padding:14px 20px;
+
+    margin:12px;
+
+    padding:16px 22px;
+
+    border-radius:24px;
+
+    background:
+    rgba(255,255,255,.75);
+
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
+
+    border:
+    1px solid rgba(255,255,255,.5);
+
+    box-shadow:
+    0 12px 30px rgba(0,0,0,.08);
 }
 
 .topbar-title{
-    font-size:20px;
-    font-weight:700;
-    color:#111827;
+
+    font-size:22px;
+
+    font-weight:800;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.search-btn{
+
+    border:none;
+
+    color:#fff;
+
+    text-decoration:none;
+
+    padding:10px 18px;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    box-shadow:
+    0 8px 20px rgba(37,99,235,.25);
 }
 
 /* =========================
@@ -36,105 +127,188 @@ body{
 
 .doctor-hero{
 
-    background:linear-gradient(
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:32px;
+
+    padding:45px;
+
+    background:
+    rgba(255,255,255,.65);
+
+    backdrop-filter:blur(30px);
+
+    border:
+    1px solid rgba(255,255,255,.45);
+
+    box-shadow:
+    0 20px 40px rgba(37,99,235,.12);
+
+    margin-bottom:25px;
+}
+
+.doctor-hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:250px;
+    height:250px;
+
+    border-radius:50%;
+
+    background:
+    rgba(37,99,235,.08);
+
+    top:-80px;
+    right:-80px;
+}
+
+.doctor-hero::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    border-radius:50%;
+
+    background:
+    rgba(124,58,237,.08);
+
+    left:-60px;
+    bottom:-60px;
+}
+
+.hero-title{
+
+    font-size:40px;
+
+    font-weight:900;
+
+    color:#111827;
+
+    position:relative;
+    z-index:2;
+}
+
+.hero-desc{
+
+    margin-top:12px;
+
+    max-width:600px;
+
+    color:#4b5563;
+
+    font-size:16px;
+
+    position:relative;
+    z-index:2;
+}
+
+.hero-btn{
+
+    display:inline-block;
+
+    margin-top:22px;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    padding:12px 22px;
+
+    border-radius:15px;
+
+    font-weight:700;
+
+    background:
+    linear-gradient(
         135deg,
         #2563eb,
         #4f46e5
     );
 
-    color:#fff;
-
-    padding:35px;
-
-    border-radius:25px;
-
-    margin-bottom:25px;
-
     position:relative;
-
-    overflow:hidden;
-}
-
-.doctor-hero::before{
-    content:"";
-    position:absolute;
-    width:250px;
-    height:250px;
-    background:rgba(255,255,255,.08);
-    border-radius:50%;
-    right:-80px;
-    top:-80px;
-}
-
-.doctor-hero::after{
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    background:rgba(255,255,255,.05);
-    border-radius:50%;
-    left:-50px;
-    bottom:-50px;
-}
-
-.hero-title{
-    font-size:30px;
-    font-weight:800;
-}
-
-.hero-desc{
-    opacity:.9;
-    max-width:500px;
+    z-index:2;
 }
 
 /* =========================
-   GLASS STATS
+   STATS
 ========================= */
 
 .quick-stats{
 
-    background:rgba(255,255,255,.75);
+    background:
+    rgba(255,255,255,.7);
 
-    backdrop-filter:blur(20px);
-
-    border:1px solid rgba(255,255,255,.5);
+    backdrop-filter:blur(25px);
 
     border-radius:25px;
 
-    padding:22px;
+    border:
+    1px solid rgba(255,255,255,.5);
+
+    padding:24px;
 
     margin-bottom:25px;
 
     box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
+    0 12px 30px rgba(0,0,0,.08);
 }
 
 .stat-number{
-    font-size:28px;
-    font-weight:800;
-    color:#111827;
+
+    font-size:32px;
+
+    font-weight:900;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
 .stat-label{
+
     color:#6b7280;
+
     font-size:13px;
+
+    margin-top:4px;
 }
 
 /* =========================
-   CARDS
+   MENU CARDS
 ========================= */
 
 .doctor-card{
 
-    background:rgba(255,255,255,.75);
+    position:relative;
 
-    backdrop-filter:blur(18px);
+    overflow:hidden;
 
-    border:1px solid rgba(255,255,255,.4);
+    background:
+    rgba(255,255,255,.65);
 
-    border-radius:22px;
+    backdrop-filter:blur(25px);
 
-    padding:22px;
+    border:
+    1px solid rgba(255,255,255,.5);
+
+    border-radius:24px;
+
+    padding:24px;
 
     text-decoration:none;
 
@@ -142,260 +316,229 @@ body{
 
     height:100%;
 
-    transition:.3s;
+    transition:.35s;
 
     box-shadow:
-    0 8px 20px rgba(0,0,0,.06);
+    0 12px 25px rgba(0,0,0,.06);
 }
 
 .doctor-card:hover{
 
-    transform:translateY(-6px);
+    transform:
+    translateY(-8px);
 
     box-shadow:
-    0 15px 30px rgba(0,0,0,.12);
+    0 20px 45px rgba(37,99,235,.16);
+}
+
+.doctor-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    linear-gradient(
+        135deg,
+        transparent,
+        rgba(255,255,255,.35)
+    );
+
+    opacity:0;
+
+    transition:.35s;
+}
+
+.doctor-card:hover::before{
+    opacity:1;
 }
 
 .icon-box{
 
-    width:60px;
-    height:60px;
+    width:70px;
+    height:70px;
 
-    border-radius:18px;
+    border-radius:22px;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    font-size:28px;
+    font-size:32px;
 
-    margin-bottom:15px;
+    margin-bottom:16px;
 }
 
-.bg-blue{
-    background:#e8f0ff;
-}
-
-.bg-green{
-    background:#e8fff1;
-}
-
-.bg-yellow{
-    background:#fff8dd;
-}
-
-.bg-cyan{
-    background:#e8fbff;
-}
-
-.bg-gray{
-    background:#f3f4f6;
-}
-
-.bg-dark2{
-    background:#ececff;
-}
+.bg-blue{background:#e8f0ff;}
+.bg-green{background:#e8fff1;}
+.bg-yellow{background:#fff8dd;}
+.bg-cyan{background:#e8fbff;}
+.bg-gray{background:#f3f4f6;}
+.bg-dark2{background:#ececff;}
 
 .doctor-title{
-    font-size:18px;
-    font-weight:700;
+
+    font-size:19px;
+
+    font-weight:800;
+
     color:#111827;
 }
 
 .doctor-desc{
+
     color:#6b7280;
+
+    margin-top:8px;
+
     font-size:14px;
-    margin-top:6px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* Mobile */
 
 @media(max-width:768px){
 
     .hero-title{
-        font-size:24px;
+        font-size:30px;
+    }
+
+    .doctor-hero{
+        padding:30px;
     }
 
     .doctor-card{
-        padding:18px;
-    }
-
-    .stat-number{
-        font-size:22px;
+        padding:20px;
     }
 }
 
-</style>
+</style><!-- TOPBAR --><div class="doctor-topbar d-flex justify-content-between align-items-center"><div class="topbar-title">
+    🩺 Doctors Chamber
+</div>
 
-<!-- TOP BAR -->
-<div class="doctor-topbar d-flex justify-content-between align-items-center">
+<a href="/doctors/search" class="search-btn">
+    🔍 Search
+</a>
 
-    <div class="topbar-title">
-        🩺 Doctors Chamber
+</div><div class="container py-4"><!-- HERO -->
+
+<div class="doctor-hero">
+
+    <div class="hero-title">
+        Find Trusted Doctors
     </div>
 
-    <a href="/doctors/search" class="btn btn-primary btn-sm">
-        Search
+    <div class="hero-desc">
+        Search verified doctors, hospital information,
+        chamber schedules, ratings, reviews and healthcare services
+        from a premium professional medical directory.
+    </div>
+
+    <a href="/doctors/search" class="hero-btn">
+        🔍 Find Doctor
     </a>
 
 </div>
 
-<div class="container py-4">
+<!-- STATS -->
 
-    <!-- HERO -->
+<div class="quick-stats">
 
-    <div class="doctor-hero">
+    <div class="row text-center">
 
-        <div class="hero-title">
-            Doctors Chamber
-        </div>
+        <div class="col-4">
 
-        <div class="hero-desc mt-2">
-            Find trusted doctors, chamber schedules,
-            hospitals, ratings and contact details.
-        </div>
-
-    </div>
-
-    <!-- STATS -->
-
-    <div class="quick-stats">
-
-        <div class="row text-center">
-
-            <div class="col-4">
-                <div class="stat-number">
-                    {{ total_doctors }}
-                </div>
-                <div class="stat-label">
-                    Doctors
-                </div>
+            <div class="stat-number">
+                {{ total_doctors }}
             </div>
 
-            <div class="col-4">
-                <div class="stat-number">
-                    {{ verified_doctors }}
-                </div>
-                <div class="stat-label">
-                    Verified
-                </div>
+            <div class="stat-label">
+                Doctors
             </div>
 
-            <div class="col-4">
-                <div class="stat-number">
-                    {{ total_views }}
-                </div>
-                <div class="stat-label">
-                    Views
-                </div>
+        </div>
+
+        <div class="col-4">
+
+            <div class="stat-number">
+                {{ verified_doctors }}
+            </div>
+
+            <div class="stat-label">
+                Verified
+            </div>
+
+        </div>
+
+        <div class="col-4">
+
+            <div class="stat-number">
+                {{ total_views }}
+            </div>
+
+            <div class="stat-label">
+                Views
             </div>
 
         </div>
 
     </div>
 
-    <!-- MENU -->
+</div>
 
-    <div class="row g-4">
+<!-- MENU -->
 
-        <div class="col-md-4 col-6">
-            <a href="/doctors/search" class="doctor-card">
+<div class="row g-4">
 
-                <div class="icon-box bg-blue">🔍</div>
-
-                <div class="doctor-title">
-                    Search Doctor
-                </div>
-
-                <div class="doctor-desc">
-                    Search by name, area or specialization
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors?verified=1" class="doctor-card">
-
-                <div class="icon-box bg-green">✔️</div>
-
-                <div class="doctor-title">
-                    Verified Doctors
-                </div>
-
-                <div class="doctor-desc">
-                    Trusted and approved doctors
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors?sort=rating" class="doctor-card">
-
-                <div class="icon-box bg-yellow">⭐</div>
-
-                <div class="doctor-title">
-                    Top Rated
-                </div>
-
-                <div class="doctor-desc">
-                    Highest rated doctors
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors?sort=views" class="doctor-card">
-
-                <div class="icon-box bg-cyan">👁</div>
-
-                <div class="doctor-title">
-                    Most Viewed
-                </div>
-
-                <div class="doctor-desc">
-                    Popular doctor profiles
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors" class="doctor-card">
-
-                <div class="icon-box bg-gray">👨‍⚕️</div>
-
-                <div class="doctor-title">
-                    All Doctors
-                </div>
-
-                <div class="doctor-desc">
-                    Browse all available doctors
-                </div>
-
-            </a>
-        </div>
-
-        <div class="col-md-4 col-6">
-            <a href="/doctors/admin/create" class="doctor-card">
-
-                <div class="icon-box bg-dark2">➕</div>
-
-                <div class="doctor-title">
-                    Create Profile
-                </div>
-
-                <div class="doctor-desc">
-                    Add your doctor chamber profile
-                </div>
-
-            </a>
-        </div>
-
+    <div class="col-md-4 col-6">
+        <a href="/doctors/search" class="doctor-card">
+            <div class="icon-box bg-blue">🔍</div>
+            <div class="doctor-title">Search Doctor</div>
+            <div class="doctor-desc">Search by name, area or specialization</div>
+        </a>
     </div>
 
-          </div>
+    <div class="col-md-4 col-6">
+        <a href="/doctors?verified=1" class="doctor-card">
+            <div class="icon-box bg-green">✔️</div>
+            <div class="doctor-title">Verified Doctors</div>
+            <div class="doctor-desc">Trusted and approved doctors</div>
+        </a>
+    </div>
+
+    <div class="col-md-4 col-6">
+        <a href="/doctors?sort=rating" class="doctor-card">
+            <div class="icon-box bg-yellow">⭐</div>
+            <div class="doctor-title">Top Rated</div>
+            <div class="doctor-desc">Highest rated doctors</div>
+        </a>
+    </div>
+
+    <div class="col-md-4 col-6">
+        <a href="/doctors?sort=views" class="doctor-card">
+            <div class="icon-box bg-cyan">👁</div>
+            <div class="doctor-title">Most Viewed</div>
+            <div class="doctor-desc">Popular doctor profiles</div>
+        </a>
+    </div>
+
+    <div class="col-md-4 col-6">
+        <a href="/doctors/list" class="doctor-card">
+            <div class="icon-box bg-gray">👨‍⚕️</div>
+            <div class="doctor-title">All Doctors</div>
+            <div class="doctor-desc">Browse all available doctors</div>
+        </a>
+    </div>
+
+    <div class="col-md-4 col-6">
+        <a href="/doctors/admin/create" class="doctor-card">
+            <div class="icon-box bg-dark2">➕</div>
+            <div class="doctor-title">Create Profile</div>
+            <div class="doctor-desc">Add your doctor chamber profile</div>
+        </a>
+    </div>
+
+</div>
+
+</div>
