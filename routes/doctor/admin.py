@@ -49,30 +49,6 @@ return render_template(
 
 ==========================================
 
-DOCTOR PROFILE
-
-==========================================
-
-@doctor_bp.route("/"int:doctor_id" (int:doctor_id)")
-def doctor_profile(doctor_id):
-
-doctor = Doctor.query.get_or_404(
-    doctor_id
-)
-
-doctor.views = (
-    doctor.views or 0
-) + 1
-
-db.session.commit()
-
-return render_template(
-    "doctor/profile.html",
-    doctor=doctor
-)
-
-==========================================
-
 CREATE DOCTOR
 
 ==========================================
