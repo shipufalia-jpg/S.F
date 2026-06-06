@@ -1,11 +1,9 @@
-doctor/routes.py
-
 from flask import (
-render_template,
-request,
-redirect,
-url_for,
-flash
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash
 )
 
 from extensions import db
@@ -15,445 +13,355 @@ from models.chamber import Chamber
 
 from . import doctor_bp
 
-==========================================
 
-DOCTOR LIST
-
-==========================================
+# ==========================================
+# DOCTOR LIST
+# ==========================================
 
 @doctor_bp.route("/list")
 def doctor_list():
 
-q = request.args.get("q", "").strip()
+    q = request.args.get("q", "").strip()
 
-doctors = Doctor.query
+    doctors = Doctor.query
 
-if q:
-
-    doctors = doctors.filter(
-        db.or_(
-            Doctor.name.ilike(f"%{q}%"),
-            Doctor.specialization.ilike(f"%{q}%"),
-            Doctor.hospital.ilike(f"%{q}%")
+    if q:
+        doctors = doctors.filter(
+            db.or_(
+                Doctor.name.ilike(f"%{q}%"),
+                Doctor.specialization.ilike(f"%{q}%"),
+                Doctor.hospital.ilike(f"%{q}%")
+            )
         )
+
+    doctors = doctors.order_by(
+        Doctor.id.desc()
+    ).all()
+
+    return render_template(
+        "doctor/list.html",
+        doctors=doctors
     )
 
-doctors = doctors.order_by(
-    Doctor.created_at.desc()
-).all()
 
-return render_template(
-    "doctor/list.html",
-    doctors=doctors
-)
-
-==========================================
-
-CREATE DOCTOR
-
-==========================================
+# ==========================================
+# CREATE DOCTOR
+# ==========================================
 
 @doctor_bp.route(
-"/admin/create",
-methods=["GET", "POST"]
+    "/admin/create",
+    methods=["GET", "POST"]
 )
 def create_doctor():
 
-if request.method == "POST":
+    if request.method == "POST":
 
-    doctor = Doctor(
-
-        name=request.form.get("name"),
-
-        degree=request.form.get("degree"),
-
-        specialization=request.form.get(
-            "specialization"
-        ),
-
-        hospital=request.form.get(
-            "hospital"
-        ),
-
-        experience=request.form.get(
-            "experience"
-        ),
-
-        about=request.form.get(
-            "about"
-        ),
-
-        profile_photo=request.form.get(
-            "profile_photo"
-        ),
-
-        cover_photo=request.form.get(
-            "cover_photo"
-        ),
-
-        verified=bool(
-            request.form.get("verified")
+        doctor = Doctor(
+            name=request.form.get("name"),
+            degree=request.form.get("degree"),
+            specialization=request.form.get("specialization"),
+            hospital=request.form.get("hospital"),
+            experience=request.form.get("experience"),
+            about=request.form.get("about"),
+            profile_photo=request.form.get("profile_photo"),
+            cover_photo=request.form.get("cover_photo"),
+            verified=bool(request.form.get("verified"))
         )
 
-    )
+        db.session.add(doctor)
+        db.session.commit()
 
-    db.session.add(doctor)
-    db.session.commit()
-
-    flash(
-        "Doctor created successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "doctor.manage_chambers",
-            doctor_id=doctor.id
+        flash(
+            "Doctor created successfully.",
+            "success"
         )
+
+        return redirect(
+            url_for(
+                "doctor.manage_chambers",
+                doctor_id=doctor.id
+            )
+        )
+
+    return render_template(
+        "doctor/create.html"
     )
 
-return render_template(
-    "doctor/create.html"
-)
 
-==========================================
-
-EDIT DOCTOR
-
-==========================================
+# ==========================================
+# EDIT DOCTOR
+# ==========================================
 
 @doctor_bp.route(
-"/admin/"int:doctor_id" (int:doctor_id)/edit",
-methods=["GET", "POST"]
+    "/admin/<int:doctor_id>/edit",
+    methods=["GET", "POST"]
 )
 def edit_doctor(doctor_id):
 
-doctor = Doctor.query.get_or_404(
-    doctor_id
-)
-
-if request.method == "POST":
-
-    doctor.name = request.form.get(
-        "name"
+    doctor = Doctor.query.get_or_404(
+        doctor_id
     )
 
-    doctor.degree = request.form.get(
-        "degree"
-    )
+    if request.method == "POST":
 
-    doctor.specialization = request.form.get(
-        "specialization"
-    )
-
-    doctor.hospital = request.form.get(
-        "hospital"
-    )
-
-    doctor.experience = request.form.get(
-        "experience"
-    )
-
-    doctor.about = request.form.get(
-        "about"
-    )
-
-    doctor.profile_photo = request.form.get(
-        "profile_photo"
-    )
-
-    doctor.cover_photo = request.form.get(
-        "cover_photo"
-    )
-
-    doctor.verified = bool(
-        request.form.get("verified")
-    )
-
-    db.session.commit()
-
-    flash(
-        "Doctor updated successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "doctor.doctor_profile",
-            doctor_id=doctor.id
+        doctor.name = request.form.get("name")
+        doctor.degree = request.form.get("degree")
+        doctor.specialization = request.form.get("specialization")
+        doctor.hospital = request.form.get("hospital")
+        doctor.experience = request.form.get("experience")
+        doctor.about = request.form.get("about")
+        doctor.profile_photo = request.form.get("profile_photo")
+        doctor.cover_photo = request.form.get("cover_photo")
+        doctor.verified = bool(
+            request.form.get("verified")
         )
+
+        db.session.commit()
+
+        flash(
+            "Doctor updated successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "doctor.doctor_profile",
+                doctor_id=doctor.id
+            )
+        )
+
+    return render_template(
+        "doctor/edit.html",
+        doctor=doctor
     )
 
-return render_template(
-    "doctor/edit.html",
-    doctor=doctor
-)
 
-==========================================
-
-DELETE DOCTOR
-
-==========================================
+# ==========================================
+# DELETE DOCTOR
+# ==========================================
 
 @doctor_bp.route(
-"/admin/"int:doctor_id" (int:doctor_id)/delete"
+    "/admin/<int:doctor_id>/delete"
 )
 def delete_doctor(doctor_id):
 
-doctor = Doctor.query.get_or_404(
-    doctor_id
-)
+    doctor = Doctor.query.get_or_404(
+        doctor_id
+    )
 
-db.session.delete(doctor)
+    db.session.delete(doctor)
+    db.session.commit()
 
-db.session.commit()
+    flash(
+        "Doctor deleted successfully.",
+        "success"
+    )
 
-flash(
-    "Doctor deleted successfully.",
-    "success"
-)
+    return redirect(
+        url_for("doctor.doctor_list")
+    )
 
-return redirect(
-    url_for("doctor.doctor_list")
-)
 
-==========================================
-
-CHAMBER MANAGER
-
-==========================================
+# ==========================================
+# CHAMBER MANAGER
+# ==========================================
 
 @doctor_bp.route(
-"/admin/"int:doctor_id" (int:doctor_id)/chambers"
+    "/admin/<int:doctor_id>/chambers"
 )
 def manage_chambers(doctor_id):
 
-doctor = Doctor.query.get_or_404(
-    doctor_id
-)
+    doctor = Doctor.query.get_or_404(
+        doctor_id
+    )
 
-return render_template(
-    "doctor/chambers.html",
-    doctor=doctor
-)
+    return render_template(
+        "doctor/chambers.html",
+        doctor=doctor
+    )
 
-==========================================
 
-ADD CHAMBER
-
-==========================================
+# ==========================================
+# ADD CHAMBER
+# ==========================================
 
 @doctor_bp.route(
-"/admin/"int:doctor_id" (int:doctor_id)/chamber/add",
-methods=["GET", "POST"]
+    "/admin/<int:doctor_id>/chamber/add",
+    methods=["GET", "POST"]
 )
 def add_chamber(doctor_id):
 
-doctor = Doctor.query.get_or_404(
-    doctor_id
-)
+    doctor = Doctor.query.get_or_404(
+        doctor_id
+    )
 
-if request.method == "POST":
+    if request.method == "POST":
 
-    chamber = Chamber(
-
-        doctor_id=doctor.id,
-
-        chamber_name=request.form.get(
-            "chamber_name"
-        ),
-
-        area=request.form.get(
-            "area"
-        ),
-
-        address=request.form.get(
-            "address"
-        ),
-
-        phone=request.form.get(
-            "phone"
-        ),
-
-        whatsapp=request.form.get(
-            "whatsapp"
-        ),
-
-        day=request.form.get(
-            "day"
-        ),
-
-        start_time=request.form.get(
-            "start_time"
-        ),
-
-        end_time=request.form.get(
-            "end_time"
+        chamber = Chamber(
+            doctor_id=doctor.id,
+            chamber_name=request.form.get(
+                "chamber_name"
+            ),
+            area=request.form.get("area"),
+            address=request.form.get("address"),
+            phone=request.form.get("phone"),
+            whatsapp=request.form.get(
+                "whatsapp"
+            ),
+            day=request.form.get("day"),
+            start_time=request.form.get(
+                "start_time"
+            ),
+            end_time=request.form.get(
+                "end_time"
+            )
         )
-    )
 
-    db.session.add(chamber)
+        db.session.add(chamber)
+        db.session.commit()
 
-    db.session.commit()
-
-    flash(
-        "Chamber added successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "doctor.manage_chambers",
-            doctor_id=doctor.id
+        flash(
+            "Chamber added successfully.",
+            "success"
         )
+
+        return redirect(
+            url_for(
+                "doctor.manage_chambers",
+                doctor_id=doctor.id
+            )
+        )
+
+    return render_template(
+        "doctor/add_chamber.html",
+        doctor=doctor
     )
 
-return render_template(
-    "doctor/add_chamber.html",
-    doctor=doctor
-)
 
-==========================================
-
-EDIT CHAMBER
-
-==========================================
+# ==========================================
+# EDIT CHAMBER
+# ==========================================
 
 @doctor_bp.route(
-"/admin/chamber/"int:chamber_id" (int:chamber_id)/edit",
-methods=["GET", "POST"]
+    "/admin/chamber/<int:chamber_id>/edit",
+    methods=["GET", "POST"]
 )
 def edit_chamber(chamber_id):
 
-chamber = Chamber.query.get_or_404(
-    chamber_id
+    chamber = Chamber.query.get_or_404(
+        chamber_id
+    )
+
+    if request.method == "POST":
+
+        chamber.chamber_name = request.form.get(
+            "chamber_name"
+        )
+        chamber.area = request.form.get("area")
+        chamber.address = request.form.get(
+            "address"
+        )
+        chamber.phone = request.form.get(
+            "phone"
+        )
+        chamber.whatsapp = request.form.get(
+            "whatsapp"
+        )
+        chamber.day = request.form.get("day")
+        chamber.start_time = request.form.get(
+            "start_time"
+        )
+        chamber.end_time = request.form.get(
+            "end_time"
+        )
+
+        db.session.commit()
+
+        flash(
+            "Chamber updated successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "doctor.manage_chambers",
+                doctor_id=chamber.doctor_id
+            )
+        )
+
+    return render_template(
+        "doctor/edit_chamber.html",
+        chamber=chamber
+    )
+
+
+# ==========================================
+# DELETE CHAMBER
+# ==========================================
+
+@doctor_bp.route(
+    "/admin/chamber/<int:chamber_id>/delete"
 )
+def delete_chamber(chamber_id):
 
-if request.method == "POST":
-
-    chamber.chamber_name = request.form.get(
-        "chamber_name"
+    chamber = Chamber.query.get_or_404(
+        chamber_id
     )
 
-    chamber.area = request.form.get(
-        "area"
-    )
+    doctor_id = chamber.doctor_id
 
-    chamber.address = request.form.get(
-        "address"
-    )
-
-    chamber.phone = request.form.get(
-        "phone"
-    )
-
-    chamber.whatsapp = request.form.get(
-        "whatsapp"
-    )
-
-    chamber.day = request.form.get(
-        "day"
-    )
-
-    chamber.start_time = request.form.get(
-        "start_time"
-    )
-
-    chamber.end_time = request.form.get(
-        "end_time"
-    )
-
+    db.session.delete(chamber)
     db.session.commit()
 
     flash(
-        "Chamber updated successfully.",
+        "Chamber deleted successfully.",
         "success"
     )
 
     return redirect(
         url_for(
             "doctor.manage_chambers",
-            doctor_id=chamber.doctor_id
+            doctor_id=doctor_id
         )
     )
 
-return render_template(
-    "doctor/edit_chamber.html",
-    chamber=chamber
-)
 
-==========================================
-
-DELETE CHAMBER
-
-==========================================
-
-@doctor_bp.route(
-"/admin/chamber/"int:chamber_id" (int:chamber_id)/delete"
-)
-def delete_chamber(chamber_id):
-
-chamber = Chamber.query.get_or_404(
-    chamber_id
-)
-
-doctor_id = chamber.doctor_id
-
-db.session.delete(chamber)
-
-db.session.commit()
-
-flash(
-    "Chamber deleted successfully.",
-    "success"
-)
-
-return redirect(
-    url_for(
-        "doctor.manage_chambers",
-        doctor_id=doctor_id
-    )
-)
+# ==========================================
+# ADMIN DOCTORS PANEL
+# ==========================================
 
 @doctor_bp.route("/admin")
 def admin_doctors():
 
-q = request.args.get("q", "")
+    q = request.args.get("q", "").strip()
 
-doctors = Doctor.query
+    doctors = Doctor.query
 
-if q:
-
-    doctors = doctors.filter(
-
-        db.or_(
-
-            Doctor.name.ilike(f"%{q}%"),
-
-            Doctor.specialization.ilike(f"%{q}%"),
-
-            Doctor.hospital.ilike(f"%{q}%")
-
+    if q:
+        doctors = doctors.filter(
+            db.or_(
+                Doctor.name.ilike(f"%{q}%"),
+                Doctor.specialization.ilike(f"%{q}%"),
+                Doctor.hospital.ilike(f"%{q}%")
+            )
         )
 
-    )
+    doctors = doctors.order_by(
+        Doctor.id.desc()
+    ).all()
 
-doctors = doctors.order_by(
-    Doctor.created_at.desc()
-).all()
+    total_doctors = Doctor.query.count()
 
-total_doctors = Doctor.query.count()
+    total_chambers = Chamber.query.count()
 
-total_chambers = Chamber.query.count()
+    verified_doctors = Doctor.query.filter_by(
+        verified=True
+    ).count()
 
-verified_doctors = Doctor.query.filter_by(
-    verified=True
-).count()
-
-return render_template(
-    "doctor/admin_doctors.html",
-    doctors=doctors,
-    total_doctors=total_doctors,
-    total_chambers=total_chambers,
-    verified_doctors=verified_doctors
-)
+    return render_template(
+        "doctor/admin_doctors.html",
+        doctors=doctors,
+        total_doctors=total_doctors,
+        total_chambers=total_chambers,
+        verified_doctors=verified_doctors
+        )
