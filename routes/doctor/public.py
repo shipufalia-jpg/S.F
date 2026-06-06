@@ -3,10 +3,12 @@ from models.doctor import Doctor
 from flask import render_template
 
 
-@doctor_bp.route("/")
+@doctor_bp.route("/list")
 def doctor_list():
 
-    doctors = Doctor.query.order_by(Doctor.id.desc()).all()
+    doctors = Doctor.query.order_by(
+        Doctor.id.desc()
+    ).all()
 
     return render_template(
         "doctor/list.html",
