@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Doctor | S.F Doctor Chamber
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.hero-card{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:#fff;
+    border:none;
+    border-radius:24px;
+    padding:30px;
+    margin-bottom:25px;
+}
+
+.form-card{
+    border:none;
+    border-radius:24px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.preview-card{
+    border:none;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.cover-preview{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+}
+
+.profile-preview{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    border:4px solid #fff;
+    margin-top:-50px;
+    margin-left:20px;
+    background:#fff;
+    object-fit:cover;
+}
+
+.preview-body{
+    padding:15px 20px 20px;
+}
+
+.section-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.btn-action{
+    border-radius:14px;
+    font-weight:700;
+    padding:12px;
+}
+
+</style><div class="container py-4"><!-- Header -->
+
+<div class="hero-card">
+
+    <h2 class="fw-bold mb-2">
+        ✏ Edit Doctor
+    </h2>
+
+    <p class="mb-0">
+
+        Update doctor information and profile settings.
+
+    </p>
+
+</div>
+
+<form method="POST">
+
+    <div class="row">
+
+        <!-- Left -->
+
+        <div class="col-lg-8">
+
+            <!-- Basic Info -->
+
+            <div class="card form-card mb-4">
+
+                <div class="card-body p-4">
+
+                    <div class="section-title">
+                        Basic Information
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Doctor Name
+                            </label>
+
+                            <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            value="{{ doctor.name }}"
+                            required>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Degree
+                            </label>
+
+                            <input
+                            type="text"
+                            name="degree"
+                            class="form-control"
+                            value="{{ doctor.degree }}"
+                            required>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Specialization
+                            </label>
+
+                            <input
+                            type="text"
+                            name="specialization"
+                            class="form-control"
+                            value="{{ doctor.specialization }}">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Hospital
+                            </label>
+
+                            <input
+                            type="text"
+                            name="hospital"
+                            class="form-control"
+                            value="{{ doctor.hospital }}">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Professional -->
+
+            <div class="card form-card mb-4">
+
+                <div class="card-body p-4">
+
+                    <div class="section-title">
+                        Professional Information
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Experience
+                        </label>
+
+                        <input
+                        type="text"
+                        name="experience"
+                        class="form-control"
+                        value="{{ doctor.experience }}">
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            About Doctor
+                        </label>
+
+                        <textarea
+                        name="about"
+                        rows="6"
+                        class="form-control">{{ doctor.about }}</textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Media -->
+
+            <div class="card form-card mb-4">
+
+                <div class="card-body p-4">
+
+                    <div class="section-title">
+                        Media
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Profile Photo URL
+                        </label>
+
+                        <input
+                        type="url"
+                        name="profile_photo"
+                        id="profileInput"
+                        class="form-control"
+                        value="{{ doctor.profile_photo }}">
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Cover Photo URL
+                        </label>
+
+                        <input
+                        type="url"
+                        name="cover_photo"
+                        id="coverInput"
+                        class="form-control"
+                        value="{{ doctor.cover_photo }}">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Status -->
+
+            <div class="card form-card mb-4">
+
+                <div class="card-body p-4">
+
+                    <div class="section-title">
+                        Status
+                    </div>
+
+                    <div class="form-check form-switch">
+
+                        <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="verified"
+                        {% if doctor.verified %}
+                        checked
+                        {% endif %}>
+
+                        <label class="form-check-label">
+
+                            Verified Doctor
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right -->
+
+        <div class="col-lg-4">
+
+            <div class="card preview-card">
+
+                <img
+                id="coverPreview"
+                src="{{ doctor.cover_photo }}"
+                class="cover-preview">
+
+                <img
+                id="profilePreview"
+                src="{{ doctor.profile_photo }}"
+                class="profile-preview">
+
+                <div class="preview-body">
+
+                    <h5 class="fw-bold">
+                        {{ doctor.name }}
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        {{ doctor.specialization }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+
+                <button
+                type="submit"
+                class="btn btn-primary btn-action">
+
+                    💾 Update Doctor
+
+                </button>
+
+                <a
+                href="{{ url_for('doctor.manage_chambers', doctor_id=doctor.id) }}"
+                class="btn btn-success btn-action">
+
+                    🏥 Manage Chambers
+
+                </a>
+
+                <a
+                href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
+                class="btn btn-outline-primary btn-action">
+
+                    👁 View Profile
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
+</div><script>
+
+const coverInput =
+document.getElementById("coverInput");
+
+const coverPreview =
+document.getElementById("coverPreview");
+
+coverInput.addEventListener(
+"input",
+function(){
+
+    if(this.value){
+
+        coverPreview.src =
+        this.value;
+
+    }
+
+});
+
+const profileInput =
+document.getElementById("profileInput");
+
+const profilePreview =
+document.getElementById("profilePreview");
+
+profileInput.addEventListener(
+"input",
+function(){
+
+    if(this.value){
+
+        profilePreview.src =
+        this.value;
+
+    }
+
+});
+
+</script>{% endblock %}
