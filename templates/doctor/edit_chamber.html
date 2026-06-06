@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Chamber | S.F Doctor Chamber
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.hero-card{
+    background:linear-gradient(135deg,#0ea5e9,#2563eb);
+    color:#fff;
+    border:none;
+    border-radius:24px;
+    padding:30px;
+    margin-bottom:25px;
+}
+
+.form-card{
+    border:none;
+    border-radius:24px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.section-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.btn-action{
+    border-radius:14px;
+    font-weight:700;
+    padding:12px 20px;
+}
+
+</style><div class="container py-4"><!-- Header -->
+
+<div class="hero-card">
+
+    <h2 class="fw-bold mb-2">
+        ✏ Edit Chamber
+    </h2>
+
+    <p class="mb-0">
+
+        Updating:
+        <strong>{{ chamber.chamber_name }}</strong>
+
+    </p>
+
+</div>
+
+<form method="POST">
+
+    <div class="card form-card">
+
+        <div class="card-body p-4">
+
+            <!-- Chamber Info -->
+
+            <div class="section-title">
+                Chamber Information
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Chamber Name
+                    </label>
+
+                    <input
+                    type="text"
+                    name="chamber_name"
+                    class="form-control"
+                    value="{{ chamber.chamber_name }}"
+                    required>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Area
+                    </label>
+
+                    <input
+                    type="text"
+                    name="area"
+                    class="form-control"
+                    value="{{ chamber.area }}"
+                    required>
+
+                </div>
+
+                <div class="col-12 mb-3">
+
+                    <label class="form-label">
+                        Address
+                    </label>
+
+                    <textarea
+                    name="address"
+                    rows="4"
+                    class="form-control">{{ chamber.address }}</textarea>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Phone Number
+                    </label>
+
+                    <input
+                    type="text"
+                    name="phone"
+                    class="form-control"
+                    value="{{ chamber.phone }}">
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        WhatsApp Number
+                    </label>
+
+                    <input
+                    type="text"
+                    name="whatsapp"
+                    class="form-control"
+                    value="{{ chamber.whatsapp }}">
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- Schedule -->
+
+            <div class="section-title">
+                Visiting Schedule
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <label class="form-label">
+                        Day
+                    </label>
+
+                    <input
+                    type="text"
+                    name="day"
+                    class="form-control"
+                    value="{{ chamber.day }}"
+                    placeholder="Mon-Wed-Fri">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <label class="form-label">
+                        Start Time
+                    </label>
+
+                    <input
+                    type="text"
+                    name="start_time"
+                    class="form-control"
+                    value="{{ chamber.start_time }}"
+                    placeholder="5:00 PM">
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <label class="form-label">
+                        End Time
+                    </label>
+
+                    <input
+                    type="text"
+                    name="end_time"
+                    class="form-control"
+                    value="{{ chamber.end_time }}"
+                    placeholder="8:00 PM">
+
+                </div>
+
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap mt-4">
+
+                <button
+                type="submit"
+                class="btn btn-primary btn-action">
+
+                    💾 Update Chamber
+
+                </button>
+
+                <a
+                href="{{ url_for('doctor.manage_chambers', doctor_id=chamber.doctor_id) }}"
+                class="btn btn-secondary btn-action">
+
+                    ← Back
+
+                </a>
+
+                <a
+                href="{{ url_for('doctor.delete_chamber', chamber_id=chamber.id) }}"
+                class="btn btn-danger btn-action"
+                onclick="return confirm('Delete this chamber?')">
+
+                    🗑 Delete
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
+</div>{% endblock %}
