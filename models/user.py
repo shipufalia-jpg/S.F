@@ -189,6 +189,12 @@ class User(UserMixin, db.Model):
     lazy=True
     )
 
+    doctor = db.relationship(
+    "Doctor",
+    backref="user",
+    uselist=False
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
 
