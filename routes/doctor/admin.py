@@ -414,3 +414,46 @@ return redirect(
         doctor_id=doctor_id
     )
 )
+
+@doctor_bp.route("/admin")
+def admin_doctors():
+
+q = request.args.get("q", "")
+
+doctors = Doctor.query
+
+if q:
+
+    doctors = doctors.filter(
+
+        db.or_(
+
+            Doctor.name.ilike(f"%{q}%"),
+
+            Doctor.specialization.ilike(f"%{q}%"),
+
+            Doctor.hospital.ilike(f"%{q}%")
+
+        )
+
+    )
+
+doctors = doctors.order_by(
+    Doctor.created_at.desc()
+).all()
+
+total_doctors = Doctor.query.count()
+
+total_chambers = Chamber.query.count()
+
+verified_doctors = Doctor.query.filter_by(
+    verified=True
+).count()
+
+return render_template(
+    "doctor/admin_doctors.html",
+    doctors=doctors,
+    total_doctors=total_doctors,
+    total_chambers=total_chambers,
+    verified_doctors=verified_doctors
+)
