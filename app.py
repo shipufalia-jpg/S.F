@@ -213,6 +213,7 @@ def create_app():
     app.register_blueprint(live_media_bp)
     app.register_blueprint(verification)
     app.register_blueprint(doctor_bp)
+    print(app.url_map)
 
     return app
 
@@ -227,7 +228,6 @@ with app.app_context():
 
 # ================= RUN =================
 if __name__ == "__main__":
-    print(app.url_map)
     socketio.run(
         app,
         host="0.0.0.0",
