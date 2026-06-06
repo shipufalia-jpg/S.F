@@ -227,8 +227,7 @@ with app.app_context():
 
 # ================= RUN =================
 if __name__ == "__main__":
-     for rule in app.url_map.iter_rules():
-        print(rule)
+    print(app.url_map)
     socketio.run(
         app,
         host="0.0.0.0",
