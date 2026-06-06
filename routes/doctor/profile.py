@@ -24,6 +24,7 @@ def doctor_profile(doctor_id):
 
 @doctor_bp.route("/")
 def doctors_home():
+    return "DOCTORS HOME"
 
     doctors = Doctor.query.order_by(
         Doctor.verified.desc(),
