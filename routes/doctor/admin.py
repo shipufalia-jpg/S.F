@@ -9,7 +9,9 @@ import os
 from extensions import db
 from models.doctor import Doctor
 from models.doctor.chamber import Chamber
-from flask import request, render_template, redirect, url_for, flash
+from werkzeug.utils import secure_filename
+import cloudinary.uploader
+
 from . import doctor_bp
 
 
@@ -17,40 +19,40 @@ from . import doctor_bp
 # ==========================================
 # CREATE DOCTOR
 # ==========================================
-@doctor_bp.route("/admin/create", methods=["GET", "POST"])
+doctor_bp.route("/admin/create", methods=["GET", "POST"])
 def create_doctor():
 
     if request.method == "POST":
 
         # =========================
-        # FILE UPLOAD HANDLING
+        # FILE UPLOAD HANDLING (CLOUDINARY)
         # =========================
 
         profile_file = request.files.get("profile_photo")
         cover_file = request.files.get("cover_photo")
 
-        profile_path = None
-        cover_path = None
-
-        upload_folder = "static/uploads/doctors"
-
-        os.makedirs(upload_folder, exist_ok=True)
+        profile_url = None
+        cover_url = None
 
         # -------------------------
-        # PROFILE IMAGE
+        # PROFILE IMAGE UPLOAD
         # -------------------------
         if profile_file and profile_file.filename != "":
-            filename = secure_filename(profile_file.filename)
-            profile_path = os.path.join(upload_folder, filename)
-            profile_file.save(profile_path)
+            result = cloudinary.uploader.upload(
+                profile_file,
+                folder="doctors/profile"
+            )
+            profile_url = result.get("secure_url")
 
         # -------------------------
-        # COVER IMAGE
+        # COVER IMAGE UPLOAD
         # -------------------------
         if cover_file and cover_file.filename != "":
-            filename = secure_filename(cover_file.filename)
-            cover_path = os.path.join(upload_folder, filename)
-            cover_file.save(cover_path)
+            result = cloudinary.uploader.upload(
+                cover_file,
+                folder="doctors/cover"
+            )
+            cover_url = result.get("secure_url")
 
         # =========================
         # CREATE DOCTOR OBJECT
@@ -64,9 +66,9 @@ def create_doctor():
             experience=request.form.get("experience"),
             about=request.form.get("about"),
 
-            # ✅ FILE PATH SAVE
-            profile_photo=profile_path,
-            cover_photo=cover_path,
+            # ✅ CLOUD IMAGE URL SAVE
+            profile_photo=profile_url,
+            cover_photo=cover_url,
 
             verified=bool(request.form.get("verified"))
         )
