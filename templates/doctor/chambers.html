@@ -1,304 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+{% block title %}
+Manage Chambers | S.F Doctor Chamber
+{% endblock %}
 
-<title>S.F Doctor Chamber</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block content %}
 
 <style>
 
-:root{
-    --primary:#2563eb;
-    --secondary:#4f46e5;
-    --bg:#f4f7fc;
-}
-
-/* BODY */
-body{
-    background:var(--bg);
-    font-family:Inter,sans-serif;
-}
-
-/* HERO */
-.hero{
+.hero-card{
     background:linear-gradient(135deg,#2563eb,#4f46e5);
-    color:white;
-    border-radius:30px;
-    padding:40px;
-    margin-bottom:30px;
-    box-shadow:0 15px 40px rgba(37,99,235,.25);
-}
-
-/* SEARCH */
-.search-box{
-    background:rgba(255,255,255,.15);
-    backdrop-filter:blur(12px);
-    border-radius:20px;
-    padding:18px;
-}
-
-/* CHIPS */
-.chip{
-    display:inline-block;
-    background:white;
+    color:#fff;
     border:none;
-    padding:10px 18px;
-    border-radius:50px;
-    font-size:14px;
-    font-weight:600;
-    margin:4px;
-    transition:.3s;
-    cursor:pointer;
-}
-
-.chip:hover{
-    background:var(--primary);
-    color:white;
-}
-
-/* =========================
-   DOCTOR CARD (FIXED)
-========================= */
-
-.doctor-card{
-    border:none;
-    border-radius:28px;
+    border-radius:24px;
     overflow:hidden;
-    background:#fff;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-    transition:.3s;
-    position:relative;
 }
 
-.doctor-card:hover{
-    transform:translateY(-6px);
-    box-shadow:0 18px 45px rgba(0,0,0,.12);
-}
-
-/* COVER */
-.cover-wrap{
-    position:relative;
-    height:180px;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(135deg,#eef2ff,#ffffff);
-}
-
-/* COVER IMAGE */
-.cover-img{
+.hero-cover{
     width:100%;
-    height:180px;
+    height:220px;
     object-fit:cover;
-    position:absolute;
-    top:0;
-    left:0;
 }
 
-/* Fallback */
-.cover-fallback{
-    font-size:70px;
-    opacity:.6;
-    z-index:2;
+.profile-wrap{
+    margin-top:-60px;
+    padding-left:25px;
 }
 
-/* PROFILE IMAGE (FIXED NO CUT ISSUE) */
 .profile-img{
-    width:95px;
-    height:95px;
+    width:120px;
+    height:120px;
     border-radius:50%;
     border:5px solid #fff;
     object-fit:cover;
-    position:absolute;
-    bottom:-45px;
-    left:20px;
     background:#fff;
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
-    z-index:10;
 }
 
-/* CARD CONTENT */
-.card-content{
-    padding:60px 20px 20px;
-}
-
-/* TEXT */
-.doc-name{
-    font-size:20px;
-    font-weight:800;
-}
-
-.doc-speciality{
-    color:var(--primary);
-    font-weight:600;
-}
-
-/* VERIFIED */
-.verified{
-    background:#16a34a;
-    color:white;
-    padding:5px 10px;
-    border-radius:20px;
-    font-size:12px;
-}
-
-/* STATS */
-.stats{
-    display:flex;
-    justify-content:space-between;
-    margin-top:15px;
-}
-
-.stats div{
-    text-align:center;
-}
-
-.stats strong{
-    display:block;
-}
-
-/* BUTTON (LIGHT GREEN FIXED) */
-.btn-profile{
-    border-radius:14px;
-    padding:10px;
-    font-weight:700;
-    background:#22c55e;
+.glass-card{
     border:none;
-    color:white;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.chamber-card{
+    border:none;
+    border-radius:18px;
     transition:.3s;
 }
 
-.btn-profile:hover{
-    background:#16a34a;
-    color:white;
+.chamber-card:hover{
+    transform:translateY(-4px);
 }
 
-/* TOPBAR */
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
+.stat-box{
+    text-align:center;
+    padding:15px;
+    border-radius:16px;
+    background:#f8fafc;
 }
 
-.logo{
-    font-size:24px;
-    font-weight:900;
-    color:#2563eb;
+.stat-box h4{
+    font-weight:800;
+    margin:0;
 }
 
-/* responsive */
-@media(max-width:768px){
-    .hero{ padding:25px; }
-    .hero h1{ font-size:28px; }
+.action-btn{
+    border-radius:12px;
 }
 
-</style>
-</head>
+</style><div class="container py-4"><!-- Doctor Summary -->
 
-<body>
+<div class="card hero-card mb-4">
 
-<div class="container py-4">
+    <img
+    src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1584982751601-97dcc096659c' }}"
+    class="hero-cover">
 
-<!-- TOPBAR -->
-<div class="topbar">
-    <div class="logo">🩺 S.F Doctor Chamber</div>
-    <a href="/" class="btn btn-outline-primary">Home</a>
-</div>
+    <div class="profile-wrap">
 
-<!-- HERO -->
-<div class="hero">
-    <h1>Find Trusted Doctors</h1>
-    <p>Search doctors, clinics and specialists near you.</p>
+        <img
+        src="{{ doctor.profile_photo if doctor.profile_photo else 'https://cdn-icons-png.flaticon.com/512/387/387561.png' }}"
+        class="profile-img">
 
-    <form class="search-box mt-3">
-        <div class="row g-2">
-            <div class="col-md-5">
-                <input type="text" name="q" class="form-control" placeholder="Doctor name / specialization">
-            </div>
-            <div class="col-md-5">
-                <input type="text" name="area" class="form-control" placeholder="Area / City">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-light w-100">Search</button>
-            </div>
-        </div>
-    </form>
-</div>
+    </div>
 
-<!-- FILTERS -->
-<div class="mb-4">
-    <span class="chip">Medicine</span>
-    <span class="chip">Child</span>
-    <span class="chip">ENT</span>
-    <span class="chip">Heart</span>
-    <span class="chip">Skin</span>
-    <span class="chip">Orthopedic</span>
-    <span class="chip">Eye</span>
-</div>
+    <div class="card-body pt-3 pb-4">
 
-<!-- DOCTORS -->
-<div class="row">
+        <div class="d-flex justify-content-between flex-wrap">
 
-{% for doctor in doctors %}
+            <div>
 
-<div class="col-lg-4 col-md-6 mb-4">
-
-    <div class="doctor-card">
-
-        <div class="cover-wrap">
-
-            {% if doctor.cover_photo %}
-                <img src="{{ doctor.cover_photo }}" class="cover-img">
-            {% else %}
-                <div class="cover-fallback">🩺</div>
-            {% endif %}
-
-            {% if doctor.profile_photo %}
-                <img src="{{ doctor.profile_photo }}" class="profile-img">
-            {% endif %}
-
-        </div>
-
-        <div class="card-content">
-
-            <div class="d-flex justify-content-between">
+                <h2 class="fw-bold mb-1">
+                    {{ doctor.name }}
+                </h2>
 
                 <div>
-                    <div class="doc-name">{{ doctor.name }}</div>
-                    <div class="doc-speciality">{{ doctor.specialization }}</div>
+                    {{ doctor.degree }}
                 </div>
 
+                <div>
+                    {{ doctor.specialization }}
+                </div>
+
+            </div>
+
+            <div class="mt-3 mt-md-0">
+
+                <a
+                href="{{ url_for('doctor.add_chamber', doctor_id=doctor.id) }}"
+                class="btn btn-light action-btn">
+
+                    ➕ Add Chamber
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Stats -->
+
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-3">
+
+        <div class="stat-box">
+
+            <h4>
+                {{ doctor.chambers|length }}
+            </h4>
+
+            <small>
+                Total Chambers
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="stat-box">
+
+            <h4>
+                {{ doctor.views or 0 }}
+            </h4>
+
+            <small>
+                Profile Views
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="stat-box">
+
+            <h4>
                 {% if doctor.verified %}
-                <span class="verified">✔ Verified</span>
+                Verified
+                {% else %}
+                Pending
                 {% endif %}
+            </h4>
 
-            </div>
+            <small>
+                Status
+            </small>
 
-            <div class="text-muted mt-2">
-                {{ doctor.hospital }}
-            </div>
+        </div>
 
-            <div class="stats">
-                <div>
-                    <strong>⭐ {{ doctor.rating or 0 }}</strong>
-                    Rating
-                </div>
+    </div>
 
-                <div>
-                    <strong>👁 {{ doctor.views or 0 }}</strong>
-                    Views
-                </div>
-            </div>
+</div>
 
-            <a href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
-               class="btn btn-profile w-100 mt-3">
-                View Doctor Profile
+<!-- Doctor Actions -->
+
+<div class="card glass-card mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <a
+            href="{{ url_for('doctor.edit_doctor', doctor_id=doctor.id) }}"
+            class="btn btn-primary action-btn">
+
+                ✏ Edit Doctor
+
+            </a>
+
+            <a
+            href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
+            class="btn btn-success action-btn">
+
+                👁 View Profile
+
+            </a>
+
+            <a
+            href="{{ url_for('doctor.delete_doctor', doctor_id=doctor.id) }}"
+            class="btn btn-danger action-btn"
+            onclick="return confirm('Delete doctor and all chambers?')">
+
+                🗑 Delete Doctor
+
             </a>
 
         </div>
@@ -307,11 +219,143 @@ body{
 
 </div>
 
-{% endfor %}
+<!-- Chambers -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h4 class="fw-bold mb-0">
+        Chamber Management
+    </h4>
+
+    <a
+    href="{{ url_for('doctor.add_chamber', doctor_id=doctor.id) }}"
+    class="btn btn-primary">
+
+        + Add Chamber
+
+    </a>
 
 </div>
 
-</div>
+{% if doctor.chambers %}
 
-</body>
-</html>
+    <div class="row">
+
+        {% for chamber in doctor.chambers %}
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card chamber-card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold">
+                        {{ chamber.chamber_name }}
+                    </h5>
+
+                    <div class="text-muted mb-2">
+
+                        📍 {{ chamber.area }}
+
+                    </div>
+
+                    <div class="mb-2">
+
+                        {{ chamber.address }}
+
+                    </div>
+
+                    <div class="mb-2">
+
+                        ☎ {{ chamber.phone }}
+
+                    </div>
+
+                    {% if chamber.whatsapp %}
+
+                    <div class="mb-2">
+
+                        WhatsApp:
+                        {{ chamber.whatsapp }}
+
+                    </div>
+
+                    {% endif %}
+
+                    <div class="mb-2">
+
+                        {{ chamber.day }}
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        🕒
+                        {{ chamber.start_time }}
+                        -
+                        {{ chamber.end_time }}
+
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <a
+                        href="{{ url_for('doctor.edit_chamber', chamber_id=chamber.id) }}"
+                        class="btn btn-outline-primary btn-sm">
+
+                            Edit
+
+                        </a>
+
+                        <a
+                        href="{{ url_for('doctor.delete_chamber', chamber_id=chamber.id) }}"
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="return confirm('Delete this chamber?')">
+
+                            Delete
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="card glass-card">
+
+        <div class="card-body text-center py-5">
+
+            <h5>
+                No Chambers Added Yet
+            </h5>
+
+            <p class="text-muted">
+
+                Create the first chamber for this doctor.
+
+            </p>
+
+            <a
+            href="{{ url_for('doctor.add_chamber', doctor_id=doctor.id) }}"
+            class="btn btn-primary">
+
+                Add First Chamber
+
+            </a>
+
+        </div>
+
+    </div>
+
+{% endif %}
+
+</div>{% endblock %}
