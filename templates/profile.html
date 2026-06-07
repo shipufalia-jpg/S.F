@@ -707,7 +707,7 @@ scale(1.08);
 
 <div
     class="cover"
-    style="background-image:url('{{ profile.cover_img if profile and profile.cover_img else url_for('static', filename='default_cover.jpg') }}');"
+    style="background-image:url('{{ profile.cover_img if profile and profile.cover_img else 'https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=1800&auto=format&fit=crop' }}');"
     onclick="openImage('{{ profile.cover_img if profile and profile.cover_img else url_for('static', filename='default_cover.jpg') }}')"
 >
 
@@ -721,7 +721,9 @@ scale(1.08);
 
     <!-- ================= PROFILE SECTION ================= -->
 
-<h1>Profile Page</h1>
+<hr>
+
+<p>{{ profile.bio }}</p>
 
 <div class="profile-section">
 
