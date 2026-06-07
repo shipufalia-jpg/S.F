@@ -360,7 +360,9 @@ Edit Doctor | S.F Doctor Chamber
 
 </form>
 
-</div><script>
+</div>
+
+<script>
 
 const profileInput =
 document.getElementById("profileInput");
@@ -368,20 +370,25 @@ document.getElementById("profileInput");
 const profilePreview =
 document.getElementById("profilePreview");
 
-profileInput.addEventListener(
-"change",
-function(){
+if(profileInput && profilePreview){
 
-    if(this.files && this.files[0]){
+    profileInput.addEventListener(
+        "change",
+        function(){
 
-        profilePreview.src =
-        URL.createObjectURL(
-            this.files[0]
-        );
+            if(this.files && this.files[0]){
 
-    }
+                profilePreview.src =
+                URL.createObjectURL(
+                    this.files[0]
+                );
 
-});
+            }
+
+        }
+    );
+
+}
 
 const coverInput =
 document.getElementById("coverInput");
@@ -389,19 +396,26 @@ document.getElementById("coverInput");
 const coverPreview =
 document.getElementById("coverPreview");
 
-coverInput.addEventListener(
-"change",
-function(){
+if(coverInput && coverPreview){
 
-    if(this.files && this.files[0]){
+    coverInput.addEventListener(
+        "change",
+        function(){
 
-        coverPreview.src =
-        URL.createObjectURL(
-            this.files[0]
-        );
+            if(this.files && this.files[0]){
 
-    }
+                coverPreview.src =
+                URL.createObjectURL(
+                    this.files[0]
+                );
 
-});
+            }
 
-            </script>
+        }
+    );
+
+}
+
+</script>
+
+{% endblock %}
