@@ -1,11 +1,22 @@
-<!DOCTYPE html><html lang="en">
-<head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>S.F Doctor Chamber</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>S.F Doctor Chamber</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
 
 :root{
     --primary:#2563eb;
     --secondary:#4f46e5;
     --bg:#f4f7fc;
+    --navy:#0b1f4d;
+    --gold:#d4af37;
 }
 
 body{
@@ -14,30 +25,16 @@ body{
 }
 
 /* HERO */
-
 .hero{
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #4f46e5
-    );
-
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
     color:white;
     border-radius:30px;
     padding:40px;
     margin-bottom:30px;
-
-    box-shadow:
-    0 15px 40px rgba(37,99,235,.25);
-}
-
-.hero h1{
-    font-weight:800;
-    margin-bottom:10px;
+    box-shadow:0 15px 40px rgba(37,99,235,.25);
 }
 
 /* SEARCH */
-
 .search-box{
     background:rgba(255,255,255,.15);
     backdrop-filter:blur(12px);
@@ -45,8 +42,7 @@ body{
     padding:18px;
 }
 
-/* CHIPS */
-
+/* CHIP */
 .chip{
     display:inline-block;
     background:white;
@@ -66,78 +62,75 @@ body{
 }
 
 /* CARD */
-
 .doctor-card{
-
     border:none;
     overflow:hidden;
     border-radius:28px;
-
     background:white;
-
-    box-shadow:
-    0 12px 35px rgba(0,0,0,.08);
-
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
     transition:.35s;
 }
 
 .doctor-card:hover{
-
-    transform:
-    translateY(-8px);
-
-    box-shadow:
-    0 20px 45px rgba(0,0,0,.12);
+    transform:translateY(-8px);
+    box-shadow:0 20px 45px rgba(0,0,0,.12);
 }
 
 /* COVER */
-
 .cover-wrap{
     position:relative;
+    background:#fff;
+    height:180px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.cover-img{
-    width:100%;
-    height:180px;
-    object-fit:cover;
+/* if no image fallback */
+.cover-fallback{
+    font-size:60px;
+    opacity:0.6;
 }
 
 /* PROFILE */
-
 .profile-img{
-
     width:95px;
     height:95px;
-
     border-radius:50%;
     border:5px solid white;
-
     object-fit:cover;
-
     position:absolute;
-
     bottom:-45px;
     left:20px;
-
     background:white;
 }
 
-/* BODY */
-
+/* CARD CONTENT */
 .card-content{
     padding:60px 20px 20px;
 }
 
+/* 🔥 NAME SECTION NAVY BLUE */
 .doc-name{
     font-size:20px;
     font-weight:800;
+    color:white;
+}
+
+.name-box{
+    background:var(--navy);
+    padding:10px 12px;
+    border-radius:12px;
+    display:inline-block;
 }
 
 .doc-speciality{
-    color:var(--primary);
+    color:#cfe3ff;
     font-weight:600;
+    margin-top:4px;
 }
 
+/* VERIFIED */
 .verified{
     background:#16a34a;
     color:white;
@@ -146,6 +139,7 @@ body{
     font-size:12px;
 }
 
+/* STATS */
 .stats{
     display:flex;
     justify-content:space-between;
@@ -160,16 +154,23 @@ body{
     display:block;
 }
 
+/* 🔥 GOLD BUTTON */
 .btn-profile{
-
     border-radius:14px;
     padding:10px;
-
-    font-weight:700;
+    font-weight:800;
+    background:var(--gold);
+    border:none;
+    color:black;
+    transition:.3s;
 }
 
-/* TOP NAV */
+.btn-profile:hover{
+    background:#f0c94d;
+    color:black;
+}
 
+/* TOPBAR */
 .topbar{
     display:flex;
     justify-content:space-between;
@@ -183,78 +184,41 @@ body{
     color:#2563eb;
 }
 
-@media(max-width:768px){
+</style>
+</head>
 
-.hero{
-    padding:25px;
-}
+<body>
 
-.hero h1{
-    font-size:28px;
-}
+<div class="container py-4">
 
-}
-
-</style></head><body><div class="container py-4"><!-- TOPBAR -->
-
+<!-- TOPBAR -->
 <div class="topbar">
-
-    <div class="logo">
-        🩺 S.F Doctor Chamber
-    </div>
-
-    <a href="/" class="btn btn-outline-primary">
-        Home
-    </a>
-
+    <div class="logo">🩺 S.F Doctor Chamber</div>
+    <a href="/" class="btn btn-outline-primary">Home</a>
 </div>
 
 <!-- HERO -->
-
 <div class="hero">
-
     <h1>Find Trusted Doctors</h1>
-
-    <p>
-        Search doctors, clinics and specialists near you.
-    </p>
+    <p>Search doctors, clinics and specialists near you.</p>
 
     <form class="search-box mt-3">
-
         <div class="row g-2">
-
             <div class="col-md-5">
-                <input
-                    type="text"
-                    name="q"
-                    class="form-control"
-                    placeholder="Doctor name / specialization">
+                <input type="text" name="q" class="form-control" placeholder="Doctor name / specialization">
             </div>
-
             <div class="col-md-5">
-                <input
-                    type="text"
-                    name="area"
-                    class="form-control"
-                    placeholder="Area / City">
+                <input type="text" name="area" class="form-control" placeholder="Area / City">
             </div>
-
             <div class="col-md-2">
-                <button class="btn btn-light w-100">
-                    Search
-                </button>
+                <button class="btn btn-light w-100">Search</button>
             </div>
-
         </div>
-
     </form>
-
 </div>
 
 <!-- FILTERS -->
-
 <div class="mb-4">
-
     <span class="chip">Medicine</span>
     <span class="chip">Child</span>
     <span class="chip">ENT</span>
@@ -262,90 +226,76 @@ body{
     <span class="chip">Skin</span>
     <span class="chip">Orthopedic</span>
     <span class="chip">Eye</span>
-
 </div>
 
 <!-- DOCTORS -->
-
 <div class="row">
 
-    {% for doctor in doctors %}
+{% for doctor in doctors %}
 
-    <div class="col-lg-4 col-md-6 mb-4">
+<div class="col-lg-4 col-md-6 mb-4">
 
-        <div class="doctor-card">
+    <div class="doctor-card">
 
-            <div class="cover-wrap">
+        <div class="cover-wrap">
 
-                <img
-                    src="{{ doctor.cover_photo }}"
-                    class="cover-img">
+            {% if doctor.cover_photo %}
+                <img src="{{ doctor.cover_photo }}" class="cover-img">
+            {% else %}
+                <div class="cover-fallback">🩺</div>
+            {% endif %}
 
-                <img
-                    src="{{ doctor.profile_photo }}"
-                    class="profile-img">
+            <img src="{{ doctor.profile_photo }}" class="profile-img">
+
+        </div>
+
+        <div class="card-content">
+
+            <div class="d-flex justify-content-between">
+
+                <div class="name-box">
+                    <div class="doc-name">{{ doctor.name }}</div>
+                    <div class="doc-speciality">{{ doctor.specialization }}</div>
+                </div>
+
+                {% if doctor.verified %}
+                <span class="verified">✔ Verified</span>
+                {% endif %}
 
             </div>
 
-            <div class="card-content">
+            <div class="text-muted mt-2">
+                {{ doctor.hospital }}
+            </div>
 
-                <div class="d-flex justify-content-between">
-
-                    <div>
-
-                        <div class="doc-name">
-                            {{ doctor.name }}
-                        </div>
-
-                        <div class="doc-speciality">
-                            {{ doctor.specialization }}
-                        </div>
-
-                    </div>
-
-                    {% if doctor.verified %}
-                    <span class="verified">
-                        ✔ Verified
-                    </span>
-                    {% endif %}
-
+            <div class="stats">
+                <div>
+                    <strong>⭐ {{ doctor.rating or 0 }}</strong>
+                    Rating
                 </div>
 
-                <div class="text-muted mt-2">
-                    {{ doctor.hospital }}
+                <div>
+                    <strong>👁 {{ doctor.views or 0 }}</strong>
+                    Views
                 </div>
+            </div>
 
-                <div class="stats">
-
-                    <div>
-                        <strong>⭐ {{ doctor.rating or 0 }}</strong>
-                        Rating
-                    </div>
-
-                    <div>
-                        <strong>👁 {{ doctor.views or 0 }}</strong>
-                        Views
-                    </div>
-
-                </div>
-
-                <a
-                href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
-                class="btn btn-primary btn-profile w-100 mt-3">
-
+            <a href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
+               class="btn btn-profile w-100 mt-3">
                 View Doctor Profile
-
-                </a>
-
-            </div>
+            </a>
 
         </div>
 
     </div>
 
-    {% endfor %}
+</div>
+
+{% endfor %}
 
 </div>
 
-</div></body>
-</html>
+</div>
+
+</body>
+    </html>
