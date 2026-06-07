@@ -19,7 +19,7 @@ from . import doctor_bp
 # ==========================================
 # CREATE DOCTOR
 # ==========================================
-doctor_bp.route("/admin/create", methods=["GET", "POST"])
+@doctor_bp.route("/admin/create", methods=["GET", "POST"])
 def create_doctor():
 
     if request.method == "POST":
