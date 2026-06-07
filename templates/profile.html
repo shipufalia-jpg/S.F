@@ -364,6 +364,220 @@ body{
         grid-template-columns:1fr;
     }
 
+    :root{
+--primary:#2563eb;
+--secondary:#4f46e5;
+--glass:rgba(255,255,255,.72);
+}
+
+body{
+background:
+linear-gradient(
+135deg,
+#eef4ff,
+#f8fafc
+);
+font-size:16px;
+}
+
+/* COVER */
+
+.cover{
+height:460px;
+border-radius:0 0 35px 35px;
+}
+
+.cover-overlay{
+background:
+linear-gradient(
+to top,
+rgba(15,23,42,.85),
+rgba(15,23,42,.15)
+);
+}
+
+/* PROFILE CARD */
+
+.profile-section{
+background:var(--glass);
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
+
+border:1px solid rgba(
+    255,255,255,.5
+);
+
+box-shadow:
+0 20px 60px rgba(
+    37,99,235,.12
+);
+
+padding:38px;
+margin-top:-120px;
+
+}
+
+/* IMAGE */
+
+.profile-img{
+width:210px;
+height:210px;
+
+border:7px solid #fff;
+
+box-shadow:
+0 15px 40px rgba(
+    37,99,235,.25
+);
+
+}
+
+/* NAME */
+
+.user-info h1{
+font-size:48px;
+line-height:1.1;
+font-weight:800;
+}
+
+.work{
+font-size:20px;
+font-weight:600;
+color:#475569;
+}
+
+/* DETAILS */
+
+.user-details span{
+font-size:15px;
+padding:12px 18px;
+border-radius:14px;
+
+background:
+linear-gradient(
+    135deg,
+    #eff6ff,
+    #dbeafe
+);
+
+border:1px solid #bfdbfe;
+
+}
+
+/* BUTTONS */
+
+.btn{
+padding:14px 24px;
+font-size:15px;
+border-radius:16px;
+}
+
+.primary-btn{
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#4f46e5
+);
+}
+
+.primary-btn:hover{
+transform:translateY(-2px);
+}
+
+/* CONTENT */
+
+.content{
+gap:26px;
+margin-top:28px;
+}
+
+/* CARDS */
+
+.sidebar-card,
+.gallery-card{
+
+background:
+rgba(
+    255,
+    255,
+    255,
+    .8
+);
+
+backdrop-filter:blur(18px);
+
+border:1px solid
+rgba(
+    255,
+    255,
+    255,
+    .5
+);
+
+box-shadow:
+0 12px 35px
+rgba(
+    15,
+    23,
+    42,
+    .08
+);
+
+}
+
+/* SECTION */
+
+.section-title{
+font-size:26px;
+}
+
+/* INFO */
+
+.info-item div:last-child{
+font-size:16px;
+font-weight:500;
+}
+
+/* GALLERY */
+
+.gallery-img{
+height:240px;
+}
+
+.gallery-img:hover{
+transform:
+scale(1.08);
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.cover{
+    height:300px;
+}
+
+.profile-section{
+    margin-top:-70px;
+    padding:24px;
+}
+
+.profile-img{
+    width:160px;
+    height:160px;
+}
+
+.user-info h1{
+    font-size:34px;
+}
+
+.work{
+    font-size:18px;
+}
+
+    }
+
 /* আগের সব CSS এখানে থাকবে */
 
 .profile-section{
