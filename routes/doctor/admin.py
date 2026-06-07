@@ -11,7 +11,7 @@ from models.doctor import Doctor
 from models.doctor.chamber import Chamber
 
 from . import doctor_bp
-
+print("ADMIN LOADED")
 
 # ==========================================
 # DOCTOR LIST
