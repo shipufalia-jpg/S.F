@@ -1,6 +1,7 @@
 from . import doctor_bp
 from flask import request, redirect
 from models.doctor import DoctorRating
+from extensions import db
 
 
 @doctor_bp.route("/rate/<int:doctor_id>", methods=["POST"])
