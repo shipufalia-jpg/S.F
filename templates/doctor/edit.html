@@ -79,7 +79,7 @@ Edit Doctor | S.F Doctor Chamber
 
 </div>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
     <div class="row">
 
@@ -216,31 +216,43 @@ Edit Doctor | S.F Doctor Chamber
 
                     <div class="mb-3">
 
-                        <label class="form-label">
-                            Profile Photo URL
-                        </label>
+    <label class="form-label">
+        Profile Photo
+    </label>
 
-                        <input
-                        type="url"
-                        name="profile_photo"
-                        id="profileInput"
-                        class="form-control"
-                        value="{{ doctor.profile_photo }}">
+    <input
+    type="file"
+    name="profile_photo"
+    id="profileInput"
+    class="form-control"
+    accept="image/*">
+
+    {% if doctor.profile_photo %}
+    <small class="text-muted">
+        Current image uploaded
+    </small>
+    {% endif %}
 
                     </div>
 
                     <div>
 
-                        <label class="form-label">
-                            Cover Photo URL
-                        </label>
+    <label class="form-label">
+        Cover Photo
+    </label>
 
-                        <input
-                        type="url"
-                        name="cover_photo"
-                        id="coverInput"
-                        class="form-control"
-                        value="{{ doctor.cover_photo }}">
+    <input
+    type="file"
+    name="cover_photo"
+    id="coverInput"
+    class="form-control"
+    accept="image/*">
+
+    {% if doctor.cover_photo %}
+    <small class="text-muted">
+        Current cover uploaded
+    </small>
+    {% endif %}
 
                     </div>
 
@@ -350,25 +362,6 @@ Edit Doctor | S.F Doctor Chamber
 
 </div><script>
 
-const coverInput =
-document.getElementById("coverInput");
-
-const coverPreview =
-document.getElementById("coverPreview");
-
-coverInput.addEventListener(
-"input",
-function(){
-
-    if(this.value){
-
-        coverPreview.src =
-        this.value;
-
-    }
-
-});
-
 const profileInput =
 document.getElementById("profileInput");
 
@@ -376,16 +369,39 @@ const profilePreview =
 document.getElementById("profilePreview");
 
 profileInput.addEventListener(
-"input",
+"change",
 function(){
 
-    if(this.value){
+    if(this.files && this.files[0]){
 
         profilePreview.src =
-        this.value;
+        URL.createObjectURL(
+            this.files[0]
+        );
 
     }
 
 });
 
-</script>{% endblock %}
+const coverInput =
+document.getElementById("coverInput");
+
+const coverPreview =
+document.getElementById("coverPreview");
+
+coverInput.addEventListener(
+"change",
+function(){
+
+    if(this.files && this.files[0]){
+
+        coverPreview.src =
+        URL.createObjectURL(
+            this.files[0]
+        );
+
+    }
+
+});
+
+            </script>
