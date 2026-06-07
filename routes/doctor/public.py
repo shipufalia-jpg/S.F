@@ -26,12 +26,7 @@ def doctor_list():
         Doctor.id.desc()
     ).all()
 
-    # ✅ এখানে বসবে DEFAULT COVER LOGIC
     DEFAULT_COVER = "https://images.unsplash.com/photo-1580281658629-0a2d1a3c3d9c?auto=format&fit=crop&w=1200&q=80"
-
-    for doctor in doctors:
-        if not doctor.cover_photo:
-            doctor.cover_photo = DEFAULT_COVER
 
     return render_template(
         "doctor/list.html",
