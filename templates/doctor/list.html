@@ -18,42 +18,42 @@
 }
 
 body{
-    background:var(--bg);
+    background:linear-gradient(180deg,#eef2ff,#f8fafc);
     font-family:Inter,sans-serif;
 }
 
-/* HERO GLASS */
+/* HERO */
 .hero{
     background:linear-gradient(135deg,#2563eb,#4f46e5);
     color:white;
     border-radius:30px;
     padding:40px;
     margin-bottom:30px;
-    box-shadow:0 20px 60px rgba(37,99,235,.25);
+    box-shadow:0 25px 70px rgba(37,99,235,.25);
 }
 
-/* SEARCH GLASS */
+/* SEARCH */
 .search-box{
-    background:rgba(255,255,255,.18);
+    background:rgba(255,255,255,.15);
     backdrop-filter:blur(18px);
     border-radius:20px;
     padding:18px;
     border:1px solid rgba(255,255,255,.25);
 }
 
-/* CHIPS GLASS */
+/* CHIP */
 .chip{
     display:inline-block;
-    background:rgba(255,255,255,.8);
+    background:white;
     border:none;
     padding:10px 18px;
     border-radius:50px;
     font-size:14px;
     font-weight:600;
     margin:4px;
-    transition:.3s;
     cursor:pointer;
-    backdrop-filter:blur(10px);
+    transition:.3s;
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
 }
 
 .chip:hover{
@@ -61,79 +61,78 @@ body{
     color:white;
 }
 
-/* =========================
-   GLASS DOCTOR CARD (UPGRADED)
-========================= */
-
+/* CARD */
 .doctor-card{
     border:none;
-    border-radius:26px;
-    overflow:hidden;
-
-    background:rgba(255,255,255,.7);
-    backdrop-filter:blur(16px);
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,.06);
-
+    border-radius:28px;
+    overflow:visible; /* FIXED: image cut problem solved */
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(18px);
+    box-shadow:0 10px 35px rgba(0,0,0,.08);
     transition:.35s;
     position:relative;
 }
 
 .doctor-card:hover{
     transform:translateY(-8px);
-    box-shadow:
-        0 18px 50px rgba(37,99,235,.15);
+    box-shadow:0 25px 60px rgba(37,99,235,.18);
 }
 
 /* COVER */
 .cover-wrap{
     position:relative;
     height:180px;
+    border-radius:28px 28px 0 0;
     overflow:hidden;
 }
 
-/* cover image */
 .cover-img{
     width:100%;
     height:180px;
     object-fit:cover;
+    filter:brightness(.85);
 }
 
-/* PROFILE FLOAT GLASS */
+/* PROFILE IMAGE FIXED */
 .profile-img{
-    width:92px;
-    height:92px;
+    width:95px;
+    height:95px;
     border-radius:50%;
-    border:4px solid rgba(255,255,255,.9);
+    border:5px solid white;
     object-fit:cover;
 
     position:absolute;
-    bottom:-42px;
-    left:20px;
+    bottom:-48px;
+    left:22px;
 
     background:white;
 
-    box-shadow:
-        0 10px 25px rgba(0,0,0,.15),
-        0 0 0 4px rgba(37,99,235,.12);
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
 }
 
-/* CARD BODY */
+/* CONTENT */
 .card-content{
-    padding:65px 20px 20px;
+    padding:70px 20px 20px;
 }
 
-/* TEXT */
+/* NAME */
 .doc-name{
     font-size:20px;
-    font-weight:800;
+    font-weight:900;
     color:#0f172a;
 }
 
+/* SPECIALITY */
 .doc-speciality{
     color:var(--primary);
-    font-weight:600;
+    font-weight:700;
+}
+
+/* DEGREE FIXED */
+.doc-degree{
+    font-size:13px;
+    color:#475569;
+    margin-top:2px;
 }
 
 /* VERIFIED */
@@ -143,19 +142,17 @@ body{
     padding:5px 10px;
     border-radius:20px;
     font-size:12px;
-    font-weight:600;
-    backdrop-filter:blur(10px);
+    font-weight:700;
 }
 
-/* STATS GLASS */
+/* STATS */
 .stats{
     display:flex;
     justify-content:space-between;
     margin-top:15px;
-    padding:10px;
-    background:rgba(255,255,255,.5);
+    padding:12px;
+    background:rgba(255,255,255,.6);
     border-radius:14px;
-    backdrop-filter:blur(10px);
 }
 
 .stats div{
@@ -166,17 +163,14 @@ body{
     display:block;
 }
 
-/* BUTTON GLASS */
+/* BUTTON */
 .btn-profile{
     border-radius:14px;
     padding:10px;
-    font-weight:700;
-
+    font-weight:800;
     background:linear-gradient(135deg,#22c55e,#16a34a);
     border:none;
     color:white;
-
-    box-shadow:0 10px 25px rgba(34,197,94,.25);
 }
 
 .btn-profile:hover{
@@ -198,10 +192,9 @@ body{
     color:#2563eb;
 }
 
-/* RESPONSIVE */
+/* MOBILE */
 @media(max-width:768px){
     .hero{ padding:25px; }
-    .hero h1{ font-size:28px; }
 }
 
 </style>
@@ -260,7 +253,15 @@ body{
 
         <div class="cover-wrap">
 
-            <img src="{{ doctor.cover_photo }}" class="cover-img">
+            <img
+            src="{% if doctor.cover_photo %}
+             {{ doctor.cover_photo }}
+              {% else %}
+            https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=1200&q=80
+         {% endif %}"
+       class="cover-img"
+           alt="Doctor Cover"
+          />
 
             <img src="{{ doctor.profile_photo }}" class="profile-img">
 
@@ -272,7 +273,15 @@ body{
 
                 <div>
                     <div class="doc-name">{{ doctor.name }}</div>
-                    <div class="doc-speciality">{{ doctor.specialization }}</div>
+
+                    <div class="doc-speciality">
+                        {{ doctor.specialization }}
+                    </div>
+
+                    <!-- ✅ DEGREE FIXED -->
+                    <div class="doc-degree">
+                        {{ doctor.degree if doctor.degree else "Degree not added" }}
+                    </div>
                 </div>
 
                 {% if doctor.verified %}
@@ -315,4 +324,4 @@ body{
 </div>
 
 </body>
-    </html>
+</html>
