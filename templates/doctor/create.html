@@ -9,7 +9,6 @@ Create Doctor | S.F Doctor Chamber
 <div class="container py-4">
 
     <!-- HEADER -->
-
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-4">
 
@@ -24,208 +23,115 @@ Create Doctor | S.F Doctor Chamber
         </div>
     </div>
 
-    <form method="POST">
+    <!-- ✅ FIX: MULTIPART ADDED -->
+    <form method="POST" enctype="multipart/form-data">
 
         <!-- BASIC INFO -->
-
         <div class="card border-0 shadow-sm mb-4">
-
             <div class="card-header bg-white">
-                <h5 class="mb-0">
-                    Basic Information
-                </h5>
+                <h5 class="mb-0">Basic Information</h5>
             </div>
 
             <div class="card-body">
-
                 <div class="row">
 
                     <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Doctor Name
-                        </label>
-
-                        <input
-                            type="text"
-                            name="name"
-                            class="form-control"
-                            required>
-
+                        <label class="form-label">Doctor Name</label>
+                        <input type="text" name="name" class="form-control" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Degree
-                        </label>
-
-                        <input
-                            type="text"
-                            name="degree"
-                            class="form-control"
-                            required>
-
+                        <label class="form-label">Degree</label>
+                        <input type="text" name="degree" class="form-control" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Specialization
-                        </label>
-
-                        <input
-                            type="text"
-                            name="specialization"
-                            class="form-control">
-
+                        <label class="form-label">Specialization</label>
+                        <input type="text" name="specialization" class="form-control">
                     </div>
 
                     <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Hospital
-                        </label>
-
-                        <input
-                            type="text"
-                            name="hospital"
-                            class="form-control">
-
+                        <label class="form-label">Hospital</label>
+                        <input type="text" name="hospital" class="form-control">
                     </div>
 
                 </div>
-
             </div>
-
         </div>
 
         <!-- PROFESSIONAL -->
-
         <div class="card border-0 shadow-sm mb-4">
-
             <div class="card-header bg-white">
-                <h5 class="mb-0">
-                    Professional Information
-                </h5>
+                <h5 class="mb-0">Professional Information</h5>
             </div>
 
             <div class="card-body">
 
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Experience
-                    </label>
-
-                    <input
-                        type="text"
-                        name="experience"
-                        class="form-control"
-                        placeholder="10 Years">
-
+                    <label class="form-label">Experience</label>
+                    <input type="text" name="experience" class="form-control" placeholder="10 Years">
                 </div>
 
                 <div>
-
-                    <label class="form-label">
-                        About Doctor
-                    </label>
-
-                    <textarea
-                        name="about"
-                        rows="6"
-                        class="form-control"></textarea>
-
+                    <label class="form-label">About Doctor</label>
+                    <textarea name="about" rows="6" class="form-control"></textarea>
                 </div>
 
             </div>
-
         </div>
 
-        <!-- MEDIA -->
-
+        <!-- MEDIA (FIXED FILE UPLOAD) -->
         <div class="card border-0 shadow-sm mb-4">
-
             <div class="card-header bg-white">
-                <h5 class="mb-0">
-                    Media
-                </h5>
+                <h5 class="mb-0">Media</h5>
             </div>
 
             <div class="card-body">
 
+                <!-- PROFILE IMAGE UPLOAD -->
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Profile Photo URL
-                    </label>
-
+                    <label class="form-label">Profile Photo</label>
                     <input
-                        type="url"
+                        type="file"
                         name="profile_photo"
+                        accept="image/*"
                         class="form-control">
-
                 </div>
 
+                <!-- COVER IMAGE UPLOAD -->
                 <div>
-
-                    <label class="form-label">
-                        Cover Photo URL
-                    </label>
-
+                    <label class="form-label">Cover Photo</label>
                     <input
-                        type="url"
+                        type="file"
                         name="cover_photo"
+                        accept="image/*"
                         class="form-control">
-
                 </div>
 
             </div>
-
         </div>
 
         <!-- STATUS -->
-
         <div class="card border-0 shadow-sm mb-4">
-
             <div class="card-header bg-white">
-                <h5 class="mb-0">
-                    Status
-                </h5>
+                <h5 class="mb-0">Status</h5>
             </div>
 
             <div class="card-body">
 
                 <div class="form-check form-switch">
-
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="verified">
-
-                    <label class="form-check-label">
-                        Verified Doctor
-                    </label>
-
+                    <input class="form-check-input" type="checkbox" name="verified">
+                    <label class="form-check-label">Verified Doctor</label>
                 </div>
 
             </div>
-
         </div>
 
         <!-- ACTION -->
-
         <div class="d-grid">
-
-            <button
-                type="submit"
-                class="btn btn-primary btn-lg">
-
+            <button type="submit" class="btn btn-primary btn-lg">
                 Save Doctor & Continue
-
             </button>
-
         </div>
 
     </form>
