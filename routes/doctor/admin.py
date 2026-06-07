@@ -91,39 +91,83 @@ def create_doctor():
 # EDIT DOCTOR
 # ==========================================
 
-@doctor_bp.route("/admin/<int:doctor_id>/edit", methods=["GET", "POST"])
+@doctor_bp.route(
+    "/admin/<int:doctor_id>/edit",
+    methods=["GET", "POST"]
+)
 def edit_doctor(doctor_id):
 
     doctor = Doctor.query.get_or_404(doctor_id)
 
     if request.method == "POST":
 
-        print("FORM DATA:", request.form)
+        # আগের URL রাখো
+        profile_url = doctor.profile_photo
+        cover_url = doctor.cover_photo
 
+        # File নাও
+        profile_file = request.files.get("profile_photo")
+        cover_file = request.files.get("cover_photo")
+
+        # Profile Upload
+        if profile_file and profile_file.filename:
+            result = cloudinary.uploader.upload(
+                profile_file,
+                folder="doctors/profile"
+            )
+            profile_url = result.get("secure_url")
+
+        # Cover Upload
+        if cover_file and cover_file.filename:
+            result = cloudinary.uploader.upload(
+                cover_file,
+                folder="doctors/cover"
+            )
+            cover_url = result.get("secure_url")
+
+        # Doctor Update
         doctor.name = request.form.get("name")
         doctor.degree = request.form.get("degree")
         doctor.specialization = request.form.get("specialization")
         doctor.hospital = request.form.get("hospital")
         doctor.experience = request.form.get("experience")
         doctor.about = request.form.get("about")
-        doctor.profile_photo = request.form.get("profile_photo")
-        doctor.cover_photo = request.form.get("cover_photo")
 
-        # FIXED CHECKBOX
+        # Cloudinary URL Save
+        doctor.profile_photo = profile_url
+        doctor.cover_photo = cover_url
+
         doctor.verified = "verified" in request.form
 
         try:
             db.session.commit()
-            flash("Doctor updated successfully.", "success")
+
+            flash(
+                "Doctor updated successfully.",
+                "success"
+            )
+
+            return redirect(
+                url_for(
+                    "doctor.doctor_profile",
+                    doctor_id=doctor.id
+                )
+            )
+
         except Exception as e:
             db.session.rollback()
+
             print("DB ERROR:", e)
-            flash("Update failed!", "danger")
 
-        return redirect(url_for("doctor.doctor_profile", doctor_id=doctor.id))
+            flash(
+                "Update failed!",
+                "danger"
+            )
 
-    return render_template("doctor/edit.html", doctor=doctor)
-
+    return render_template(
+        "doctor/edit.html",
+        doctor=doctor
+    )
 # ==========================================
 # DELETE DOCTOR
 # ==========================================
