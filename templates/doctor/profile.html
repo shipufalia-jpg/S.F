@@ -178,7 +178,122 @@ select.form-control{
         padding:15px !important;
     }
 
+    /* PROFILE HEADER BIG */
+
+.profile-img{
+width:220px !important;
+height:220px !important;
+margin-top:-110px !important;
+border:8px solid #fff !important;
 }
+
+h3{
+font-size:2.6rem !important;
+font-weight:800 !important;
+margin-top:15px;
+}
+
+.text-muted{
+font-size:1.15rem !important;
+}
+
+/* DOCTOR HEADER AREA */
+
+.doctor-header{
+background:linear-gradient(135deg,#2563eb,#4f46e5);
+color:#fff;
+padding:30px;
+border-radius:24px;
+margin-top:-40px;
+position:relative;
+z-index:5;
+box-shadow:0 15px 35px rgba(37,99,235,.25);
+}
+
+/* ABOUT CARD */
+
+.about-card{
+border-left:6px solid #2563eb;
+background:#fff;
+}
+
+/* CHAMBER CARD */
+
+.chamber-card{
+border-left:6px solid #22c55e;
+background:#fff;
+}
+
+/* RATING CARD */
+
+.rating-card{
+border-left:6px solid #f59e0b;
+background:#fff;
+}
+
+/* SECTION TITLES */
+
+.info-title{
+font-size:1.45rem !important;
+font-weight:800 !important;
+margin-bottom:20px;
+color:#111827;
+}
+
+/* CHAMBER BOX */
+
+.chamber-box{
+background:#f8fafc !important;
+border:2px solid #e5e7eb !important;
+border-radius:18px !important;
+padding:18px !important;
+margin-bottom:15px !important;
+}
+
+.chamber-box b{
+display:block;
+font-size:1.2rem;
+margin-bottom:8px;
+}
+
+/* BUTTONS BIG */
+
+.btn-call,
+.btn-whatsapp{
+padding:12px 18px !important;
+font-size:15px !important;
+font-weight:700 !important;
+}
+
+.btn-primary{
+height:52px;
+font-size:16px;
+font-weight:700;
+}
+
+/* CARD SPACING */
+
+.card-box{
+padding:22px !important;
+margin-top:22px !important;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.profile-img{
+    width:160px !important;
+    height:160px !important;
+    margin-top:-80px !important;
+}
+
+h3{
+    font-size:2rem !important;
+}
+
+  }
+
 
 </style>
     
@@ -194,7 +309,7 @@ select.form-control{
     class="w-100 cover">
 
     <!-- PROFILE -->
-    <div class="text-center">
+    <div class="text-center doctor-header">
 
         <img
         src="{{ doctor.profile_photo if doctor.profile_photo else url_for('static', filename='doctor.png') }}"
