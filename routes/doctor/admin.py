@@ -91,17 +91,14 @@ def create_doctor():
 # EDIT DOCTOR
 # ==========================================
 
-@doctor_bp.route(
-    "/admin/<int:doctor_id>/edit",
-    methods=["GET", "POST"]
-)
+@doctor_bp.route("/admin/<int:doctor_id>/edit", methods=["GET", "POST"])
 def edit_doctor(doctor_id):
 
-    doctor = Doctor.query.get_or_404(
-        doctor_id
-    )
+    doctor = Doctor.query.get_or_404(doctor_id)
 
     if request.method == "POST":
+
+        print("FORM DATA:", request.form)
 
         doctor.name = request.form.get("name")
         doctor.degree = request.form.get("degree")
@@ -111,29 +108,21 @@ def edit_doctor(doctor_id):
         doctor.about = request.form.get("about")
         doctor.profile_photo = request.form.get("profile_photo")
         doctor.cover_photo = request.form.get("cover_photo")
-        doctor.verified = bool(
-            request.form.get("verified")
-        )
 
-        db.session.commit()
+        # FIXED CHECKBOX
+        doctor.verified = "verified" in request.form
 
-        flash(
-            "Doctor updated successfully.",
-            "success"
-        )
+        try:
+            db.session.commit()
+            flash("Doctor updated successfully.", "success")
+        except Exception as e:
+            db.session.rollback()
+            print("DB ERROR:", e)
+            flash("Update failed!", "danger")
 
-        return redirect(
-            url_for(
-                "doctor.doctor_profile",
-                doctor_id=doctor.id
-            )
-        )
+        return redirect(url_for("doctor.doctor_profile", doctor_id=doctor.id))
 
-    return render_template(
-        "doctor/edit.html",
-        doctor=doctor
-    )
-
+    return render_template("doctor/edit.html", doctor=doctor)
 
 # ==========================================
 # DELETE DOCTOR
