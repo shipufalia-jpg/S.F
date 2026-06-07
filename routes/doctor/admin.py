@@ -11,7 +11,7 @@ from models.doctor import Doctor
 from models.doctor.chamber import Chamber
 from flask import request, render_template, redirect, url_for, flash
 from . import doctor_bp
-print("ADMIN LOADED")
+
 
 
 # ==========================================
