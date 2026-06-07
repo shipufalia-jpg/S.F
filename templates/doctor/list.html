@@ -12,12 +12,9 @@
 <style>
 
 :root{
-    --primary:#2563eb;
-    --secondary:#4f46e5;
+    --primary:#1e3a8a;   /* deep medical blue */
     --bg:#f4f7fc;
-    --navy:#0b1f4d;
     --gold:#d4af37;
-    --lightblue:#eaf4ff;
 }
 
 body{
@@ -25,138 +22,131 @@ body{
     font-family:Inter,sans-serif;
 }
 
-/* HERO */
-.hero{
-    background:linear-gradient(135deg,#2563eb,#4f46e5);
-    color:white;
-    border-radius:30px;
-    padding:40px;
-    margin-bottom:30px;
-    box-shadow:0 15px 40px rgba(37,99,235,.25);
-}
-
-/* SEARCH */
-.search-box{
-    background:rgba(255,255,255,.15);
-    backdrop-filter:blur(12px);
-    border-radius:20px;
-    padding:18px;
-}
-
-/* CHIP */
-.chip{
-    display:inline-block;
-    background:white;
-    border:none;
-    padding:10px 18px;
-    border-radius:50px;
-    font-size:14px;
-    font-weight:600;
-    margin:4px;
-    transition:.3s;
-    cursor:pointer;
-}
-
-.chip:hover{
-    background:var(--primary);
-    color:white;
-}
-
 /* CARD */
 .doctor-card{
     border:none;
+    border-radius:26px;
     overflow:hidden;
-    border-radius:28px;
-    background:white;
-    box-shadow:0 12px 35px rgba(0,0,0,.08);
-    transition:.35s;
+    background:#fff;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    transition:.3s;
 }
 
 .doctor-card:hover{
-    transform:translateY(-8px);
+    transform:translateY(-6px);
+    box-shadow:0 18px 50px rgba(0,0,0,.12);
 }
 
 /* COVER */
 .cover-wrap{
     position:relative;
-    height:190px;
+    height:180px;
+    background:linear-gradient(135deg,#eaf1ff,#ffffff);
     display:flex;
     align-items:center;
     justify-content:center;
-    background:linear-gradient(135deg,#eef2ff,#ffffff);
     overflow:hidden;
 }
 
-/* modern big icon fallback */
-.cover-fallback{
-    font-size:90px;
-    z-index:2;
-    background:rgba(255,255,255,0.6);
-    padding:25px 35px;
-    border-radius:25px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
+/* decorative soft circles */
+.cover-wrap::before,
+.cover-wrap::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    filter:blur(50px);
+    opacity:.25;
 }
 
-/* cover image */
+.cover-wrap::before{
+    background:var(--primary);
+    top:-50px;
+    left:-40px;
+}
+
+.cover-wrap::after{
+    background:var(--gold);
+    bottom:-60px;
+    right:-40px;
+}
+
+/* COVER IMAGE */
 .cover-img{
     width:100%;
-    height:190px;
+    height:180px;
     object-fit:cover;
     position:absolute;
     top:0;
     left:0;
 }
 
-/* PROFILE (FIXED CUT ISSUE) */
+/* fallback */
+.cover-fallback{
+    font-size:80px;
+    z-index:2;
+    opacity:.6;
+}
+
+/* PROFILE */
 .profile-img{
-    width:95px;
-    height:95px;
+    width:92px;
+    height:92px;
     border-radius:50%;
-    border:5px solid white;
+    border:4px solid white;
     object-fit:cover;
     position:absolute;
-    bottom:-50px;
-    left:20px;
-    background:white;
+    bottom:-46px;
+    left:22px;
     z-index:10;
     box-shadow:0 10px 25px rgba(0,0,0,.15);
 }
 
-/* CARD CONTENT (LIGHT BLUE FULL SECTION) */
+/* CONTENT */
 .card-content{
-    padding:70px 20px 25px;
-    background:var(--lightblue);
+    padding:70px 22px 22px;
 }
 
-/* NAME BLOCK */
-.name-box{
-    background:var(--navy);
-    padding:10px 14px;
-    border-radius:14px;
+/* UNIFIED NAME BLOCK (single color only) */
+.doc-info{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 16px;
+    border-radius:16px;
     display:inline-block;
-    box-shadow:0 8px 20px rgba(11,31,77,.25);
+    width:100%;
 }
 
 .doc-name{
-    font-size:20px;
+    font-size:18px;
     font-weight:800;
-    color:#fff;
+    margin:0;
 }
 
 .doc-speciality{
-    color:#cfe3ff;
-    font-weight:600;
     font-size:13px;
-    margin-top:3px;
+    opacity:.85;
+    margin-top:2px;
+}
+
+/* HOSPITAL */
+.doc-hospital{
+    margin-top:10px;
+    color:#666;
+    font-size:14px;
 }
 
 /* VERIFIED */
 .verified{
+    position:absolute;
+    top:12px;
+    right:12px;
     background:#16a34a;
-    color:white;
-    padding:5px 10px;
+    color:#fff;
+    font-size:11px;
+    padding:4px 10px;
     border-radius:20px;
-    font-size:12px;
 }
 
 /* STATS */
@@ -164,24 +154,25 @@ body{
     display:flex;
     justify-content:space-between;
     margin-top:15px;
-}
-
-.stats div{
-    text-align:center;
+    font-size:13px;
+    color:#444;
 }
 
 .stats strong{
     display:block;
+    font-size:16px;
 }
 
 /* GOLD BUTTON */
 .btn-profile{
-    border-radius:14px;
+    margin-top:16px;
+    width:100%;
+    border:none;
     padding:10px;
+    border-radius:14px;
     font-weight:800;
     background:var(--gold);
-    border:none;
-    color:black;
+    color:#111;
     transition:.3s;
 }
 
@@ -200,7 +191,7 @@ body{
 .logo{
     font-size:24px;
     font-weight:900;
-    color:#2563eb;
+    color:var(--primary);
 }
 
 </style>
@@ -217,34 +208,9 @@ body{
 </div>
 
 <!-- HERO -->
-<div class="hero">
-    <h1>Find Trusted Doctors</h1>
-    <p>Search doctors, clinics and specialists near you.</p>
-
-    <form class="search-box mt-3">
-        <div class="row g-2">
-            <div class="col-md-5">
-                <input type="text" name="q" class="form-control" placeholder="Doctor name / specialization">
-            </div>
-            <div class="col-md-5">
-                <input type="text" name="area" class="form-control" placeholder="Area / City">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-light w-100">Search</button>
-            </div>
-        </div>
-    </form>
-</div>
-
-<!-- FILTERS -->
 <div class="mb-4">
-    <span class="chip">Medicine</span>
-    <span class="chip">Child</span>
-    <span class="chip">ENT</span>
-    <span class="chip">Heart</span>
-    <span class="chip">Skin</span>
-    <span class="chip">Orthopedic</span>
-    <span class="chip">Eye</span>
+    <h2 class="fw-bold">Find Trusted Doctors</h2>
+    <p class="text-muted">Apollo-style premium doctor listing UI</p>
 </div>
 
 <!-- DOCTORS -->
@@ -264,6 +230,10 @@ body{
                 <div class="cover-fallback">🩺</div>
             {% endif %}
 
+            {% if doctor.verified %}
+            <span class="verified">Verified</span>
+            {% endif %}
+
             {% if doctor.profile_photo %}
                 <img src="{{ doctor.profile_photo }}" class="profile-img">
             {% endif %}
@@ -272,20 +242,12 @@ body{
 
         <div class="card-content">
 
-            <div class="d-flex justify-content-between">
-
-                <div class="name-box">
-                    <div class="doc-name">{{ doctor.name }}</div>
-                    <div class="doc-speciality">{{ doctor.specialization }}</div>
-                </div>
-
-                {% if doctor.verified %}
-                <span class="verified">✔ Verified</span>
-                {% endif %}
-
+            <div class="doc-info">
+                <div class="doc-name">{{ doctor.name }}</div>
+                <div class="doc-speciality">{{ doctor.specialization }}</div>
             </div>
 
-            <div class="text-muted mt-2">
+            <div class="doc-hospital">
                 {{ doctor.hospital }}
             </div>
 
@@ -302,7 +264,7 @@ body{
             </div>
 
             <a href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
-               class="btn btn-profile w-100 mt-3">
+               class="btn btn-profile">
                 View Doctor Profile
             </a>
 
