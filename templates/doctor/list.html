@@ -17,6 +17,7 @@
     --bg:#f4f7fc;
     --navy:#0b1f4d;
     --gold:#d4af37;
+    --lightblue:#eaf4ff;
 }
 
 body{
@@ -73,13 +74,12 @@ body{
 
 .doctor-card:hover{
     transform:translateY(-8px);
-    box-shadow:0 20px 45px rgba(0,0,0,.12);
 }
 
 /* COVER */
 .cover-wrap{
     position:relative;
-    height:180px;
+    height:190px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -87,48 +87,27 @@ body{
     overflow:hidden;
 }
 
-/* color capsules */
-.cover-wrap::before,
-.cover-wrap::after{
-    content:"";
-    position:absolute;
-    width:160px;
-    height:160px;
-    border-radius:50%;
-    filter:blur(40px);
-    opacity:.4;
-}
-
-.cover-wrap::before{
-    background:#2563eb;
-    top:-40px;
-    left:-40px;
-}
-
-.cover-wrap::after{
-    background:#d4af37;
-    bottom:-40px;
-    right:-40px;
+/* modern big icon fallback */
+.cover-fallback{
+    font-size:90px;
+    z-index:2;
+    background:rgba(255,255,255,0.6);
+    padding:25px 35px;
+    border-radius:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
 /* cover image */
 .cover-img{
     width:100%;
-    height:180px;
+    height:190px;
     object-fit:cover;
     position:absolute;
     top:0;
     left:0;
 }
 
-/* fallback */
-.cover-fallback{
-    font-size:70px;
-    opacity:0.6;
-    z-index:2;
-}
-
-/* PROFILE */
+/* PROFILE (FIXED CUT ISSUE) */
 .profile-img{
     width:95px;
     height:95px;
@@ -136,18 +115,20 @@ body{
     border:5px solid white;
     object-fit:cover;
     position:absolute;
-    bottom:-45px;
+    bottom:-50px;
     left:20px;
     background:white;
-    z-index:5;
+    z-index:10;
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
 }
 
-/* CARD CONTENT */
+/* CARD CONTENT (LIGHT BLUE FULL SECTION) */
 .card-content{
-    padding:60px 20px 20px;
+    padding:70px 20px 25px;
+    background:var(--lightblue);
 }
 
-/* NAVY NAME BLOCK */
+/* NAME BLOCK */
 .name-box{
     background:var(--navy);
     padding:10px 14px;
