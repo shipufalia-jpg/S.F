@@ -81,20 +81,17 @@ body{
 /* COVER */
 .cover-wrap{
     position:relative;
-    height:180px;
+    height:150px;   /* আগে 180px ছিল → এখন কমানো */
     border-radius:28px 28px 0 0;
     overflow:visible;
 }
-
 /* COVER IMAGE */
 .cover-img{
+    height:150px;   /* match with wrap */
     width:100%;
-    height:180px;
     object-fit:cover;
-    filter:brightness(.85);
-    border-radius:28px 28px 0 0;
+    filter:brightness(.78);
 }
-
 /* PROFILE IMAGE */
 .profile-img{
     width:100px;
@@ -129,45 +126,45 @@ body{
     justify-content:space-between;
     align-items:flex-start;
 
-    padding:14px 16px;
+    padding:16px 16px;
 
-    border-radius:18px;
-
-    /* 🔥 stronger glass for readability */
-    background:rgba(255,255,255,.75);
+    background:rgba(255,255,255,.65);
     backdrop-filter:blur(16px);
 
+    border-radius:18px;
     border:1px solid rgba(255,255,255,.6);
-
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
 .doctor-info{
     display:flex;
     flex-direction:column;
     gap:3px;
+    max-width:75%;
 }
 
 /* 🔥 FIX: NAME VISIBILITY */
 .doc-name{
-    font-size:20px;
+    font-size:21px;
     font-weight:900;
-    color:#0b1220;   /* darker for strong visibility */
-    letter-spacing:.2px;
+    color:#0b1220;
 }
 
-/* SPECIALITY */
 .doc-speciality{
     font-size:14px;
     font-weight:700;
-    color:#1d4ed8;  /* stronger blue */
+    color:#1d4ed8;
 }
 
 /* DEGREE */
 .doc-degree{
     font-size:12px;
-    color:#334155;  /* darker grey */
-    font-weight:600;
+    color:#475569;
+    font-weight:500;
+
+    display:-webkit-box;
+    -webkit-line-clamp:2;   /* max 2 lines */
+    -webkit-box-orient:vertical;
+    overflow:hidden;
 }
 
 /* VERIFIED BADGE */
@@ -182,7 +179,7 @@ body{
     font-weight:800;
 
     box-shadow:0 8px 18px rgba(34,197,94,.25);
-    }
+}
 /* OLD STYLES (keep for safety) */
 .stats{
     display:flex;
