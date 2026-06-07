@@ -65,7 +65,7 @@ body{
 .doctor-card{
     border:none;
     border-radius:28px;
-    overflow:visible; /* FIXED: image cut problem solved */
+    overflow:visible;
     background:rgba(255,255,255,.75);
     backdrop-filter:blur(18px);
     box-shadow:0 10px 35px rgba(0,0,0,.08);
@@ -83,7 +83,7 @@ body{
     position:relative;
     height:180px;
     border-radius:28px 28px 0 0;
-    overflow:visible;   /* ✅ IMPORTANT FIX */
+    overflow:visible;
 }
 
 /* COVER IMAGE */
@@ -95,7 +95,7 @@ body{
     border-radius:28px 28px 0 0;
 }
 
-/* PROFILE IMAGE FIXED FULL VIEW */
+/* PROFILE IMAGE */
 .profile-img{
     width:100px;
     height:100px;
@@ -106,8 +106,7 @@ body{
     position:absolute;
     bottom:-50px;
     left:20px;
-
-    z-index:10;   /* ✅ IMPORTANT FIX */
+    z-index:10;
 
     background:white;
 
@@ -116,47 +115,75 @@ body{
         0 0 0 5px rgba(37,99,235,.10);
 }
 
-/* CARD BODY PUSH DOWN */
+/* CARD BODY */
 .card-content{
-    padding:80px 20px 20px; /* ✅ increased spacing */
+    padding:80px 20px 20px;
 }
 
-/* CONTENT */
-.card-content{
-    padding:70px 20px 20px;
+/* =========================
+   🔥 NEW HEADER UI (REPLACED)
+========================= */
+
+.doctor-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    padding:12px 14px;
+    border-radius:18px;
+
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(14px);
+
+    border:1px solid rgba(255,255,255,.4);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
 }
 
-/* NAME */
+.doctor-info{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+/* NAME PREMIUM */
 .doc-name{
     font-size:20px;
     font-weight:900;
     color:#0f172a;
+    letter-spacing:.2px;
 }
 
 /* SPECIALITY */
 .doc-speciality{
+    font-size:14px;
+    font-weight:700;
     color:var(--primary);
-    font-weight:700;
 }
 
-/* DEGREE FIXED */
+/* DEGREE */
 .doc-degree{
-    font-size:13px;
-    color:#475569;
-    margin-top:2px;
-}
-
-/* VERIFIED */
-.verified{
-    background:rgba(22,163,74,.12);
-    color:#16a34a;
-    padding:5px 10px;
-    border-radius:20px;
     font-size:12px;
-    font-weight:700;
+    color:#64748b;
+    font-weight:500;
 }
 
-/* STATS */
+/* VERIFIED BADGE */
+.verified-badge{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:white;
+
+    padding:6px 12px;
+    border-radius:999px;
+
+    font-size:11px;
+    font-weight:800;
+
+    box-shadow:0 8px 20px rgba(34,197,94,.25);
+    backdrop-filter:blur(10px);
+}
+
+/* OLD STYLES (keep for safety) */
 .stats{
     display:flex;
     justify-content:space-between;
@@ -174,7 +201,6 @@ body{
     display:block;
 }
 
-/* BUTTON */
 .btn-profile{
     border-radius:14px;
     padding:10px;
@@ -271,58 +297,55 @@ body{
             https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=1200&q=80
          {% endif %}"
        class="cover-img"
-           alt="Doctor Cover"
-          />
+       alt="Doctor Cover"/>
 
             <img src="{{ doctor.profile_photo }}" class="profile-img">
 
         </div>
 
-        <div class="card-content">
+        <!-- 🔥 NEW HEADER UI -->
+        <div class="doctor-header">
 
-            <div class="d-flex justify-content-between">
+            <div class="doctor-info">
 
-                <div>
-                    <div class="doc-name">{{ doctor.name }}</div>
+                <div class="doc-name">{{ doctor.name }}</div>
 
-                    <div class="doc-speciality">
-                        {{ doctor.specialization }}
-                    </div>
-
-                    <!-- ✅ DEGREE FIXED -->
-                    <div class="doc-degree">
-                        {{ doctor.degree if doctor.degree else "Degree not added" }}
-                    </div>
+                <div class="doc-speciality">
+                    {{ doctor.specialization }}
                 </div>
 
-                {% if doctor.verified %}
-                <span class="verified">✔ Verified</span>
-                {% endif %}
+                <div class="doc-degree">
+                    {{ doctor.degree if doctor.degree else "Degree not added" }}
+                </div>
 
             </div>
 
-            <div class="text-muted mt-2">
-                {{ doctor.hospital }}
-            </div>
-
-            <div class="stats">
-                <div>
-                    <strong>⭐ {{ doctor.rating or 0 }}</strong>
-                    Rating
-                </div>
-
-                <div>
-                    <strong>👁 {{ doctor.views or 0 }}</strong>
-                    Views
-                </div>
-            </div>
-
-            <a href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
-               class="btn btn-profile w-100 mt-3">
-                View Doctor Profile
-            </a>
+            {% if doctor.verified %}
+            <span class="verified-badge">✔ Verified</span>
+            {% endif %}
 
         </div>
+
+        <div class="text-muted mt-2">
+            {{ doctor.hospital }}
+        </div>
+
+        <div class="stats">
+            <div>
+                <strong>⭐ {{ doctor.rating or 0 }}</strong>
+                Rating
+            </div>
+
+            <div>
+                <strong>👁 {{ doctor.views or 0 }}</strong>
+                Views
+            </div>
+        </div>
+
+        <a href="{{ url_for('doctor.doctor_profile', doctor_id=doctor.id) }}"
+           class="btn btn-profile w-100 mt-3">
+            View Doctor Profile
+        </a>
 
     </div>
 
