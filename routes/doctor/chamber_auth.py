@@ -1,19 +1,32 @@
-from flask import Blueprint, request, session, redirect, render_template, url_for
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Blueprint, request, session, redirect, render_template
+from werkzeug.security import check_password_hash
 from models.chamber import Chamber
-from extensions import db
-from datetime import datetime
+from models.appointment import Appointment
+from models.doctor import Doctor
+from functools import wraps
 
-chamber_auth = Blueprint(
-    "chamber_auth",
-    __name__,
-    url_prefix="/chamber"
-)
+chamber = Blueprint("chamber", __name__, url_prefix="/chamber")
 
-# =====================================================
+
+# =========================
+# LOGIN REQUIRED
+# =========================
+def chamber_login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        if "chamber_id" not in session:
+            return redirect("/chamber/login")
+
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+# =========================
 # LOGIN
-# =====================================================
-@chamber_auth.route("/login", methods=["GET", "POST"])
+# =========================
+@chamber.route("/login", methods=["GET", "POST"])
 def login():
 
     if request.method == "GET":
@@ -22,27 +35,48 @@ def login():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    if not username or not password:
-        return "All fields required"
+    chamber_user = Chamber.query.filter_by(username=username).first()
 
-    chamber = Chamber.query.filter_by(username=username).first()
-
-    if not chamber:
+    if not chamber_user:
         return "Invalid Chamber"
 
-    if chamber.status != "active":
-        return "Chamber blocked"
-
-    if not check_password_hash(chamber.password_hash, password):
+    if not chamber_user.check_password(password):
         return "Wrong password"
 
     session.clear()
+    session["chamber_id"] = chamber_user.id
+    session["chamber_name"] = chamber_user.name
 
-    session["chamber_id"] = chamber.id
-    session["chamber_name"] = chamber.name
+    return redirect("/chamber/dashboard")
 
-    chamber.last_login = datetime.utcnow()
 
-    db.session.commit()
+# =========================
+# DASHBOARD
+# =========================
+@chamber.route("/dashboard")
+@chamber_login_required
+def dashboard():
 
-    return redirect(url_for("chamber.dashboard"))
+    cid = session["chamber_id"]
+
+    doctors = Doctor.query.filter_by(chamber_id=cid).count()
+
+    bookings = Appointment.query.filter_by(chamber_id=cid).count()
+
+    recent = Appointment.query.filter_by(chamber_id=cid).order_by(Appointment.id.desc()).limit(10).all()
+
+    return render_template(
+        "chamber/dashboard.html",
+        total_doctors=doctors,
+        total_bookings=bookings,
+        recent_bookings=recent
+    )
+
+
+# =========================
+# LOGOUT
+# =========================
+@chamber.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/chamber/login")
