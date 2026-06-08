@@ -19,6 +19,7 @@
 
 body{
     background:linear-gradient(135deg,#eef4ff,#f8fafc);
+    padding-bottom:140px;
 }
 
 /* COVER */
@@ -201,10 +202,10 @@ body{
     left:0;
     bottom:0;
     width:100%;
-    background:rgba(255,255,255,.92);
-    backdrop-filter:blur(18px);
+    background:#fff;
     padding:12px;
-    box-shadow:0 -5px 20px rgba(0,0,0,.12);
+    border-top:1px solid #e5e7eb;
+    box-shadow:0 -8px 25px rgba(0,0,0,.10);
     z-index:999;
 }
 
@@ -371,19 +372,22 @@ class="cover">
             -
             {{ c.end_time }}
 
-        </div>
+        <div class="mt-3 d-flex flex-wrap gap-2">
 
-        <div class="mt-3">
+    <a href="tel:{{ c.phone }}"
+       class="btn btn-call btn-sm">
+        📞 Call
+    </a>
 
-            <a href="tel:{{ c.phone }}"
-               class="btn btn-call btn-sm me-2">
-                📞 Call
-            </a>
+    <a href="https://wa.me/{{ c.whatsapp }}"
+       class="btn btn-whatsapp btn-sm">
+        💬 WhatsApp
+    </a>
 
-            <a href="https://wa.me/{{ c.whatsapp }}"
-               class="btn btn-whatsapp btn-sm">
-                💬 WhatsApp
-            </a>
+    <a href="/book-appointment/{{ doctor.id }}"
+       class="btn btn-warning btn-sm fw-bold">
+        📅 Book Now
+    </a>
 
         </div>
 
