@@ -1,24 +1,15 @@
 from extensions import db
 from datetime import datetime
-from werkzeug.security import (
-    generate_password_hash,
-    check_password_hash
-)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Chamber(db.Model):
 
     __tablename__ = "chambers"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(
-        db.String(255),
-        nullable=False
-    )
+    name = db.Column(db.String(255), nullable=False)
 
     username = db.Column(
         db.String(100),
@@ -32,18 +23,11 @@ class Chamber(db.Model):
         nullable=False
     )
 
-    phone = db.Column(
-        db.String(20)
-    )
-
-    address = db.Column(
-        db.Text
-    )
+    phone = db.Column(db.String(20))
 
     status = db.Column(
         db.String(20),
         default="active",
-        nullable=False,
         index=True
     )
 
@@ -67,19 +51,11 @@ class Chamber(db.Model):
         db.ForeignKey("user.id")
     )
 
-    last_login = db.Column(
-        db.DateTime
-    )
+    last_login = db.Column(db.DateTime)
 
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
-    )
-
-    updated_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
     )
 
     def set_password(self, password):
@@ -89,4 +65,4 @@ class Chamber(db.Model):
         return check_password_hash(
             self.password_hash,
             password
-  )
+        )
