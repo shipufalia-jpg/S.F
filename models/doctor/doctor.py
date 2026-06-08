@@ -31,11 +31,11 @@ class Doctor(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # RELATIONS
-    chambers = db.relationship(
-        "Chamber",
-        backref="doctor",
-        lazy=True,
-        cascade="all, delete-orphan"
+    chamber_id = db.Column(
+        db.Integer,
+        db.ForeignKey("chambers.id"),
+        nullable=False,
+        index=True
     )
 
     ratings = db.relationship(
