@@ -58,6 +58,13 @@ class Chamber(db.Model):
         default=datetime.utcnow
     )
 
+    doctors = db.relationship(
+        "Doctor",
+        backref="chamber",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
