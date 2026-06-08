@@ -272,3 +272,103 @@ def get_user(user_id):
 
         profile_image=profile_image
             )
+
+
+# =========================
+# ADMIN DASHBOARD
+# =========================
+@admin.route("/dashboard")
+def dashboard():
+
+    admin_id = session.get("user_id")
+
+    chambers = Chamber.query.filter_by(
+        created_by_admin_id=admin_id
+    ).order_by(Chamber.id.desc()).all()
+
+    return render_template(
+        "admin/dashboard.html",
+        chambers=chambers
+    )
+
+
+# =========================
+# CREATE CHAMBER (USERNAME + PASSWORD)
+# =========================
+@admin.route("/chamber/create", methods=["GET", "POST"])
+def create_chamber():
+
+    if request.method == "GET":
+        return render_template("admin/create_chamber.html")
+
+    admin_id = session.get("user_id")
+
+    name = request.form.get("name")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    phone = request.form.get("phone")
+    address = request.form.get("address")
+
+    # validation
+    if not all([name, username, password]):
+        return "Missing fields"
+
+    # duplicate check
+    existing = Chamber.query.filter_by(username=username).first()
+    if existing:
+        return "Username already exists"
+
+    # create chamber
+    chamber = Chamber(
+        name=name,
+        username=username,
+        phone=phone,
+        address=address,
+        created_by_admin_id=admin_id,
+        controller_admin_id=admin_id
+    )
+
+    chamber.set_password(password)
+
+    db.session.add(chamber)
+    db.session.commit()
+
+    flash("Chamber created successfully", "success")
+
+    return redirect(url_for("admin.dashboard"))
+
+
+# =========================
+# EDIT CHAMBER
+# =========================
+@admin.route("/chamber/<int:chamber_id>/edit", methods=["GET", "POST"])
+def edit_chamber(chamber_id):
+
+    admin_id = session.get("user_id")
+
+    chamber = Chamber.query.filter_by(
+        id=chamber_id,
+        created_by_admin_id=admin_id
+    ).first_or_404()
+
+    if request.method == "POST":
+
+        chamber.name = request.form.get("name")
+        chamber.phone = request.form.get("phone")
+        chamber.address = request.form.get("address")
+
+        # optional password change
+        new_password = request.form.get("password")
+        if new_password:
+            chamber.set_password(new_password)
+
+        db.session.commit()
+
+        flash("Chamber updated successfully", "success")
+
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template(
+        "admin/edit_chamber.html",
+        chamber=chamber
+        )
