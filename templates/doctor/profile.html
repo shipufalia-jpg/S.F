@@ -267,33 +267,227 @@ font-weight:700 !important;
 
 .btn-primary{
 height:52px;
-font-size:16px;
-font-weight:700;
+<style>
+
+body{
+    background:#f4f7fc;
+    font-family:'Segoe UI',sans-serif;
+    color:#1e293b;
+    padding-bottom:100px;
 }
 
-/* CARD SPACING */
+/* COVER */
+
+.cover{
+    width:100%;
+    height:380px;
+    object-fit:cover;
+    border-radius:28px;
+    box-shadow:0 15px 40px rgba(0,0,0,.12);
+}
+
+/* HEADER */
+
+.doctor-header{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:#fff;
+    border-radius:30px;
+    padding:35px;
+    text-align:center;
+    margin-top:-90px;
+    position:relative;
+    z-index:10;
+    box-shadow:0 20px 45px rgba(37,99,235,.25);
+}
+
+/* PROFILE */
+
+.profile-img{
+    width:230px;
+    height:230px;
+    border-radius:50%;
+    object-fit:cover;
+    border:8px solid #fff;
+    background:#fff;
+    margin-top:-150px;
+    box-shadow:0 15px 35px rgba(0,0,0,.20);
+}
+
+.doctor-header h3{
+    font-size:42px;
+    font-weight:800;
+    margin-top:20px;
+    margin-bottom:10px;
+}
+
+.doctor-header .text-muted{
+    color:#e5e7eb !important;
+    font-size:18px;
+}
+
+.badge-verified{
+    background:#22c55e;
+    color:#fff;
+    border-radius:50px;
+    padding:8px 14px;
+    font-size:14px;
+    font-weight:700;
+    margin-left:8px;
+}
+
+.rating{
+    font-size:24px;
+    font-weight:800;
+    color:#fbbf24;
+}
+
+/* CARDS */
 
 .card-box{
-padding:22px !important;
-margin-top:22px !important;
+    border:none;
+    border-radius:24px;
+    padding:28px !important;
+    margin-top:25px;
+    background:#fff;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.about-card{
+    border-left:6px solid #2563eb;
+}
+
+.chamber-card{
+    border-left:6px solid #22c55e;
+}
+
+.rating-card{
+    border-left:6px solid #f59e0b;
+}
+
+.info-title{
+    font-size:26px;
+    font-weight:800;
+    margin-bottom:20px;
+    color:#111827;
+}
+
+/* ABOUT */
+
+.about-text{
+    font-size:17px;
+    line-height:1.8;
+    color:#475569;
+}
+
+/* CHAMBERS */
+
+.chamber-box{
+    background:#f8fafc;
+    border:2px solid #e2e8f0;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:15px;
+}
+
+.chamber-box b{
+    display:block;
+    font-size:20px;
+    margin-bottom:10px;
+    color:#0f172a;
+}
+
+.chamber-box small{
+    font-size:15px;
+    color:#64748b;
+}
+
+/* BUTTONS */
+
+.btn-call{
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:12px 20px;
+    font-weight:700;
+}
+
+.btn-whatsapp{
+    background:#22c55e;
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:12px 20px;
+    font-weight:700;
+}
+
+.btn-primary{
+    height:55px;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:700;
+}
+
+/* SELECT */
+
+.form-control{
+    height:55px;
+    border-radius:14px;
+}
+
+/* FIXED BAR */
+
+.bottom-bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(15px);
+    padding:12px;
+    box-shadow:0 -5px 20px rgba(0,0,0,.12);
+    z-index:999;
+}
+
+.bottom-bar .btn{
+    height:55px;
+    font-size:16px;
+    font-weight:700;
 }
 
 /* MOBILE */
 
 @media(max-width:768px){
 
-.profile-img{
-    width:160px !important;
-    height:160px !important;
-    margin-top:-80px !important;
+    .cover{
+        height:250px;
+        border-radius:20px;
+    }
+
+    .doctor-header{
+        padding:25px;
+        margin-top:-60px;
+    }
+
+    .profile-img{
+        width:170px;
+        height:170px;
+        margin-top:-110px;
+    }
+
+    .doctor-header h3{
+        font-size:30px;
+    }
+
+    .info-title{
+        font-size:22px;
+    }
+
+    .card-box{
+        padding:20px !important;
+    }
+
 }
-
-h3{
-    font-size:2rem !important;
-}
-
-  }
-
 
 </style>
     
