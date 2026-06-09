@@ -5,4 +5,4 @@ doctor_bp = Blueprint(
     __name__,
     url_prefix="/doctors"
 )
-from . import public, admin, profile, search, rating
+from . import search, rating
