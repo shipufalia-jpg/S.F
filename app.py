@@ -36,7 +36,7 @@ from werkzeug.security import generate_password_hash
 from routes.owner_tools import owner_tools
 from routes.application_routes import application_bp
 from routes.verification import verification
-from routes.chamber import chamber
+from routes.chamber.chamber import chamber_panel
 import cloudinary
 
 
@@ -212,7 +212,7 @@ def create_app():
     app.register_blueprint(notification_bp)
     app.register_blueprint(live_media_bp)
     app.register_blueprint(verification)
-    app.register_blueprint(chamber)
+    app.register_blueprint(chamber_panel)
     
 
     return app
