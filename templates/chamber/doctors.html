@@ -1,0 +1,539 @@
+{% extends "base.html" %}
+
+{% block title %}
+Doctors Management
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+    --success:#22c55e;
+    --danger:#ef4444;
+    --warning:#f59e0b;
+    --dark:#0f172a;
+}
+
+body{
+    background:
+    linear-gradient(
+    135deg,
+    #eef4ff,
+    #f8fbff
+    );
+}
+
+/* HEADER */
+
+.page-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+    flex-wrap:wrap;
+}
+
+.title-box h2{
+    color:#0f172a;
+    font-weight:700;
+}
+
+.title-box p{
+    color:#64748b;
+}
+
+/* ACTION BAR */
+
+.action-bar{
+
+    display:flex;
+    gap:12px;
+
+    flex-wrap:wrap;
+}
+
+.search-box{
+    position:relative;
+}
+
+.search-box input{
+
+    width:280px;
+
+    height:50px;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:16px;
+
+    padding-left:50px;
+
+    background:rgba(
+        255,
+        255,
+        255,
+        .8
+    );
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(
+        255,
+        255,
+        255,
+        .6
+    );
+}
+
+.search-box i{
+
+    position:absolute;
+
+    left:18px;
+    top:17px;
+
+    color:#64748b;
+}
+
+.add-btn{
+
+    text-decoration:none;
+
+    background:
+    linear-gradient(
+    135deg,
+    #2563eb,
+    #4f46e5
+    );
+
+    color:white;
+
+    padding:14px 22px;
+
+    border-radius:16px;
+
+    font-weight:600;
+}
+
+/* GRID */
+
+.doctor-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(
+    auto-fill,
+    minmax(320px,1fr)
+    );
+
+    gap:22px;
+}
+
+/* CARD */
+
+.doctor-card{
+
+    background:rgba(
+        255,
+        255,
+        255,
+        .70
+    );
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(
+        255,
+        255,
+        255,
+        .5
+    );
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    transition:.3s;
+
+    box-shadow:
+    0 10px 30px rgba(
+        0,
+        0,
+        0,
+        .06
+    );
+}
+
+.doctor-card:hover{
+    transform:translateY(-4px);
+}
+
+/* COVER */
+
+.cover{
+
+    height:120px;
+
+    width:100%;
+
+    object-fit:cover;
+}
+
+/* PROFILE */
+
+.profile-section{
+
+    text-align:center;
+
+    margin-top:-45px;
+
+    padding:0 20px;
+}
+
+.profile{
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid white;
+
+    background:white;
+}
+
+.name{
+
+    margin-top:12px;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:#0f172a;
+}
+
+.degree{
+
+    color:#475569;
+
+    font-size:14px;
+
+    margin-top:5px;
+}
+
+.speciality{
+
+    margin-top:10px;
+
+    display:inline-block;
+
+    background:#eff6ff;
+
+    color:#2563eb;
+
+    padding:8px 14px;
+
+    border-radius:50px;
+
+    font-size:13px;
+}
+
+/* STATS */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+    gap:12px;
+
+    margin:20px;
+}
+
+.stat{
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:15px;
+
+    text-align:center;
+}
+
+.stat h3{
+    color:#2563eb;
+}
+
+.stat p{
+    color:#64748b;
+    font-size:13px;
+}
+
+/* BADGE */
+
+.badge{
+
+    display:inline-block;
+
+    margin-top:12px;
+
+    padding:7px 12px;
+
+    border-radius:30px;
+
+    font-size:12px;
+
+    font-weight:600;
+}
+
+.verified{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.unverified{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* ACTIONS */
+
+.actions{
+
+    display:flex;
+
+    gap:10px;
+
+    padding:20px;
+}
+
+.btn{
+
+    flex:1;
+
+    text-align:center;
+
+    text-decoration:none;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    font-weight:600;
+}
+
+.edit-btn{
+    background:#eff6ff;
+    color:#2563eb;
+}
+
+.delete-btn{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.empty{
+
+    text-align:center;
+
+    padding:80px;
+
+    background:white;
+
+    border-radius:24px;
+
+    color:#64748b;
+}
+
+</style>
+
+<div class="page-header">
+
+    <div class="title-box">
+
+        <h2>
+            Doctors Management
+        </h2>
+
+        <p>
+            Manage all doctors of your chamber
+        </p>
+
+    </div>
+
+    <div class="action-bar">
+
+        <div class="search-box">
+
+            <i class="fa fa-search"></i>
+
+            <input
+            type="text"
+            id="searchDoctor"
+            placeholder="Search doctor...">
+
+        </div>
+
+        <a
+        href="/chamber/doctor/add"
+        class="add-btn">
+
+            + Add Doctor
+
+        </a>
+
+    </div>
+
+</div>
+
+{% if doctors %}
+
+<div class="doctor-grid" id="doctorGrid">
+
+{% for doctor in doctors %}
+
+<div class="doctor-card doctor-item">
+
+    <img
+    src="{{ doctor.cover_photo or '/static/images/default-cover.jpg' }}"
+    class="cover">
+
+    <div class="profile-section">
+
+        <img
+        src="{{ doctor.profile_photo or '/static/images/default-doctor.png' }}"
+        class="profile">
+
+        <div class="name">
+            {{ doctor.name }}
+        </div>
+
+        <div class="degree">
+            {{ doctor.degree }}
+        </div>
+
+        <div class="speciality">
+            {{ doctor.specialization }}
+        </div>
+
+        <br>
+
+        {% if doctor.verified %}
+        <span class="badge verified">
+            Verified Doctor
+        </span>
+        {% else %}
+        <span class="badge unverified">
+            Not Verified
+        </span>
+        {% endif %}
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>{{ doctor.views }}</h3>
+            <p>Views</p>
+        </div>
+
+        <div class="stat">
+            <h3>{{ doctor.experience }}</h3>
+            <p>Experience</p>
+        </div>
+
+    </div>
+
+    <div class="actions">
+
+        <a
+        href="/chamber/doctor/{{ doctor.id }}/edit"
+        class="btn edit-btn">
+
+            Edit
+
+        </a>
+
+        <a
+        href="/chamber/doctor/{{ doctor.id }}/delete"
+        class="btn delete-btn"
+        onclick="return confirm('Delete this doctor?')">
+
+            Delete
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+    <h3>No Doctors Found</h3>
+
+    <p>
+        Add your first doctor to start.
+    </p>
+
+</div>
+
+{% endif %}
+
+<script>
+
+document
+.getElementById(
+'searchDoctor'
+)
+.addEventListener(
+'keyup',
+function(){
+
+let value =
+this.value.toLowerCase();
+
+document
+.querySelectorAll(
+'.doctor-item'
+)
+.forEach(card=>{
+
+card.style.display =
+card.innerText
+.toLowerCase()
+.includes(value)
+?
+'block'
+:
+'none';
+
+});
+
+});
+
+</script>
+
+{% endblock %}
