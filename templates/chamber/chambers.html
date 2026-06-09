@@ -14,12 +14,47 @@ body{
     color:white;
 }
 
-/* HEADER */
-.header{
+/* HERO SECTION */
+.hero{
+    padding:25px 15px;
     text-align:center;
-    padding:20px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+}
+
+.hero h1{
+    margin:0;
     font-size:22px;
-    font-weight:bold;
+}
+
+.hero p{
+    font-size:13px;
+    opacity:0.8;
+}
+
+/* SEARCH BAR */
+.search-bar{
+    margin-top:15px;
+    display:flex;
+    justify-content:center;
+}
+
+.search-bar input{
+    width:80%;
+    max-width:400px;
+    padding:12px;
+    border:none;
+    border-radius:12px 0 0 12px;
+    outline:none;
+}
+
+.search-bar button{
+    padding:12px 15px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    border-radius:0 12px 12px 0;
+    cursor:pointer;
 }
 
 /* GRID */
@@ -32,25 +67,32 @@ body{
 
 /* GLASS CARD */
 .card{
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
     border-radius:20px;
     padding:15px;
     box-shadow:0 8px 30px rgba(0,0,0,0.4);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
 }
 
 /* CHAMBER NAME */
 .card h3{
     margin:0;
+    font-size:18px;
 }
 
 /* AREA */
 .area{
     font-size:13px;
     opacity:0.8;
+    margin-top:5px;
 }
 
-/* DOCTOR LIST */
+/* DOCTORS */
 .doctors{
     margin-top:10px;
     padding-top:10px;
@@ -58,7 +100,7 @@ body{
 }
 
 .doctor{
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.07);
     padding:8px;
     margin-top:5px;
     border-radius:10px;
@@ -68,13 +110,20 @@ body{
 /* BUTTON */
 .toggle-btn{
     margin-top:10px;
-    padding:8px;
+    padding:10px;
     width:100%;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     background:#2563eb;
     color:white;
     cursor:pointer;
+}
+
+/* NO RESULT */
+.empty{
+    text-align:center;
+    opacity:0.7;
+    margin-top:20px;
 }
 
 </style>
@@ -82,11 +131,22 @@ body{
 
 <body>
 
-<div class="header">
-    🏥 All Chambers - S.F Doctor Chamber
+<!-- HERO -->
+<div class="hero">
+
+    <h1>🏥 S.F Doctor Chamber</h1>
+    <p>Find all chambers & doctors in one place</p>
+
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search chamber, area...">
+        <button onclick="filterCards()">🔎</button>
+    </div>
+
 </div>
 
-<div class="container">
+<!-- GRID -->
+<div class="container" id="cardContainer">
 
     {% for chamber in chambers %}
 
@@ -96,7 +156,7 @@ body{
 
         <div class="area">📍 {{ chamber.area }}</div>
 
-        <!-- DOCTORS (HIDDEN INITIALLY) -->
+        <!-- DOCTORS -->
         <div class="doctors" id="doc-{{ chamber.id }}" style="display:none;">
 
             {% for doc in chamber.doctors %}
@@ -118,10 +178,14 @@ body{
 
 </div>
 
+<div class="empty" id="empty" style="display:none;">
+    No chambers found 😔
+</div>
+
 <script>
 
+/* TOGGLE DOCTORS */
 function toggleDoctors(id){
-
     let box = document.getElementById("doc-" + id);
 
     if(box.style.display === "none"){
@@ -129,7 +193,34 @@ function toggleDoctors(id){
     }else{
         box.style.display = "none";
     }
+}
 
+/* SEARCH FILTER */
+function filterCards(){
+
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let cards = document.getElementsByClassName("card");
+    let empty = document.getElementById("empty");
+
+    let found = 0;
+
+    for(let i=0; i<cards.length; i++){
+
+        let text = cards[i].innerText.toLowerCase();
+
+        if(text.includes(input)){
+            cards[i].style.display = "block";
+            found++;
+        }else{
+            cards[i].style.display = "none";
+        }
+    }
+
+    if(found === 0){
+        empty.style.display = "block";
+    }else{
+        empty.style.display = "none";
+    }
 }
 
 </script>
