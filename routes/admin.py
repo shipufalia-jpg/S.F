@@ -273,10 +273,8 @@ def get_user(user_id):
         profile_image=profile_image
             )
 
-@admin_chambers.route("/chambers-control")
+@admin_bp.route("/chambers-control")
 def chambers_control():
-
     return render_template(
         "admin/chambers_control.html"
     )
-
