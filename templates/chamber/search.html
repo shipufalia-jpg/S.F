@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>S.F Doctor Chamber Search</title>
+
+<style>
+
+/* BACKGROUND */
+body{
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+}
+
+/* GLASS CARD */
+.glass-card{
+    width:90%;
+    max-width:500px;
+    margin:20px auto;
+    padding:20px;
+    border-radius:20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+/* TITLE */
+.title{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+/* SEARCH */
+.search-box{
+    display:flex;
+}
+
+.search-box input{
+    flex:1;
+    padding:12px;
+    border:none;
+    outline:none;
+    border-radius:10px 0 0 10px;
+}
+
+.search-box button{
+    padding:12px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    border-radius:0 10px 10px 0;
+}
+
+/* FILTER CHIPS */
+.chips{
+    margin-top:10px;
+}
+
+.chip{
+    display:inline-block;
+    padding:6px 12px;
+    margin:5px;
+    background: rgba(255,255,255,0.2);
+    border-radius:20px;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.chip:hover{
+    background:#2563eb;
+}
+
+/* RESULT */
+.result-card{
+    margin-top:10px;
+    padding:15px;
+    border-radius:15px;
+    background: rgba(255,255,255,0.1);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="glass-card">
+
+    <h2 class="title">🏥 S.F Doctor Chamber Search</h2>
+
+    <!-- SEARCH BOX -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search doctor or chamber...">
+        <button onclick="searchData()">🔎</button>
+    </div>
+
+    <!-- FILTER -->
+    <div class="chips">
+        <span class="chip" onclick="setType('all')">All</span>
+        <span class="chip" onclick="setType('doctor')">Doctors</span>
+        <span class="chip" onclick="setType('chamber')">Chambers</span>
+    </div>
+
+</div>
+
+<!-- RESULTS -->
+<div id="results"></div>
+
+<script>
+
+let type = "all";
+
+function setType(t){
+    type = t;
+    searchData();
+}
+
+function searchData(){
+
+    let q = document.getElementById("searchInput").value;
+
+    fetch(`/search?q=${q}&type=${type}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let box = document.getElementById("results");
+        box.innerHTML = "";
+
+        data.forEach(item => {
+
+            box.innerHTML += `
+                <div class="glass-card result-card">
+                    <h3>${item.name}</h3>
+                    <p>📍 ${item.area}</p>
+                    <p>🏷️ ${item.type}</p>
+                </div>
+            `;
+        });
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
