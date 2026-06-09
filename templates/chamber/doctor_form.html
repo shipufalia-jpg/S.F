@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if doctor %}
+Edit Doctor
+{% else %}
+Add Doctor
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+}
+
+.page-wrap{
+    max-width:1200px;
+    margin:auto;
+}
+
+.form-card{
+
+    background:rgba(255,255,255,.75);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:30px;
+
+    padding:30px;
+
+    border:1px solid rgba(
+        255,
+        255,
+        255,
+        .6
+    );
+
+    box-shadow:
+    0 20px 60px rgba(
+        0,
+        0,
+        0,
+        .08
+    );
+}
+
+.header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
+
+    flex-wrap:wrap;
+}
+
+.header h2{
+    color:#0f172a;
+}
+
+.header p{
+    color:#64748b;
+}
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(
+    auto-fit,
+    minmax(300px,1fr)
+    );
+
+    gap:20px;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    color:#334155;
+}
+
+input,
+textarea{
+
+    width:100%;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:16px;
+
+    padding:14px;
+
+    background:white;
+
+    border:1px solid #e5e7eb;
+}
+
+textarea{
+    min-height:140px;
+}
+
+.upload{
+
+    border:2px dashed #cbd5e1;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    text-align:center;
+
+    background:white;
+}
+
+.upload input{
+    border:none;
+}
+
+.btn{
+
+    border:none;
+
+    background:
+    linear-gradient(
+    135deg,
+    #2563eb,
+    #4f46e5
+    );
+
+    color:white;
+
+    padding:15px 30px;
+
+    border-radius:16px;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    margin-top:20px;
+}
+
+.switch{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.switch input{
+    width:auto;
+}
+
+</style>
+
+<div class="page-wrap">
+
+<form
+method="POST"
+enctype="multipart/form-data">
+
+<div class="form-card">
+
+    <div class="header">
+
+        <div>
+
+            <h2>
+
+                {% if doctor %}
+                Edit Doctor
+                {% else %}
+                Add New Doctor
+                {% endif %}
+
+            </h2>
+
+            <p>
+                Manage doctor profile information
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="grid">
+
+        <div>
+
+            <div class="form-group">
+
+                <label>
+                    Doctor Name
+                </label>
+
+                <input
+                type="text"
+                name="name"
+                value="{{ doctor.name if doctor else '' }}"
+                required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Degree
+                </label>
+
+                <input
+                type="text"
+                name="degree"
+                value="{{ doctor.degree if doctor else '' }}"
+                required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Specialization
+                </label>
+
+                <input
+                type="text"
+                name="specialization"
+                value="{{ doctor.specialization if doctor else '' }}">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Hospital
+                </label>
+
+                <input
+                type="text"
+                name="hospital"
+                value="{{ doctor.hospital if doctor else '' }}">
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <div class="form-group">
+
+                <label>
+                    Experience
+                </label>
+
+                <input
+                type="text"
+                name="experience"
+                value="{{ doctor.experience if doctor else '' }}">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Profile Photo
+                </label>
+
+                <div class="upload">
+
+                    <input
+                    type="file"
+                    name="profile_photo">
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Cover Photo
+                </label>
+
+                <div class="upload">
+
+                    <input
+                    type="file"
+                    name="cover_photo">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        <label>
+            About Doctor
+        </label>
+
+        <textarea
+        name="about">{{
+        doctor.about if doctor else ''
+        }}</textarea>
+
+    </div>
+
+    <div class="switch">
+
+        <input
+        type="checkbox"
+        name="verified"
+
+        {% if doctor and doctor.verified %}
+        checked
+        {% endif %}
+        >
+
+        <label>
+            Verified Doctor
+        </label>
+
+    </div>
+
+    <button
+    type="submit"
+    class="btn">
+
+        {% if doctor %}
+        Update Doctor
+        {% else %}
+        Save Doctor
+        {% endif %}
+
+    </button>
+
+</div>
+
+</form>
+
+</div>
+
+{% endblock %}
