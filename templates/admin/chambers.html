@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Chamber Management
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --success:#22c55e;
+    --warning:#f59e0b;
+}
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family:Inter,sans-serif;
+}
+
+/* HEADER */
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.header h2{
+    color:#0f172a;
+}
+
+.header p{
+    color:#64748b;
+}
+
+/* SEARCH + BUTTON */
+
+.actions-bar{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.search-box{
+    position:relative;
+}
+
+.search-box input{
+    width:260px;
+    height:48px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    padding-left:45px;
+    background:rgba(255,255,255,.8);
+    backdrop-filter:blur(20px);
+}
+
+.search-box i{
+    position:absolute;
+    left:16px;
+    top:16px;
+    color:#64748b;
+}
+
+.btn{
+    text-decoration:none;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:12px 18px;
+    border-radius:14px;
+    font-weight:600;
+}
+
+/* TABLE */
+
+.table-card{
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.5);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:14px;
+    text-align:left;
+    font-size:14px;
+}
+
+th{
+    background:rgba(37,99,235,.08);
+    color:#0f172a;
+}
+
+tr{
+    border-bottom:1px solid #e2e8f0;
+}
+
+/* BADGE */
+
+.badge{
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.active{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+/* ACTION BUTTONS */
+
+.action-btns{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.btn-small{
+    padding:6px 10px;
+    border-radius:10px;
+    font-size:12px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.edit{
+    background:#e0f2fe;
+    color:#0369a1;
+}
+
+/* BLOCKED ACTIONS DISABLED */
+.block,
+.unblock,
+.delete{
+    display:none; /* ❌ ADMIN CANNOT DO THESE */
+}
+
+/* EMPTY */
+
+.empty{
+    text-align:center;
+    padding:70px;
+    color:#64748b;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    table,thead,tbody,th,td,tr{
+        display:block;
+    }
+
+    tr{
+        margin-bottom:15px;
+        background:white;
+        border-radius:14px;
+        padding:10px;
+    }
+
+    th{
+        display:none;
+    }
+
+    td{
+        display:flex;
+        justify-content:space-between;
+        padding:10px;
+    }
+
+}
+
+</style>
+
+<div class="header">
+
+    <div>
+        <h2>Admin Chamber Panel</h2>
+        <p>Create & manage chambers under your control</p>
+    </div>
+
+    <div class="actions-bar">
+
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" id="search" placeholder="Search chamber...">
+        </div>
+
+        <a href="/admin/chamber/create" class="btn">
+            + Create Chamber
+        </a>
+
+    </div>
+
+</div>
+
+{% if chambers %}
+
+<div class="table-card">
+
+<table>
+
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Username</th>
+    <th>Phone</th>
+    <th>Status</th>
+    <th>Created By</th>
+    <th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for c in chambers %}
+
+<tr>
+
+    <td>{{ c.name }}</td>
+    <td>{{ c.username }}</td>
+    <td>{{ c.phone }}</td>
+
+    <td>
+        <span class="badge active">
+            {{ c.status }}
+        </span>
+    </td>
+
+    <td>
+        {{ c.created_by_admin_id }}
+    </td>
+
+    <td>
+
+        <div class="action-btns">
+
+            <a href="/admin/chamber/{{ c.id }}/edit" class="btn-small edit">
+                Edit
+            </a>
+
+            <!-- ONLY EDIT ALLOWED -->
+            <!-- BLOCK / DELETE DISABLED FOR ADMIN -->
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+    <h3>No Chambers Found</h3>
+    <p>Create your first chamber to start managing.</p>
+</div>
+
+{% endif %}
+
+<script>
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+let value=this.value.toLowerCase();
+
+document.querySelectorAll("tbody tr").forEach(row=>{
+
+row.style.display=
+row.innerText.toLowerCase().includes(value)
+?"table-row":"none";
+
+});
+
+});
+
+</script>
+
+{% endblock %}
