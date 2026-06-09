@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All Chambers - S.F Doctor Chamber</title>
+
+<style>
+
+/* BACKGROUND */
+body{
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+}
+
+/* HEADER */
+.header{
+    text-align:center;
+    padding:20px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* GRID */
+.container{
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap:15px;
+    padding:20px;
+}
+
+/* GLASS CARD */
+.card{
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    border-radius:20px;
+    padding:15px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.4);
+}
+
+/* CHAMBER NAME */
+.card h3{
+    margin:0;
+}
+
+/* AREA */
+.area{
+    font-size:13px;
+    opacity:0.8;
+}
+
+/* DOCTOR LIST */
+.doctors{
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,0.2);
+}
+
+.doctor{
+    background: rgba(255,255,255,0.08);
+    padding:8px;
+    margin-top:5px;
+    border-radius:10px;
+    font-size:14px;
+}
+
+/* BUTTON */
+.toggle-btn{
+    margin-top:10px;
+    padding:8px;
+    width:100%;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    🏥 All Chambers - S.F Doctor Chamber
+</div>
+
+<div class="container">
+
+    {% for chamber in chambers %}
+
+    <div class="card">
+
+        <h3>🏥 {{ chamber.chamber_name }}</h3>
+
+        <div class="area">📍 {{ chamber.area }}</div>
+
+        <!-- DOCTORS (HIDDEN INITIALLY) -->
+        <div class="doctors" id="doc-{{ chamber.id }}" style="display:none;">
+
+            {% for doc in chamber.doctors %}
+                <div class="doctor">
+                    👨‍⚕️ {{ doc.name }} - {{ doc.specialization }}
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <button class="toggle-btn"
+            onclick="toggleDoctors({{ chamber.id }})">
+            View Doctors 👇
+        </button>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<script>
+
+function toggleDoctors(id){
+
+    let box = document.getElementById("doc-" + id);
+
+    if(box.style.display === "none"){
+        box.style.display = "block";
+    }else{
+        box.style.display = "none";
+    }
+
+}
+
+</script>
+
+</body>
+</html>
