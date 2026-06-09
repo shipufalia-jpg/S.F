@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Doctor Chamber Control</title>
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+    --success:#22c55e;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+    --dark:#0f172a;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fafc);
+    min-height:100vh;
+    padding:20px;
+}
+
+/* HERO */
+
+.hero-card{
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+    color:white;
+    border-radius:24px;
+    padding:30px;
+    margin-bottom:25px;
+    box-shadow:0 10px 30px rgba(37,99,235,.25);
+}
+
+.hero-card h1{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.hero-card p{
+    opacity:.9;
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+
+.control-card{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(12px);
+    border-radius:22px;
+    padding:24px;
+    text-decoration:none;
+    color:var(--dark);
+    transition:.25s;
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
+}
+
+.control-card:hover{
+    transform:translateY(-5px);
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.12);
+}
+
+.icon{
+    width:65px;
+    height:65px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:18px;
+    font-size:28px;
+    margin-bottom:15px;
+}
+
+.blue{
+    background:#dbeafe;
+}
+
+.green{
+    background:#dcfce7;
+}
+
+.orange{
+    background:#fef3c7;
+}
+
+.red{
+    background:#fee2e2;
+}
+
+.purple{
+    background:#ede9fe;
+}
+
+.control-card h3{
+    font-size:18px;
+    margin-bottom:8px;
+}
+
+.control-card p{
+    color:#64748b;
+    font-size:14px;
+    line-height:1.5;
+}
+
+/* BADGE */
+
+.badge{
+    display:inline-block;
+    margin-top:12px;
+    padding:6px 12px;
+    border-radius:999px;
+    background:#eff6ff;
+    color:var(--primary);
+    font-size:12px;
+    font-weight:600;
+}
+
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+
+<div class="hero-card">
+
+    <h1>
+        👨‍⚕️ Doctor Chamber Control
+    </h1>
+
+    <p>
+        Manage chambers, owners, login credentials,
+        passwords and chamber settings.
+    </p>
+
+</div>
+
+<!-- GRID -->
+
+<div class="grid">
+
+    <a href="/admin/dashboard"
+       class="control-card">
+
+        <div class="icon blue">
+            📊
+        </div>
+
+        <h3>Dashboard</h3>
+
+        <p>
+            View chamber statistics and
+            recent activities.
+        </p>
+
+        <span class="badge">
+            Overview
+        </span>
+
+    </a>
+
+    <a href="/admin/chambers"
+       class="control-card">
+
+        <div class="icon green">
+            🏥
+        </div>
+
+        <h3>All Chambers</h3>
+
+        <p>
+            Manage all created chambers
+            and chamber information.
+        </p>
+
+        <span class="badge">
+            Chamber List
+        </span>
+
+    </a>
+
+    <a href="/admin/chamber/create"
+       class="control-card">
+
+        <div class="icon purple">
+            ➕
+        </div>
+
+        <h3>Create Chamber</h3>
+
+        <p>
+            Create a new chamber and
+            assign owner credentials.
+        </p>
+
+        <span class="badge">
+            New Chamber
+        </span>
+
+    </a>
+
+    <a href="/admin/chambers"
+       class="control-card">
+
+        <div class="icon orange">
+            🔑
+        </div>
+
+        <h3>Login Credentials</h3>
+
+        <p>
+            View username and login
+            information for chambers.
+        </p>
+
+        <span class="badge">
+            Access Control
+        </span>
+
+    </a>
+
+    <a href="/admin/chambers"
+       class="control-card">
+
+        <div class="icon blue">
+            ✏️
+        </div>
+
+        <h3>Edit Chamber</h3>
+
+        <p>
+            Update chamber profile,
+            address and phone.
+        </p>
+
+        <span class="badge">
+            Update
+        </span>
+
+    </a>
+
+    <a href="/admin/chambers"
+       class="control-card">
+
+        <div class="icon red">
+            🔄
+        </div>
+
+        <h3>Reset Password</h3>
+
+        <p>
+            Reset chamber owner
+            password securely.
+        </p>
+
+        <span class="badge">
+            Security
+        </span>
+
+    </a>
+
+</div>
+
+</body>
+      </html>
