@@ -522,8 +522,3 @@ def referral():
 @login_required
 def settings():
     return render_template("user/settings.html")
-
-@app.route("/chambers")
-def chambers():
-    chambers = Chamber.query.all()
-    return render_template("chamber/chambers.html", chambers=chambers)
