@@ -352,7 +352,7 @@ def update_appointment(
         "/chamber/appointments"
   )
 
-@user.route("/chambers")
+@chamber_panel.route("/chambers")
 def chambers():
     chambers = Chamber.query.all()
     return render_template("chamber/chambers.html", chambers=chambers)
