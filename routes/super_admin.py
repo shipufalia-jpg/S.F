@@ -468,18 +468,3 @@ def analytics():
         total_applications=total_applications,
         growth=growth
         )
-
-@super.route("/dashboard")
-def dashboard():
-
-    sid = session.get("user_id")
-
-    admins = User.query.filter_by(role="admin").all()
-
-    chambers = Chamber.query.filter_by(controller_admin_id=sid).all()
-
-    return render_template(
-        "super/dashboard.html",
-        admins=admins,
-        chambers=chambers
-    )
