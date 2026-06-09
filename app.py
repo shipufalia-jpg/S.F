@@ -37,7 +37,7 @@ from routes.owner_tools import owner_tools
 from routes.application_routes import application_bp
 from routes.verification import verification
 from routes.chamber.chamber import chamber_panel
-from routes.admin.chambers import admin_chambers
+from routes.admin_panel.chambers import admin_chambers
 import cloudinary
 
 
