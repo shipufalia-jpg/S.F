@@ -45,12 +45,5 @@ class Doctor(db.Model):
         cascade="all, delete-orphan"
     )
 
-    gallery = db.relationship(
-        "DoctorGallery",
-        backref="doctor",
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
-
     def __repr__(self):
         return f"<Doctor {self.name}>"
