@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}
+Super Admin - Chamber Network
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family:Inter,sans-serif;
+}
+
+/* HEADER */
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
+
+.header h2{
+    color:#0f172a;
+}
+
+.header p{
+    color:#64748b;
+}
+
+/* SEARCH */
+
+.search-box{
+    position:relative;
+}
+
+.search-box input{
+    width:280px;
+    height:48px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    padding-left:45px;
+    background:rgba(255,255,255,.8);
+    backdrop-filter:blur(20px);
+}
+
+.search-box i{
+    position:absolute;
+    left:15px;
+    top:15px;
+    color:#64748b;
+}
+
+/* TREE */
+
+.tree{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+/* NODE CARD */
+
+.node{
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(20px);
+    border-radius:20px;
+    padding:18px;
+    border:1px solid rgba(255,255,255,.5);
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+/* LEVEL LABEL */
+
+.level{
+    font-size:12px;
+    font-weight:700;
+    color:#2563eb;
+    margin-bottom:8px;
+}
+
+/* CHILD CONTAINER */
+
+.children{
+    margin-left:25px;
+    margin-top:10px;
+    padding-left:15px;
+    border-left:2px dashed #cbd5e1;
+}
+
+/* BADGES */
+
+.badge{
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+}
+
+.active{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.blocked{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+/* USER ROW */
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.name{
+    font-weight:600;
+    color:#0f172a;
+}
+
+.small{
+    font-size:13px;
+    color:#64748b;
+}
+
+/* ACTION */
+
+.actions a{
+    text-decoration:none;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:10px;
+    font-weight:600;
+}
+
+.block{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.unblock{
+    background:#dcfce7;
+    color:#166534;
+}
+
+</style>
+
+<div class="header">
+
+    <div>
+        <h2>Super Admin Network</h2>
+        <p>Owner → Super Admin → Admin → Chamber hierarchy</p>
+    </div>
+
+    <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input type="text" id="search" placeholder="Search network...">
+    </div>
+
+</div>
+
+<div class="tree">
+
+<!-- OWNER LEVEL -->
+
+<div class="node">
+
+    <div class="level">OWNER</div>
+
+    <div class="row">
+        <div>
+            <div class="name">Owner Account</div>
+            <div class="small">System Root Control</div>
+        </div>
+    </div>
+
+    <!-- SUPER ADMIN LOOP -->
+
+    {% for sa in super_admins %}
+
+    <div class="children">
+
+        <div class="node">
+
+            <div class="level">SUPER ADMIN</div>
+
+            <div class="row">
+                <div>
+                    <div class="name">{{ sa.name }}</div>
+                    <div class="small">{{ sa.phone }}</div>
+                </div>
+
+                <span class="badge {{ sa.status }}">
+                    {{ sa.status }}
+                </span>
+            </div>
+
+            <!-- ADMIN LOOP -->
+
+            {% for ad in sa.admins %}
+
+            <div class="children">
+
+                <div class="node">
+
+                    <div class="level">ADMIN</div>
+
+                    <div class="row">
+
+                        <div>
+                            <div class="name">{{ ad.name }}</div>
+                            <div class="small">{{ ad.phone }}</div>
+                        </div>
+
+                        <span class="badge {{ ad.status }}">
+                            {{ ad.status }}
+                        </span>
+
+                    </div>
+
+                    <!-- CHAMBER LOOP -->
+
+                    {% for ch in ad.chambers %}
+
+                    <div class="children">
+
+                        <div class="node">
+
+                            <div class="level">CHAMBER</div>
+
+                            <div class="row">
+
+                                <div>
+                                    <div class="name">{{ ch.name }}</div>
+                                    <div class="small">{{ ch.username }}</div>
+                                </div>
+
+                                <span class="badge {{ ch.status }}">
+                                    {{ ch.status }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+let val=this.value.toLowerCase();
+
+document.querySelectorAll(".node").forEach(n=>{
+
+n.style.display =
+n.innerText.toLowerCase().includes(val)
+?"block":"none";
+
+});
+
+});
+
+</script>
+
+{% endblock %}
