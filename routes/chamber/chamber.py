@@ -74,6 +74,18 @@ def profile():
     profile = ChamberProfile.query.filter_by(
         chamber_id=chamber_id
     ).first()
+    # ===== DEBUG START =====
+    print("CHAMBER ID =", chamber_id)
+    print("PROFILE =", profile)
+
+    if profile:
+        print("NAME =", profile.chamber_name)
+        print("WHATSAPP =", profile.whatsapp)
+        print("EMAIL =", profile.email)
+        print("PROFILE IMAGE =", profile.profile_image)
+        print("COVER IMAGE =", profile.cover_image)
+    # ===== DEBUG END =====
+
 
     if not profile:
 
