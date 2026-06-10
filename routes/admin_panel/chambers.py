@@ -12,6 +12,8 @@ from extensions import db
 
 from models.user import User
 from models.chamber import Chamber
+import cloudinary
+import cloudinary.uploader
 
 
 admin_chambers = Blueprint(
@@ -144,171 +146,109 @@ def create_chamber():
         db.session.flush()
 
         # ======================
-        # IMAGE UPLOAD
-        # ======================
+# CLOUDINARY UPLOAD
+# ======================
 
-        upload_dir = os.path.join(
-            "static",
-            "uploads",
-            "chambers"
-        )
+profile_image_path = None
+cover_image_path = None
+logo_path = None
 
-        os.makedirs(
-            upload_dir,
-            exist_ok=True
-        )
+profile_image = request.files.get(
+    "profile_image"
+)
 
-        profile_image_path = None
-        cover_image_path = None
-        logo_path = None
+if (
+    profile_image
+    and profile_image.filename
+):
 
-        profile_image = request.files.get(
-            "profile_image"
-        )
+    result = cloudinary.uploader.upload(
+        profile_image,
+        folder="chambers/profile"
+    )
 
-        if (
-            profile_image
-            and profile_image.filename
-        ):
+    profile_image_path = result["secure_url"]
 
-            filename = (
-                str(uuid.uuid4())
-                + "_"
-                + secure_filename(
-                    profile_image.filename
-                )
-            )
 
-            profile_image.save(
-                os.path.join(
-                    upload_dir,
-                    filename
-                )
-            )
+cover_image = request.files.get(
+    "cover_image"
+)
 
-            profile_image_path = (
-                f"/static/uploads/chambers/{filename}"
-            )
+if (
+    cover_image
+    and cover_image.filename
+):
 
-        cover_image = request.files.get(
-            "cover_image"
-        )
+    result = cloudinary.uploader.upload(
+        cover_image,
+        folder="chambers/cover"
+    )
 
-        if (
-            cover_image
-            and cover_image.filename
-        ):
+    cover_image_path = result["secure_url"]
 
-            filename = (
-                str(uuid.uuid4())
-                + "_"
-                + secure_filename(
-                    cover_image.filename
-                )
-            )
 
-            cover_image.save(
-                os.path.join(
-                    upload_dir,
-                    filename
-                )
-            )
+logo = request.files.get(
+    "logo"
+)
 
-            cover_image_path = (
-                f"/static/uploads/chambers/{filename}"
-            )
+if (
+    logo
+    and logo.filename
+):
 
-        logo = request.files.get(
-            "logo"
-        )
+    result = cloudinary.uploader.upload(
+        logo,
+        folder="chambers/logo"
+    )
 
-        if logo and logo.filename:
-
-            filename = (
-                str(uuid.uuid4())
-                + "_"
-                + secure_filename(
-                    logo.filename
-                )
-            )
-
-            logo.save(
-                os.path.join(
-                    upload_dir,
-                    filename
-                )
-            )
-
-            logo_path = (
-                f"/static/uploads/chambers/{filename}"
-            )
-
+    logo_path = result["secure_url"]
+        
         # ======================
         # CREATE PROFILE
         # ======================
 
         profile = ChamberProfile(
 
-            chamber_id=chamber.id,
+    chamber_id=chamber.id,
 
-            chamber_name=request.form.get(
-                "name"
-            ),
+    chamber_name=request.form.get(
+        "name"
+    ),
 
-            phone=request.form.get(
-                "phone"
-            ),
+    phone=request.form.get(
+        "phone"
+    ),
 
-            whatsapp=request.form.get(
-                "whatsapp"
-            ),
+    whatsapp=request.form.get(
+        "whatsapp"
+    ),
 
-            email=request.form.get(
-                "email"
-            ),
+    email=request.form.get(
+        "email"
+    ),
 
-            website=request.form.get(
-                "website"
-            ),
+    website=request.form.get(
+        "website"
+    ),
 
-            area=request.form.get(
-                "area"
-            ),
+    area=request.form.get(
+        "area"
+    ),
 
-            address=request.form.get(
-                "address"
-            ),
+    address=request.form.get(
+        "address"
+    ),
 
-            description=request.form.get(
-                "description"
-            ),
+    description=request.form.get(
+        "description"
+    ),
 
-            profile_image=profile_image_path,
+    profile_image=profile_image_path,
 
-            cover_image=cover_image_path,
+    cover_image=cover_image_path,
 
-            logo=logo_path
+    logo=logo_path
         )
-
-        db.session.add(profile)
-
-        db.session.commit()
-
-        flash(
-            "Chamber & Profile created successfully.",
-            "success"
-        )
-
-        return redirect(
-            url_for(
-                "admin_chambers.chambers"
-            )
-        )
-
-    return render_template(
-        "admin/create_chamber.html"
-            )
-
 
 # ==========================================
 # EDIT CHAMBER
