@@ -156,6 +156,18 @@ def fix_db(app):
                 ADD COLUMN IF NOT EXISTS verification_expiry TIMESTAMP;
             """))
 
+            db.session.execute(text("""
+                ALTER TABLE doctors
+                ADD COLUMN IF NOT EXISTS chamber_id INTEGER;
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE doctors
+                ADD CONSTRAINT IF NOT EXISTS fk_doctors_chamber
+                FOREIGN KEY (chamber_id)
+                REFERENCES chambers(id);
+            """))
+
             db.session.commit()
 
             print("✅ DB FIXED SUCCESSFULLY")
