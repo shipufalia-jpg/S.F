@@ -60,7 +60,6 @@ def dashboard():
 # ==========================================
 # CHAMBER PROFILE
 # ==========================================
-
 @chamber_panel.route(
     "/profile",
     methods=["GET", "POST"]
@@ -81,7 +80,8 @@ def profile():
         profile = ChamberProfile(
             chamber_id=chamber_id,
             chamber_name=session.get(
-                "chamber_name"
+                "chamber_name",
+                "My Chamber"
             )
         )
 
@@ -89,6 +89,14 @@ def profile():
         db.session.commit()
 
     if request.method == "POST":
+
+        # ======================
+        # BASIC INFO
+        # ======================
+
+        profile.chamber_name = request.form.get(
+            "chamber_name"
+        )
 
         profile.phone = request.form.get(
             "phone"
@@ -118,6 +126,44 @@ def profile():
             "description"
         )
 
+        # ======================
+        # PROFILE IMAGE
+        # ======================
+
+        profile_file = request.files.get(
+            "profile_image"
+        )
+
+        if profile_file and profile_file.filename:
+
+            result = upload(
+                profile_file,
+                folder="chambers/profile"
+            )
+
+            profile.profile_image = result[
+                "secure_url"
+            ]
+
+        # ======================
+        # COVER IMAGE
+        # ======================
+
+        cover_file = request.files.get(
+            "cover_image"
+        )
+
+        if cover_file and cover_file.filename:
+
+            result = upload(
+                cover_file,
+                folder="chambers/cover"
+            )
+
+            profile.cover_image = result[
+                "secure_url"
+            ]
+
         db.session.commit()
 
         flash(
@@ -133,6 +179,7 @@ def profile():
         "chamber/profile.html",
         profile=profile
     )
+
 
 
 # ==========================================
