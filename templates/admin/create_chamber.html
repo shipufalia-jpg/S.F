@@ -1,36 +1,67 @@
 {% extends "base.html" %}
 
-{% block title %}
-Create Chamber
-{% endblock %}
+{% block title %}Create Chamber{% endblock %}
 
 {% block content %}
 
 <style>
-.container-box{
-    max-width:900px;
+
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+    --success:#22c55e;
+    --dark:#0f172a;
+    --gray:#64748b;
+    --border:#e2e8f0;
+    --bg:#f8fafc;
+}
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+}
+
+.create-wrapper{
+    max-width:1100px;
     margin:auto;
+    padding:20px;
+}
+
+.hero-card{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    border-radius:26px;
+    padding:30px;
+    color:#fff;
+    margin-bottom:25px;
+    box-shadow:0 15px 40px rgba(37,99,235,.25);
+}
+
+.hero-card h2{
+    margin:0;
+    font-size:30px;
+    font-weight:800;
+}
+
+.hero-card p{
+    margin-top:8px;
+    opacity:.9;
 }
 
 .form-card{
     background:#fff;
-    border-radius:24px;
+    border-radius:28px;
     padding:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    box-shadow:0 15px 40px rgba(15,23,42,.08);
+    border:1px solid rgba(226,232,240,.7);
 }
 
-.page-title{
-    margin-bottom:25px;
-}
-
-.page-title h2{
-    margin:0;
-    color:#0f172a;
-}
-
-.page-title p{
-    color:#64748b;
-    margin-top:5px;
+.section-title{
+    margin-top:10px;
+    margin-bottom:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+    font-size:18px;
+    font-weight:700;
+    color:var(--dark);
 }
 
 .form-grid{
@@ -49,97 +80,264 @@ Create Chamber
 }
 
 label{
-    margin-bottom:8px;
-    font-weight:600;
+    font-size:14px;
+    font-weight:700;
     color:#334155;
+    margin-bottom:8px;
 }
 
 input,
-textarea,
-select{
+textarea{
     width:100%;
-    padding:12px 14px;
-    border:1px solid #dbe2ea;
-    border-radius:12px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:13px 15px;
+    font-size:15px;
+    transition:.25s;
+    background:#fff;
+}
+
+input:focus,
+textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
     outline:none;
 }
 
 textarea{
-    min-height:120px;
+    min-height:130px;
     resize:vertical;
 }
 
-.btn-row{
-    display:flex;
-    gap:12px;
-    margin-top:25px;
+.upload-box{
+    border:2px dashed #cbd5e1;
+    border-radius:18px;
+    padding:18px;
+    background:#fafcff;
 }
 
-.btn-save{
+.upload-box input{
     border:none;
-    background:#2563eb;
+    padding:0;
+    background:none;
+}
+
+.button-row{
+    display:flex;
+    gap:12px;
+    margin-top:30px;
+}
+
+.btn-create{
+    border:none;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
     color:#fff;
-    padding:12px 22px;
-    border-radius:12px;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
     cursor:pointer;
-    font-weight:600;
+    box-shadow:0 10px 25px rgba(37,99,235,.25);
+}
+
+.btn-create:hover{
+    transform:translateY(-2px);
 }
 
 .btn-back{
     text-decoration:none;
-    padding:12px 22px;
-    border-radius:12px;
     background:#e2e8f0;
     color:#0f172a;
-    font-weight:600;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
+}
+
+.info-card{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:15px;
+    margin-bottom:20px;
+}
+
+.info-card strong{
+    color:#0f172a;
 }
 
 @media(max-width:768px){
+
     .form-grid{
         grid-template-columns:1fr;
     }
-}
-</style><div class="container-box"><div class="form-card">
 
-    <div class="page-title">
-        <h2>Create New Chamber</h2>
-        <p>Add a new chamber under admin management.</p>
+    .hero-card h2{
+        font-size:24px;
+    }
+
+    .button-row{
+        flex-direction:column;
+    }
+}
+
+</style><div class="create-wrapper"><div class="hero-card">
+    <h2>Create New Chamber</h2>
+    <p>
+        Create Chamber Login Account,
+        Profile Information,
+        Contact Details and Branding.
+    </p>
+</div>
+
+<div class="form-card">
+
+    <div class="info-card">
+        <strong>Note:</strong>
+        Chamber account credentials will be generated
+        and profile information will be saved together.
     </div>
 
-    <form method="POST">
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        <div class="section-title">
+            Chamber Login Information
+        </div>
 
         <div class="form-grid">
 
             <div class="form-group">
                 <label>Chamber Name</label>
-                <input type="text" name="name" required>
+                <input
+                    type="text"
+                    name="name"
+                    required
+                >
             </div>
 
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" name="username" required>
+                <input
+                    type="text"
+                    name="username"
+                    required
+                >
             </div>
 
             <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" name="phone" required>
+                <input
+                    type="text"
+                    name="phone"
+                    required
+                >
             </div>
 
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" required>
+                <input
+                    type="password"
+                    name="password"
+                    required
+                >
             </div>
 
         </div>
 
-        <div class="btn-row">
-            <button type="submit" class="btn-save">
+        <div class="section-title">
+            Chamber Profile
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>WhatsApp</label>
+                <input type="text" name="whatsapp">
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email">
+            </div>
+
+            <div class="form-group">
+                <label>Website</label>
+                <input type="text" name="website">
+            </div>
+
+            <div class="form-group">
+                <label>Area</label>
+                <input type="text" name="area">
+            </div>
+
+            <div class="form-group full">
+                <label>Address</label>
+                <textarea name="address"></textarea>
+            </div>
+
+            <div class="form-group full">
+                <label>Description</label>
+                <textarea name="description"></textarea>
+            </div>
+
+        </div>
+
+        <div class="section-title">
+            Branding & Images
+        </div>
+
+        <div class="form-grid">
+
+            <div class="upload-box">
+                <label>Profile Image</label>
+                <input
+                    type="file"
+                    name="profile_image"
+                    accept="image/*"
+                >
+            </div>
+
+            <div class="upload-box">
+                <label>Cover Image</label>
+                <input
+                    type="file"
+                    name="cover_image"
+                    accept="image/*"
+                >
+            </div>
+
+            <div class="upload-box">
+                <label>Logo</label>
+                <input
+                    type="file"
+                    name="logo"
+                    accept="image/*"
+                >
+            </div>
+
+        </div>
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="btn-create"
+            >
                 Create Chamber
             </button>
 
-            <a href="/admin/chambers" class="btn-back">
+            <a
+                href="/admin/chambers"
+                class="btn-back"
+            >
                 Back
             </a>
+
         </div>
 
     </form>
