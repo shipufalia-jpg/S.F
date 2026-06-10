@@ -413,5 +413,12 @@ def update_appointment(
 
 @chamber_panel.route("/chambers")
 def chambers():
-    chambers = Chamber.query.all()
-    return render_template("chamber/chambers.html", chambers=chambers)
+
+    chambers = ChamberProfile.query.filter_by(
+        status="active"
+    ).all()
+
+    return render_template(
+        "chamber/chambers.html",
+        chambers=chambers
+    )
