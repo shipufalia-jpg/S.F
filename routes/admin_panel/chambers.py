@@ -145,111 +145,130 @@ def create_chamber():
         db.session.add(chamber)
         db.session.flush()
 
-        # ======================
-# CLOUDINARY UPLOAD
-# ======================
+        ======================
 
-profile_image_path = None
-cover_image_path = None
-logo_path = None
+    # CLOUDINARY UPLOAD
+    # ======================
 
-profile_image = request.files.get(
-    "profile_image"
-)
+    profile_image_path = None
+    cover_image_path = None
+    logo_path = None
 
-if (
-    profile_image
-    and profile_image.filename
-):
-
-    result = cloudinary.uploader.upload(
-        profile_image,
-        folder="chambers/profile"
+    profile_image = request.files.get(
+        "profile_image"
     )
 
-    profile_image_path = result["secure_url"]
+    if (
+        profile_image
+        and profile_image.filename
+    ):
 
-
-cover_image = request.files.get(
-    "cover_image"
-)
-
-if (
-    cover_image
-    and cover_image.filename
-):
-
-    result = cloudinary.uploader.upload(
-        cover_image,
-        folder="chambers/cover"
-    )
-
-    cover_image_path = result["secure_url"]
-
-
-logo = request.files.get(
-    "logo"
-)
-
-if (
-    logo
-    and logo.filename
-):
-
-    result = cloudinary.uploader.upload(
-        logo,
-        folder="chambers/logo"
-    )
-
-    logo_path = result["secure_url"]
-        
-        # ======================
-        # CREATE PROFILE
-        # ======================
-
-        profile = ChamberProfile(
-
-    chamber_id=chamber.id,
-
-    chamber_name=request.form.get(
-        "name"
-    ),
-
-    phone=request.form.get(
-        "phone"
-    ),
-
-    whatsapp=request.form.get(
-        "whatsapp"
-    ),
-
-    email=request.form.get(
-        "email"
-    ),
-
-    website=request.form.get(
-        "website"
-    ),
-
-    area=request.form.get(
-        "area"
-    ),
-
-    address=request.form.get(
-        "address"
-    ),
-
-    description=request.form.get(
-        "description"
-    ),
-
-    profile_image=profile_image_path,
-
-    cover_image=cover_image_path,
-
-    logo=logo_path
+        result = cloudinary.uploader.upload(
+            profile_image,
+            folder="chambers/profile"
         )
 
+        profile_image_path = result[
+            "secure_url"
+        ]
+
+    cover_image = request.files.get(
+        "cover_image"
+    )
+
+    if (
+        cover_image
+        and cover_image.filename
+    ):
+
+        result = cloudinary.uploader.upload(
+            cover_image,
+            folder="chambers/cover"
+        )
+
+        cover_image_path = result[
+            "secure_url"
+        ]
+
+    logo = request.files.get(
+        "logo"
+    )
+
+    if (
+        logo
+        and logo.filename
+    ):
+
+        result = cloudinary.uploader.upload(
+            logo,
+            folder="chambers/logo"
+        )
+
+        logo_path = result[
+            "secure_url"
+        ]
+
+    # ======================
+    # CREATE PROFILE
+    # ======================
+
+    profile = ChamberProfile(
+
+        chamber_id=chamber.id,
+
+        chamber_name=request.form.get(
+            "name"
+        ),
+
+        phone=request.form.get(
+            "phone"
+        ),
+
+        whatsapp=request.form.get(
+            "whatsapp"
+        ),
+
+        email=request.form.get(
+            "email"
+        ),
+
+        website=request.form.get(
+            "website"
+        ),
+
+        area=request.form.get(
+            "area"
+        ),
+
+        address=request.form.get(
+            "address"
+        ),
+
+        description=request.form.get(
+            "description"
+        ),
+
+        profile_image=profile_image_path,
+
+        cover_image=cover_image_path,
+
+        logo=logo_path
+    )
+
+    db.session.add(profile)
+
+    db.session.commit()
+
+    flash(
+        "Chamber & Profile created successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "admin_chambers.chambers"
+        )
+        )
 # ==========================================
 # EDIT CHAMBER
 # ==========================================
