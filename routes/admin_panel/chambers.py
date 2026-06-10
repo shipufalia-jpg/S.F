@@ -370,3 +370,68 @@ def reset_password(chamber_id):
         "admin/reset_password.html",
         chamber=chamber
   )
+
+
+@doctor.route(
+    "/doctor/create/<int:chamber_id>",
+    methods=["GET", "POST"]
+)
+def create_doctor(chamber_id):
+
+    # Admin Login
+    admin_id = session.get("user_id")
+
+    # Chamber Login
+    chamber_session = session.get("chamber_id")
+
+    # Login Check
+    if not admin_id and not chamber_session:
+        return redirect("/login")
+
+    # Chamber Owner শুধু নিজের Chamber-এ Add করতে পারবে
+    if chamber_session and chamber_session != chamber_id:
+        flash(
+            "Access Denied",
+            "danger"
+        )
+        return redirect("/chamber/dashboard")
+
+    chamber = Chamber.query.get_or_404(
+        chamber_id
+    )
+
+    if request.method == "POST":
+
+        doctor = Doctor(
+            chamber_id=chamber.id,
+            name=request.form.get("name"),
+            degree=request.form.get("degree"),
+            specialization=request.form.get("specialization"),
+            hospital=request.form.get("hospital"),
+            experience=request.form.get("experience"),
+            about=request.form.get("about")
+        )
+
+        db.session.add(doctor)
+        db.session.commit()
+
+        flash(
+            "Doctor Added Successfully",
+            "success"
+        )
+
+        # Admin হলে
+        if admin_id:
+            return redirect(
+                "/admin/chambers"
+            )
+
+        # Chamber Owner হলে
+        return redirect(
+            "/chamber/dashboard"
+        )
+
+    return render_template(
+        "doctor/create_doctor.html",
+        chamber=chamber
+    )
