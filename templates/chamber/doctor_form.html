@@ -377,6 +377,22 @@ textarea{
 </style>
 
 <div class="page-wrap">
+    <div class="hero-card">
+
+    <h1>
+        👨‍⚕️ {% if doctor %}
+        Edit Doctor Profile
+        {% else %}
+        Add New Doctor
+        {% endif %}
+    </h1>
+
+    <p>
+        Manage doctor information, photos,
+        specialization, experience and profile details.
+    </p>
+
+    </div>
 
 <form
 method="POST"
