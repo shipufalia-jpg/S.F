@@ -2,225 +2,334 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Chambers - S.F Doctor Chamber</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>All Chambers | S.F Doctor Chamber</title>
 
 <style>
 
-/* BACKGROUND */
-body{
+*{
     margin:0;
-    font-family: Arial;
-    background: linear-gradient(135deg,#0f172a,#1e293b);
-    color:white;
+    padding:0;
+    box-sizing:border-box;
 }
 
-/* HERO SECTION */
+body{
+    font-family:Inter,sans-serif;
+    background:#f1f5f9;
+}
+
+/* HERO */
+
 .hero{
-    padding:25px 15px;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:50px 20px;
     text-align:center;
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
 }
 
 .hero h1{
-    margin:0;
-    font-size:22px;
+    font-size:36px;
+    font-weight:800;
 }
 
 .hero p{
-    font-size:13px;
-    opacity:0.8;
+    margin-top:10px;
+    opacity:.9;
 }
 
-/* SEARCH BAR */
-.search-bar{
-    margin-top:15px;
+.search-box{
+    margin-top:25px;
     display:flex;
     justify-content:center;
 }
 
-.search-bar input{
-    width:80%;
-    max-width:400px;
-    padding:12px;
+.search-box input{
+    width:100%;
+    max-width:500px;
+    padding:15px;
     border:none;
-    border-radius:12px 0 0 12px;
+    border-radius:14px;
+    font-size:15px;
     outline:none;
 }
 
-.search-bar button{
-    padding:12px 15px;
-    border:none;
-    background:#2563eb;
-    color:white;
-    border-radius:0 12px 12px 0;
-    cursor:pointer;
-}
-
 /* GRID */
+
 .container{
+    max-width:1400px;
+    margin:auto;
+    padding:30px 20px;
+
     display:grid;
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-    gap:15px;
-    padding:20px;
+    grid-template-columns:
+    repeat(auto-fill,minmax(320px,1fr));
+
+    gap:25px;
 }
 
-/* GLASS CARD */
+/* CARD */
+
 .card{
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px);
-    border-radius:20px;
-    padding:15px;
-    box-shadow:0 8px 30px rgba(0,0,0,0.4);
-    transition:0.3s;
+    background:white;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.08);
+    transition:.3s;
 }
 
 .card:hover{
-    transform:translateY(-5px);
+    transform:translateY(-6px);
 }
 
-/* CHAMBER NAME */
-.card h3{
-    margin:0;
-    font-size:18px;
+.cover{
+    width:100%;
+    height:180px;
+    object-fit:cover;
 }
 
-/* AREA */
+.profile-section{
+    text-align:center;
+    margin-top:-50px;
+    padding:0 20px;
+}
+
+.profile-img{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid white;
+    background:white;
+}
+
+.chamber-name{
+    margin-top:12px;
+    font-size:20px;
+    font-weight:700;
+    color:#0f172a;
+}
+
 .area{
-    font-size:13px;
-    opacity:0.8;
+    color:#64748b;
+    font-size:14px;
     margin-top:5px;
 }
 
-/* DOCTORS */
+.desc{
+    color:#475569;
+    font-size:14px;
+    padding:15px 20px;
+    min-height:80px;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-around;
+    padding:15px;
+    border-top:1px solid #e2e8f0;
+}
+
+.stat{
+    text-align:center;
+}
+
+.stat strong{
+    display:block;
+    color:#2563eb;
+}
+
+.btn{
+    width:calc(100% - 30px);
+    margin:15px;
+    border:none;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+    color:white;
+    padding:14px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:700;
+}
+
 .doctors{
-    margin-top:10px;
-    padding-top:10px;
-    border-top:1px solid rgba(255,255,255,0.2);
+    display:none;
+    padding:15px;
 }
 
 .doctor{
-    background: rgba(255,255,255,0.07);
-    padding:8px;
-    margin-top:5px;
-    border-radius:10px;
-    font-size:14px;
-}
-
-/* BUTTON */
-.toggle-btn{
-    margin-top:10px;
+    background:#f8fafc;
     padding:10px;
-    width:100%;
-    border:none;
     border-radius:12px;
-    background:#2563eb;
-    color:white;
-    cursor:pointer;
+    margin-bottom:8px;
+    color:#334155;
 }
 
-/* NO RESULT */
 .empty{
     text-align:center;
-    opacity:0.7;
-    margin-top:20px;
+    padding:50px;
+    color:#64748b;
 }
 
 </style>
-</head>
 
+</head>
 <body>
 
-<!-- HERO -->
 <div class="hero">
 
     <h1>🏥 S.F Doctor Chamber</h1>
-    <p>Find all chambers & doctors in one place</p>
 
-    <!-- SEARCH -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search chamber, area...">
-        <button onclick="filterCards()">🔎</button>
+    <p>
+        Find Chambers, Doctors &
+        Medical Services Near You
+    </p>
+
+    <div class="search-box">
+
+        <input
+        type="text"
+        id="searchInput"
+        placeholder="Search chamber, area..."
+        onkeyup="filterCards()">
+
     </div>
 
 </div>
 
-<!-- GRID -->
 <div class="container" id="cardContainer">
 
-    {% for chamber in chambers %}
+{% for chamber in chambers %}
 
-    <div class="card">
+<div class="card">
 
-        <h3>🏥 {{ chamber.chamber_name }}</h3>
+    <img
+    src="{{ chamber.cover_image or '/static/default-cover.jpg' }}"
+    class="cover">
 
-        <div class="area">📍 {{ chamber.area }}</div>
+    <div class="profile-section">
 
-        <!-- DOCTORS -->
-        <div class="doctors" id="doc-{{ chamber.id }}" style="display:none;">
+        <img
+        src="{{ chamber.profile_image or '/static/default-profile.png' }}"
+        class="profile-img">
 
-            {% for doc in chamber.doctors %}
-                <div class="doctor">
-                    👨‍⚕️ {{ doc.name }} - {{ doc.specialization }}
-                </div>
-            {% endfor %}
-
+        <div class="chamber-name">
+            {{ chamber.chamber_name }}
         </div>
 
-        <button class="toggle-btn"
-            onclick="toggleDoctors({{ chamber.id }})">
-            View Doctors 👇
-        </button>
+        <div class="area">
+            📍 {{ chamber.area or 'Location Not Added' }}
+        </div>
 
     </div>
 
-    {% endfor %}
+    <div class="desc">
+        {{ chamber.description or 'No description available.' }}
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <strong>{{ chamber.views }}</strong>
+            Views
+        </div>
+
+        <div class="stat">
+            <strong>{{ chamber.rating }}</strong>
+            Rating
+        </div>
+
+        <div class="stat">
+            <strong>{{ chamber.total_reviews }}</strong>
+            Reviews
+        </div>
+
+    </div>
+
+    <button
+    class="btn"
+    onclick="toggleDoctors({{ chamber.id }})">
+
+        View Doctors
+
+    </button>
+
+    <div
+    class="doctors"
+    id="doc-{{ chamber.id }}">
+
+        No doctors added yet.
+
+    </div>
 
 </div>
 
-<div class="empty" id="empty" style="display:none;">
-    No chambers found 😔
+{% endfor %}
+
+</div>
+
+<div
+class="empty"
+id="empty"
+style="display:none;">
+
+No chambers found.
+
 </div>
 
 <script>
 
-/* TOGGLE DOCTORS */
 function toggleDoctors(id){
-    let box = document.getElementById("doc-" + id);
 
-    if(box.style.display === "none"){
-        box.style.display = "block";
+    let box =
+    document.getElementById(
+        "doc-"+id
+    );
+
+    if(box.style.display==="block"){
+        box.style.display="none";
     }else{
-        box.style.display = "none";
+        box.style.display="block";
     }
 }
 
-/* SEARCH FILTER */
 function filterCards(){
 
-    let input = document.getElementById("searchInput").value.toLowerCase();
-    let cards = document.getElementsByClassName("card");
-    let empty = document.getElementById("empty");
+    let input =
+    document.getElementById(
+        "searchInput"
+    ).value.toLowerCase();
+
+    let cards =
+    document.querySelectorAll(".card");
 
     let found = 0;
 
-    for(let i=0; i<cards.length; i++){
+    cards.forEach(card=>{
 
-        let text = cards[i].innerText.toLowerCase();
+        let text =
+        card.innerText.toLowerCase();
 
         if(text.includes(input)){
-            cards[i].style.display = "block";
-            found++;
-        }else{
-            cards[i].style.display = "none";
-        }
-    }
 
-    if(found === 0){
-        empty.style.display = "block";
-    }else{
-        empty.style.display = "none";
-    }
+            card.style.display="block";
+            found++;
+
+        }else{
+
+            card.style.display="none";
+        }
+
+    });
+
+    document.getElementById(
+        "empty"
+    ).style.display =
+    found===0 ? "block":"none";
 }
 
 </script>
