@@ -155,27 +155,7 @@ def fix_db(app):
                 ALTER TABLE "user"
                 ADD COLUMN IF NOT EXISTS verification_expiry TIMESTAMP;
             """))
-            db.session.execute(text("""
-                ALTER TABLE doctors
-                ADD COLUMN IF NOT EXISTS chamber_id INTEGER;
-           """))
-           db.session.execute(text("""
-               DO $$
-               BEGIN
-                   IF NOT EXISTS (
-                       SELECT 1 FROM 
-           information_schema.table_constraints
-                       WHERE constraint_name = 
-           'fk_doctors_chamber'
-                   ) THEN
-                       ALTER TABLE doctors
-                       ADD CONSTRAINT fk_doctors_chamber
-                       FOREIGN KEY (chamber_id)
-                       REFERENCES chambers(id);
-                    END IF;
-                END $$;
-            """))
-
+    
             db.session.commit()
 
             print("✅ DB FIXED SUCCESSFULLY")
