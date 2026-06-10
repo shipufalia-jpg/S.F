@@ -155,6 +155,23 @@ def fix_db(app):
                 ALTER TABLE "user"
                 ADD COLUMN IF NOT EXISTS verification_expiry TIMESTAMP;
             """))
+
+            # ================= DOCTORS TABLE =================
+
+            # 1. Ensure column exists
+            db.session.execute(text("""
+                ALTER TABLE doctors
+                ADD COLUMN IF NOT EXISTS chamber_id INTEGER;
+            """))
+
+            # 2. Check and add foreign key safely (WITHOUT DO block)
+            db.session.execute(text("""
+                ALTER TABLE doctors
+                ADD CONSTRAINT IF NOT EXISTS fk_doctors_chamber
+                FOREIGN KEY (chamber_id)
+                REFERENCES chambers(id)
+                ON DELETE SET NULL;
+            """))
             db.session.commit()
 
             print("✅ DB FIXED SUCCESSFULLY")
