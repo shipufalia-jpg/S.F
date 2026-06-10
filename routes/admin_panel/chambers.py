@@ -133,10 +133,6 @@ def create_chamber():
 
             phone=request.form.get("phone"),
 
-            address=request.form.get(
-                "address"
-            ),
-
             created_by_admin_id=admin_id,
 
             controller_admin_id=admin_id,
