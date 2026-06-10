@@ -155,12 +155,10 @@ def fix_db(app):
                 ALTER TABLE "user"
                 ADD COLUMN IF NOT EXISTS verification_expiry TIMESTAMP;
             """))
-
             db.session.execute(text("""
                 ALTER TABLE doctors
                 ADD COLUMN IF NOT EXISTS chamber_id INTEGER;
            """))
-
            db.session.execute(text("""
                DO $$
                BEGIN
