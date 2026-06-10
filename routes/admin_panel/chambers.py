@@ -14,6 +14,7 @@ from models.user import User
 from models.chamber import Chamber
 import cloudinary
 import cloudinary.uploader
+from models.chamber_profile import ChamberProfile
 
 
 admin_chambers = Blueprint(
