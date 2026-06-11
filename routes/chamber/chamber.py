@@ -188,9 +188,11 @@ def profile():
 @chamber_panel.route("/view/<int:chamber_id>")
 def chamber_details(chamber_id):
 
-    chamber = ChamberProfile.query.filter_by(
+    chamber = Chamber.query.get_or_404(chamber_id)
+
+    profile = ChamberProfile.query.filter_by(
         chamber_id=chamber_id
-    ).first_or_404()
+    ).first()
 
     doctors = Doctor.query.filter_by(
         chamber_id=chamber_id
@@ -199,9 +201,9 @@ def chamber_details(chamber_id):
     return render_template(
         "chamber/chamber_details.html",
         chamber=chamber,
+        profile=profile,
         doctors=doctors
     )
-
 
 # ==========================================
 # PUBLIC DOCTOR DETAILS
