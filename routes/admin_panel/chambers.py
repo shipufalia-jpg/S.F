@@ -193,38 +193,108 @@ def edit_chamber(chamber_id):
         created_by_admin_id=admin_id
     ).first_or_404()
 
+    profile = ChamberProfile.query.filter_by(
+        chamber_id=chamber.id
+    ).first()
+
     if request.method == "POST":
 
-        chamber.name = request.form.get(
-            "name"
-        )
+        # ======================
+        # CHAMBER BASIC INFO
+        # ======================
+        chamber.name = request.form.get("name")
+        chamber.phone = request.form.get("phone")
+        chamber.address = request.form.get("address")
 
-        chamber.phone = request.form.get(
-            "phone"
-        )
+        # ======================
+        # PROFILE UPDATE
+        # ======================
+        if profile:
 
-        chamber.address = request.form.get(
-            "address"
-        )
+            profile.chamber_name = request.form.get("name")
+            profile.phone = request.form.get("phone")
+            profile.whatsapp = request.form.get("whatsapp")
+            profile.email = request.form.get("email")
+            profile.website = request.form.get("website")
+            profile.area = request.form.get("area")
+            profile.address = request.form.get("address")
+            profile.description = request.form.get("description")
+
+            # ======================
+            # IMAGE UPDATE (Cloudinary)
+            # ======================
+            def upload(file, folder):
+                if file and file.filename:
+                    result = cloudinary.uploader.upload(file, folder=folder)
+                    return result["secure_url"]
+                return None
+
+            new_profile_img = upload(request.files.get("profile_image"), "chambers/profile")
+            new_cover_img = upload(request.files.get("cover_image"), "chambers/cover")
+            new_logo = upload(request.files.get("logo"), "chambers/logo")
+
+            if new_profile_img:
+                profile.profile_image = new_profile_img
+
+            if new_cover_img:
+                profile.cover_image = new_cover_img
+
+            if new_logo:
+                profile.logo = new_logo
 
         db.session.commit()
 
-        flash(
-            "Chamber updated successfully.",
-            "success"
-        )
+        flash("Chamber updated successfully.", "success")
 
         return redirect(
-            url_for(
-                "admin_chambers.chamber_details",
-                chamber_id=chamber.id
-            )
+            url_for("admin_chambers.chamber_details", chamber_id=chamber.id)
         )
 
     return render_template(
         "admin/edit_chamber.html",
-        chamber=chamber
-    )
+        chamber=chamber,
+        profile=profile
+            )
+
+@admin_chambers.route(
+    "/doctor/<int:doctor_id>/edit",
+    methods=["GET", "POST"]
+)
+def edit_doctor(doctor_id):
+
+    doctor = Doctor.query.get_or_404(doctor_id)
+
+    if request.method == "POST":
+
+        doctor.name = request.form.get("name")
+        doctor.degree = request.form.get("degree")
+        doctor.specialization = request.form.get("specialization")
+        doctor.hospital = request.form.get("hospital")
+        doctor.experience = request.form.get("experience")
+        doctor.about = request.form.get("about")
+
+        def upload(file, folder):
+            if file and file.filename:
+                result = cloudinary.uploader.upload(file, folder=folder)
+                return result["secure_url"]
+            return None
+
+        new_profile = upload(request.files.get("profile_photo"), "doctors/profile")
+        new_cover = upload(request.files.get("cover_photo"), "doctors/cover")
+
+        if new_profile:
+            doctor.profile_photo = new_profile
+
+        if new_cover:
+            doctor.cover_photo = new_cover
+
+        db.session.commit()
+
+        flash("Doctor updated successfully", "success")
+
+        return redirect(url_for("admin_chambers.doctor_details", doctor_id=doctor.id))
+
+    return render_template("doctor/edit_doctor.html", doctor=doctor)
 
 
 # ==========================================
