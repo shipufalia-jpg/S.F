@@ -70,9 +70,7 @@ def chambers():
 # CHAMBER DETAILS
 # ==========================================
 
-@admin_chambers.route(
-    "/chamber/<int:chamber_id>"
-)
+@admin_chambers.route("/chamber/<int:chamber_id>")
 def chamber_details(chamber_id):
 
     admin_id = session.get("user_id")
@@ -82,11 +80,20 @@ def chamber_details(chamber_id):
         created_by_admin_id=admin_id
     ).first_or_404()
 
+    profile = ChamberProfile.query.filter_by(
+        chamber_id=chamber.id
+    ).first()
+
+    doctors = Doctor.query.filter_by(
+        chamber_id=chamber.id
+    ).all()
+
     return render_template(
         "admin/chamber_details.html",
-        chamber=chamber
+        chamber=chamber,
+        profile=profile,
+        doctors=doctors
     )
-
 
 # ==========================================
 # CREATE CHAMBER
