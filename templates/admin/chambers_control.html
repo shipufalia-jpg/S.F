@@ -221,11 +221,23 @@ body{
 
     </a>
 
-    <a
-    href="{{ url_for('admin_chambers.create_doctor', chamber_id=chamber.id) }}"
-    class="btn btn-success">
+    <a href="/admin/doctors"
+   class="control-card">
 
-    ➕ Add Doctor
+    <div class="icon green">
+        👨‍⚕️
+    </div>
+
+    <h3>Add Doctor</h3>
+
+    <p>
+        Create and manage doctors
+        for all chambers.
+    </p>
+
+    <span class="badge">
+        Doctor Management
+    </span>
 
     </a>
 
