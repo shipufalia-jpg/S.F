@@ -213,12 +213,12 @@ body{
             <!-- ACTION BUTTONS -->
             <div class="card-actions">
 
-                <a href="/doctor/{{ d.id }}" class="view-btn">
-                    View
+                <a href="{{ url_for('admin_chambers.doctor_details', doctor_id=d.id) }}">
+                  View
                 </a>
 
-                <a href="/doctor/{{ d.id }}/edit" class="edit-btn">
-                    Edit
+                <a href="{{ url_for('admin_chambers.edit_doctor', doctor_id=d.id) }}">
+                  Edit
                 </a>
 
             </div>
