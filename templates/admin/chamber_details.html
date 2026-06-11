@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}
+Chamber Details
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family:Inter,sans-serif;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.header h2{
+    color:#0f172a;
+}
+
+.btn{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:10px 16px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+/* PROFILE CARD */
+.profile-card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.profile-img img{
+    width:120px;
+    height:120px;
+    border-radius:15px;
+    object-fit:cover;
+}
+
+.profile-info h3{
+    margin:0;
+    color:#0f172a;
+}
+
+.profile-info p{
+    color:#64748b;
+    margin:5px 0;
+}
+
+/* DOCTOR CARD */
+.section-title{
+    margin:20px 0 10px;
+    color:#0f172a;
+}
+
+.doctor-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+}
+
+.card h4{
+    margin:0;
+    color:#0f172a;
+}
+
+.card p{
+    margin:5px 0;
+    color:#64748b;
+    font-size:13px;
+}
+
+/* EMPTY */
+.empty{
+    text-align:center;
+    padding:40px;
+    color:#64748b;
+}
+
+</style>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h2>{{ chamber.name }}</h2>
+
+        <a href="/admin/chambers" class="btn">
+            ← Back
+        </a>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="profile-card">
+
+        <div class="profile-img">
+            {% if profile and profile.logo %}
+                <img src="{{ profile.logo }}" alt="Logo">
+            {% else %}
+                <img src="https://via.placeholder.com/120">
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+
+            <h3>{{ chamber.name }}</h3>
+
+            <p>📞 {{ chamber.phone }}</p>
+
+            {% if profile %}
+                <p>📍 {{ profile.address }}</p>
+                <p>✉️ {{ profile.email }}</p>
+                <p>🌐 {{ profile.website }}</p>
+                <p>📝 {{ profile.description }}</p>
+            {% else %}
+                <p>No profile data available</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- DOCTORS -->
+    <h3 class="section-title">Doctors</h3>
+
+    {% if doctors and doctors|length > 0 %}
+
+    <div class="doctor-grid">
+
+        {% for d in doctors %}
+
+        <div class="card">
+
+            <h4>{{ d.name }}</h4>
+            <p>🎓 {{ d.degree }}</p>
+            <p>🩺 {{ d.specialization }}</p>
+            <p>🏥 {{ d.hospital }}</p>
+            <p>⏳ {{ d.experience }} years experience</p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty">
+        No doctors added yet.
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
