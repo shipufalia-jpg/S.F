@@ -278,74 +278,94 @@ body{
     </div>
 
     <!-- DOCTORS -->
-    <div class="doctor-card">
+    <!-- DOCTORS -->
+<div class="card">
 
-    <!-- COVER PHOTO -->
-    <div class="doctor-cover">
-        <img
-            src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f' }}"
-            alt="{{ doctor.name }}"
-        >
+    <h2>👨‍⚕️ Our Doctors</h2>
 
-        <div class="doctor-status">
-            🟢 Available
+    {% if doctors %}
+
+    <div class="doctors">
+
+        {% for doctor in doctors %}
+
+        <div class="doctor-card">
+
+            <div class="doctor-cover">
+                <img
+                    src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f' }}"
+                    alt="{{ doctor.name }}"
+                >
+
+                <div class="doctor-status">
+                    🟢 Available
+                </div>
+            </div>
+
+            <div class="doctor-profile">
+
+                <img
+                    src="{{ doctor.profile_photo if doctor.profile_photo else 'https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png' }}"
+                    alt="{{ doctor.name }}"
+                >
+
+            </div>
+
+            <div class="doctor-body">
+
+                <h3>
+                    Dr. {{ doctor.name }}
+
+                    {% if doctor.verified %}
+                    <span class="verified">✔</span>
+                    {% endif %}
+                </h3>
+
+                <div class="speciality">
+                    {{ doctor.specialization }}
+                </div>
+
+                <div class="rating">
+                    ⭐⭐⭐⭐⭐
+                </div>
+
+                <div class="info-row">
+                    🎓 {{ doctor.degree }}
+                </div>
+
+                <div class="info-row">
+                    🏥 {{ doctor.hospital }}
+                </div>
+
+                <div class="info-row">
+                    💼 {{ doctor.experience or 'N/A' }}
+                </div>
+
+                <div class="info-row">
+                    👁️ {{ doctor.views or 0 }} Views
+                </div>
+
+                <a
+                    href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
+                    class="view-btn"
+                >
+                    View Full Profile →
+                </a>
+
+            </div>
+
         </div>
+
+        {% endfor %}
+
     </div>
 
-    <!-- PROFILE PHOTO -->
-    <div class="doctor-profile">
+    {% else %}
 
-        <img
-            src="{{ doctor.profile_photo if doctor.profile_photo else 'https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png' }}"
-            alt="{{ doctor.name }}"
-        >
-
+    <div class="empty">
+        No doctors added yet.
     </div>
 
-    <!-- BODY -->
-    <div class="doctor-body">
+    {% endif %}
 
-        <h3>
-            Dr. {{ doctor.name }}
-
-            {% if doctor.verified %}
-            <span class="verified">
-                ✔
-            </span>
-            {% endif %}
-        </h3>
-
-        <div class="speciality">
-            {{ doctor.specialization }}
-        </div>
-
-        <div class="rating">
-            ⭐⭐⭐⭐⭐
-        </div>
-
-        <div class="info-row">
-            🎓 {{ doctor.degree }}
-        </div>
-
-        <div class="info-row">
-            🏥 {{ doctor.hospital }}
-        </div>
-
-        <div class="info-row">
-            💼 {{ doctor.experience or 'N/A' }}
-        </div>
-
-        <div class="info-row">
-            👁️ {{ doctor.views or 0 }} Views
-        </div>
-
-        <a
-            href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
-            class="view-btn"
-        >
-            View Full Profile →
-        </a>
-
-    </div>
-
-    </div>
+</div>
