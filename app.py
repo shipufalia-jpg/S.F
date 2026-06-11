@@ -38,6 +38,7 @@ from routes.application_routes import application_bp
 from routes.verification import verification
 from routes.chamber.chamber import chamber_panel
 from routes.admin_panel.chambers import admin_chambers
+from routes.chamber.auth import chamber
 import cloudinary
 
 
@@ -240,6 +241,7 @@ def create_app():
     app.register_blueprint(verification)
     app.register_blueprint(chamber_panel)
     app.register_blueprint(admin_chambers)
+    app.register_blueprint(chamber)
     
 
     return app
