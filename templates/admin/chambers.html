@@ -147,6 +147,10 @@ tr{
     color:#0369a1;
 }
 
+.add-doctor{
+    background:#dcfce7;
+    color:#166534;
+}
 /* BLOCKED ACTIONS DISABLED */
 .block,
 .unblock,
@@ -256,6 +260,14 @@ tr{
 
             <a href="/admin/chamber/{{ c.id }}/edit" class="btn-small edit">
                 Edit
+            </a>
+
+            <a href="{{ url_for('admin_chambers.create_doctor',
+                    chamber_id=c.id) }}"
+             class="btn-small add-doctor">
+
+            ➕ Add Doctor
+
             </a>
 
             <!-- ONLY EDIT ALLOWED -->
