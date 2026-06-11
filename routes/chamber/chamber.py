@@ -185,12 +185,10 @@ def profile():
 # PUBLIC CHAMBER DETAILS
 # ==========================================
 
-@chamber_panel.route(
-    "/view/<int:chamber_id>"
-)
+@chamber_panel.route("/view/<int:chamber_id>")
 def chamber_details(chamber_id):
 
-    profile = ChamberProfile.query.filter_by(
+    chamber = ChamberProfile.query.filter_by(
         chamber_id=chamber_id
     ).first_or_404()
 
@@ -198,12 +196,9 @@ def chamber_details(chamber_id):
         chamber_id=chamber_id
     ).all()
 
-    profile.views += 1
-    db.session.commit()
-
     return render_template(
         "chamber/chamber_details.html",
-        profile=profile,
+        chamber=chamber,
         doctors=doctors
     )
 
