@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}
+Doctor Details
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family:Inter,sans-serif;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+}
+
+/* HEADER */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.back-btn{
+    background:#2563eb;
+    color:white;
+    padding:10px 14px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+/* COVER */
+.cover{
+    width:100%;
+    height:220px;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    margin-bottom: -60px;
+}
+
+.cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* PROFILE CARD */
+.profile-card{
+    background:white;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+}
+
+/* IMAGE */
+.profile-img{
+    width:140px;
+    height:140px;
+    border-radius:18px;
+    overflow:hidden;
+    border:4px solid white;
+    margin-top:-60px;
+    background:white;
+}
+
+.profile-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* INFO */
+.info{
+    flex:1;
+}
+
+.info h2{
+    margin:0;
+    color:#0f172a;
+}
+
+.badge{
+    display:inline-block;
+    background:#e0f2fe;
+    color:#0369a1;
+    padding:4px 10px;
+    border-radius:8px;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.info p{
+    color:#64748b;
+    margin:6px 0;
+}
+
+/* ABOUT */
+.about{
+    margin-top:15px;
+    padding:15px;
+    background:#f8fafc;
+    border-radius:12px;
+    color:#334155;
+    line-height:1.6;
+}
+
+/* ACTION BUTTONS */
+.actions{
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+}
+
+.btn{
+    padding:8px 14px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+    font-size:13px;
+}
+
+.edit{
+    background:#f59e0b;
+    color:white;
+}
+
+.delete{
+    background:#ef4444;
+    color:white;
+}
+
+/* GRID INFO */
+.grid{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px;
+}
+
+.box{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
+
+.box h4{
+    margin:0;
+    color:#0f172a;
+}
+
+.box p{
+    margin:5px 0;
+    color:#64748b;
+}
+
+</style>
+
+<div class="container">
+
+    <!-- TOP -->
+    <div class="topbar">
+        <h2>Doctor Profile</h2>
+
+        <a href="javascript:history.back()" class="back-btn">
+            ← Back
+        </a>
+    </div>
+
+    <!-- COVER -->
+    {% if doctor.cover_photo %}
+    <div class="cover">
+        <img src="{{ doctor.cover_photo }}">
+    </div>
+    {% endif %}
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+
+        <!-- IMAGE -->
+        <div class="profile-img">
+            {% if doctor.profile_photo %}
+                <img src="{{ doctor.profile_photo }}">
+            {% else %}
+                <img src="https://via.placeholder.com/150">
+            {% endif %}
+        </div>
+
+        <!-- INFO -->
+        <div class="info">
+
+            <h2>{{ doctor.name }}</h2>
+
+            <span class="badge">
+                {{ doctor.specialization }}
+            </span>
+
+            <p>🎓 {{ doctor.degree }}</p>
+            <p>🏥 {{ doctor.hospital }}</p>
+            <p>⏳ {{ doctor.experience }} years experience</p>
+
+            {% if chamber %}
+                <p>🏢 Chamber: {{ chamber.name }}</p>
+            {% endif %}
+
+            <!-- ABOUT -->
+            {% if doctor.about %}
+            <div class="about">
+                {{ doctor.about }}
+            </div>
+            {% endif %}
+
+            <!-- ACTIONS -->
+            <div class="actions">
+
+                <a href="/doctor/{{ doctor.id }}/edit" class="btn edit">
+                    Edit Doctor
+                </a>
+
+                <a href="#" class="btn delete" onclick="alert('Delete feature add করতে হবে')">
+                    Delete
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DETAILS GRID -->
+    <div class="grid">
+
+        <div class="box">
+            <h4>Specialization</h4>
+            <p>{{ doctor.specialization }}</p>
+        </div>
+
+        <div class="box">
+            <h4>Experience</h4>
+            <p>{{ doctor.experience }} Years</p>
+        </div>
+
+        <div class="box">
+            <h4>Hospital</h4>
+            <p>{{ doctor.hospital }}</p>
+        </div>
+
+        <div class="box">
+            <h4>Degree</h4>
+            <p>{{ doctor.degree }}</p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
