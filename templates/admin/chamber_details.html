@@ -39,6 +39,22 @@ body{
     font-weight:600;
 }
 
+/* COVER IMAGE */
+.cover{
+    width:100%;
+    height:200px;
+    margin-bottom:15px;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+}
+
+.cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
 /* PROFILE CARD */
 .profile-card{
     background:white;
@@ -68,7 +84,7 @@ body{
     margin:5px 0;
 }
 
-/* DOCTOR CARD */
+/* DOCTOR GRID */
 .section-title{
     margin:20px 0 10px;
     color:#0f172a;
@@ -98,6 +114,28 @@ body{
     font-size:13px;
 }
 
+.card-actions{
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+}
+
+.card-actions a{
+    padding:6px 10px;
+    border-radius:8px;
+    font-size:12px;
+    text-decoration:none;
+    color:white;
+}
+
+.view-btn{
+    background:#22c55e;
+}
+
+.edit-btn{
+    background:#f59e0b;
+}
+
 /* EMPTY */
 .empty{
     text-align:center;
@@ -118,12 +156,19 @@ body{
         </a>
     </div>
 
+    <!-- COVER IMAGE -->
+    {% if profile and profile.cover_image %}
+    <div class="cover">
+        <img src="{{ profile.cover_image }}">
+    </div>
+    {% endif %}
+
     <!-- PROFILE -->
     <div class="profile-card">
 
         <div class="profile-img">
-            {% if profile and profile.logo %}
-                <img src="{{ profile.logo }}" alt="Logo">
+            {% if profile and profile.image %}
+                <img src="{{ profile.image }}" alt="Profile">
             {% else %}
                 <img src="https://via.placeholder.com/120">
             {% endif %}
@@ -164,6 +209,19 @@ body{
             <p>🩺 {{ d.specialization }}</p>
             <p>🏥 {{ d.hospital }}</p>
             <p>⏳ {{ d.experience }} years experience</p>
+
+            <!-- ACTION BUTTONS -->
+            <div class="card-actions">
+
+                <a href="/doctor/{{ d.id }}" class="view-btn">
+                    View
+                </a>
+
+                <a href="/doctor/{{ d.id }}/edit" class="edit-btn">
+                    Edit
+                </a>
+
+            </div>
 
         </div>
 
