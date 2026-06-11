@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Chamber{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow p-4">
+
+        <h3 class="mb-3">✏️ Edit Chamber</h3>
+
+        <form method="POST">
+
+            <!-- Chamber Name -->
+            <div class="mb-3">
+                <label class="form-label">Chamber Name</label>
+                <input type="text" name="name" class="form-control"
+                       value="{{ chamber.name }}" required>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="3" required>{{ chamber.address }}</textarea>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+                <label class="form-label">Mobile Number</label>
+                <input type="text" name="mobile" class="form-control"
+                       value="{{ chamber.mobile }}">
+            </div>
+
+            <!-- Status -->
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="active" {% if chamber.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if chamber.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+
+                <a href="{{ url_for('admin_chambers.dashboard') }}" class="btn btn-secondary">
+                    ⬅ Back
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    💾 Update Chamber
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
