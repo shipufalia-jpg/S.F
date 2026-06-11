@@ -256,6 +256,47 @@ def edit_chamber(chamber_id):
         profile=profile
             )
 
+@admin_chambers.route("/doctor/<int:doctor_id>")
+def doctor_details(doctor_id):
+
+    # ======================
+    # SESSION CHECK
+    # ======================
+    admin_id = session.get("user_id")
+    chamber_session = session.get("chamber_id")
+
+    if not admin_id and not chamber_session:
+        return redirect("/login")
+
+    # ======================
+    # GET DOCTOR
+    # ======================
+    doctor = Doctor.query.get_or_404(doctor_id)
+
+    # ======================
+    # CHAMBER SECURITY CHECK
+    # (doctor অন্য chamber এর হলে access block)
+    # ======================
+    if chamber_session and doctor.chamber_id != chamber_session:
+        flash("Access Denied", "danger")
+        return redirect("/chamber/dashboard")
+
+    # ======================
+    # OPTIONAL: LOAD CHAMBER INFO
+    # ======================
+    chamber = None
+    if doctor.chamber_id:
+        chamber = Chamber.query.get(doctor.chamber_id)
+
+    # ======================
+    # RENDER
+    # ======================
+    return render_template(
+        "doctor/view_doctor.html",
+        doctor=doctor,
+        chamber=chamber
+    )
+
 @admin_chambers.route(
     "/doctor/<int:doctor_id>/edit",
     methods=["GET", "POST"]
