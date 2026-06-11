@@ -250,49 +250,24 @@ body{
 
     </div>
 
-    <button
-    class="btn"
-    onclick="toggleDoctors({{ chamber.id }})">
+    <a
+href="{{ url_for(
+    'chamber_panel.chamber_details',
+    chamber_id=chamber.chamber_id
+) }}"
+class="btn"
+style="
+display:block;
+text-align:center;
+text-decoration:none;
+">
 
-        View Doctors
+    View Chamber →
 
-    </button>
+    </a>
 
     <div
-class="doctors"
-id="doc-{{ chamber.id }}">
-
-{% if chamber.chamber and chamber.chamber.doctors %}
-
-    {% for doctor in chamber.chamber.doctors %}
-
-    <div class="doctor">
-
-        <strong>
-            👨‍⚕️ {{ doctor.name }}
-        </strong>
-
-        <br>
-
-        {{ doctor.degree }}
-
-        <br>
-
-        🩺 {{ doctor.specialization }}
-
-    </div>
-
-    {% endfor %}
-
-{% else %}
-
-    <div class="doctor">
-        No doctors added yet.
-    </div>
-
-{% endif %}
-
-    </div>
+class
 
 </div>
 
@@ -311,19 +286,7 @@ No chambers found.
 
 <script>
 
-function toggleDoctors(id){
 
-    let box =
-    document.getElementById(
-        "doc-"+id
-    );
-
-    if(box.style.display==="block"){
-        box.style.display="none";
-    }else{
-        box.style.display="block";
-    }
-}
 
 function filterCards(){
 
