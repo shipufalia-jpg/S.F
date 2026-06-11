@@ -181,6 +181,55 @@ def profile():
     )
 
 
+# ==========================================
+# PUBLIC CHAMBER DETAILS
+# ==========================================
+
+@chamber_panel.route(
+    "/view/<int:chamber_id>"
+)
+def chamber_details(chamber_id):
+
+    profile = ChamberProfile.query.filter_by(
+        chamber_id=chamber_id
+    ).first_or_404()
+
+    doctors = Doctor.query.filter_by(
+        chamber_id=chamber_id
+    ).all()
+
+    profile.views += 1
+    db.session.commit()
+
+    return render_template(
+        "chamber/chamber_details.html",
+        profile=profile,
+        doctors=doctors
+    )
+
+
+# ==========================================
+# PUBLIC DOCTOR DETAILS
+# ==========================================
+
+@chamber_panel.route(
+    "/doctor/view/<int:doctor_id>"
+)
+def doctor_details(doctor_id):
+
+    doctor = Doctor.query.get_or_404(
+        doctor_id
+    )
+
+    doctor.views += 1
+    db.session.commit()
+
+    return render_template(
+        "doctor/doctor_details.html",
+        doctor=doctor
+    )
+
+
 
 # ==========================================
 # DOCTORS
