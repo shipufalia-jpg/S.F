@@ -25,6 +25,7 @@ class ChamberProfile(db.Model):
         "profile",
         uselist=False
     )
+)
     
 
     # =========================
