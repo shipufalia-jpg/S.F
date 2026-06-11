@@ -8,7 +8,9 @@ class Doctor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
+    # =========================
     # BASIC INFO
+    # =========================
     name = db.Column(db.String(150), nullable=False, index=True)
     degree = db.Column(db.String(255), nullable=False)
     specialization = db.Column(db.String(255), index=True)
@@ -17,20 +19,30 @@ class Doctor(db.Model):
     experience = db.Column(db.String(100))
     about = db.Column(db.Text)
 
-    # MEDIA
+    # =========================
+    # MEDIA (Cloudinary supported)
+    # =========================
     profile_photo = db.Column(db.String(255))
     cover_photo = db.Column(db.String(255))
 
+    # =========================
     # STATUS
+    # =========================
     verified = db.Column(db.Boolean, default=False, index=True)
 
+    # =========================
     # ANALYTICS
+    # =========================
     views = db.Column(db.Integer, default=0)
 
+    # =========================
     # TIMESTAMP
+    # =========================
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # RELATIONS
+    # =========================
+    # RELATIONSHIP (IMPORTANT FIX)
+    # =========================
     chamber_id = db.Column(
         db.Integer,
         db.ForeignKey("chambers.id"),
@@ -38,6 +50,14 @@ class Doctor(db.Model):
         index=True
     )
 
+    chamber = db.relationship(
+        "Chamber",
+        back_populates="doctors"
+    )
+
+    # =========================
+    # RATINGS
+    # =========================
     ratings = db.relationship(
         "DoctorRating",
         backref="doctor",
@@ -45,5 +65,8 @@ class Doctor(db.Model):
         cascade="all, delete-orphan"
     )
 
+    # =========================
+    # DEBUG
+    # =========================
     def __repr__(self):
         return f"<Doctor {self.name}>"
