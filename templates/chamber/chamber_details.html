@@ -48,7 +48,7 @@ body{
     margin-bottom:20px;
 }
 
-/* IMAGE HEADER */
+/* COVER */
 .cover{
     width:100%;
     height:220px;
@@ -56,6 +56,7 @@ body{
     border-radius:18px;
 }
 
+/* PROFILE */
 .profile-row{
     display:flex;
     align-items:center;
@@ -123,13 +124,13 @@ body{
 }
 
 .doctor h3{
-    margin:0;
+    margin:8px 0 4px;
     font-size:18px;
     color:#0f172a;
 }
 
 .doctor p{
-    margin:4px 0;
+    margin:3px 0;
     font-size:14px;
     color:#475569;
 }
@@ -159,7 +160,7 @@ body{
 <!-- HERO -->
 <div class="hero">
     <h1>🏥 {{ chamber.chamber_name }}</h1>
-    <p>{{ chamber.area or "Location not available" }}</p>
+    <p>{{ chamber.profile.area if chamber.profile else "Location not available" }}</p>
 </div>
 
 <div class="wrapper">
@@ -167,13 +168,9 @@ body{
     <!-- CHAMBER INFO -->
     <div class="card">
 
-        <!-- COVER IMAGE (CLOUDINARY SAFE) -->
+        <!-- COVER -->
         <img
-            src="{% if chamber.profile and chamber.profile.cover_image %}
-                {{ chamber.profile.cover_image }}
-            {% else %}
-                https://res.cloudinary.com/demo/image/upload/v1690000000/default-cover.jpg
-            {% endif %}"
+            src="{% if profile and profile.cover_image %}{{ profile.cover_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-cover.jpg{% endif %}"
             class="cover"
         >
 
@@ -181,11 +178,7 @@ body{
         <div class="profile-row">
 
             <img
-                src="{% if chamber.profile and chamber.profile.profile_image %}
-                    {{ chamber.profile.profile_image }}
-                {% else %}
-                    https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png
-                {% endif %}"
+                src="{% if profile and profile.profile_image %}{{ profile.profile_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png{% endif %}"
                 class="profile-img"
             >
 
@@ -193,7 +186,7 @@ body{
                 <h2>{{ chamber.chamber_name }}</h2>
 
                 <span class="badge">
-                    {% if chamber.profile and chamber.profile.verified %}
+                    {% if profile and profile.verified %}
                         Verified Chamber
                     {% else %}
                         Unverified
@@ -206,21 +199,10 @@ body{
         <!-- DETAILS -->
         <div class="grid">
 
-            <div class="item">
-                📞 {{ chamber.phone or "Not added" }}
-            </div>
-
-            <div class="item">
-                📧 {{ chamber.email or "Not added" }}
-            </div>
-
-            <div class="item">
-                🌐 {{ chamber.website or "Not added" }}
-            </div>
-
-            <div class="item">
-                📍 {{ chamber.address or "Not added" }}
-            </div>
+            <div class="item">📞 {{ chamber.phone or "Not added" }}</div>
+            <div class="item">📧 {{ profile.email if profile else "Not added" }}</div>
+            <div class="item">🌐 {{ profile.website if profile else "Not added" }}</div>
+            <div class="item">📍 {{ profile.address if profile else "Not added" }}</div>
 
         </div>
 
@@ -231,30 +213,23 @@ body{
 
         <h2>👨‍⚕️ Doctors</h2>
 
-        {% if chamber.doctors and chamber.doctors|length > 0 %}
+        {% if doctors and doctors|length > 0 %}
 
         <div class="doctors">
 
-            {% for doctor in chamber.doctors %}
+            {% for doctor in doctors %}
 
             <div class="doctor">
 
-                <!-- DOCTOR IMAGE SAFE -->
                 <img
-                    src="{% if doctor.profile_photo %}
-                        {{ doctor.profile_photo }}
-                    {% else %}
-                        https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png
-                    {% endif %}"
-                    style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:10px;"
+                    src="{% if doctor.profile_photo %}{{ doctor.profile_photo }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png{% endif %}"
+                    style="width:60px;height:60px;border-radius:50%;object-fit:cover;"
                 >
 
                 <h3>{{ doctor.name }}</h3>
 
                 <p>🎓 {{ doctor.degree }}</p>
-
                 <p>🩺 {{ doctor.specialization }}</p>
-
                 <p>🏥 {{ doctor.hospital }}</p>
 
                 <a href="/chamber/doctor/{{ doctor.id }}" class="btn">
