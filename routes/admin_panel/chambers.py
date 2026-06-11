@@ -99,10 +99,7 @@ def chamber_details(chamber_id):
 # CREATE CHAMBER
 # ==========================================
 
-@admin_chambers.route(
-    "/chamber/create",
-    methods=["GET", "POST"]
-)
+@admin_chambers.route("/chamber/create", methods=["GET", "POST"])
 def create_chamber():
 
     if request.method == "POST":
@@ -118,26 +115,13 @@ def create_chamber():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        exists = Chamber.query.filter_by(
-            username=username
-        ).first()
-
-        if exists:
-            flash(
-                "Username already exists.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "admin_chambers.create_chamber"
-                )
-            )
+        if Chamber.query.filter_by(username=username).first():
+            flash("Username already exists.", "danger")
+            return redirect(url_for("admin_chambers.create_chamber"))
 
         # ======================
-        # CREATE CHAMBER ACCOUNT
+        # CREATE CHAMBER
         # ======================
-
         chamber = Chamber(
             name=request.form.get("name"),
             username=username,
@@ -156,96 +140,29 @@ def create_chamber():
         # ======================
         # CLOUDINARY UPLOAD
         # ======================
+        def upload(file, folder):
+            if file and file.filename:
+                result = cloudinary.uploader.upload(file, folder=folder)
+                return result["secure_url"]
+            return None
 
-        profile_image_path = None
-        cover_image_path = None
-        logo_path = None
-
-        profile_image = request.files.get(
-            "profile_image"
-        )
-
-        if profile_image and profile_image.filename:
-
-            result = cloudinary.uploader.upload(
-                profile_image,
-                folder="chambers/profile"
-            )
-
-            profile_image_path = result[
-                "secure_url"
-            ]
-
-        cover_image = request.files.get(
-            "cover_image"
-        )
-
-        if cover_image and cover_image.filename:
-
-            result = cloudinary.uploader.upload(
-                cover_image,
-                folder="chambers/cover"
-            )
-
-            cover_image_path = result[
-                "secure_url"
-            ]
-
-        logo = request.files.get(
-            "logo"
-        )
-
-        if logo and logo.filename:
-
-            result = cloudinary.uploader.upload(
-                logo,
-                folder="chambers/logo"
-            )
-
-            logo_path = result[
-                "secure_url"
-            ]
+        profile_image_path = upload(request.files.get("profile_image"), "chambers/profile")
+        cover_image_path = upload(request.files.get("cover_image"), "chambers/cover")
+        logo_path = upload(request.files.get("logo"), "chambers/logo")
 
         # ======================
-        # CREATE PROFILE
+        # PROFILE CREATE
         # ======================
-
         profile = ChamberProfile(
-
             chamber_id=chamber.id,
-
-            chamber_name=request.form.get(
-                "name"
-            ),
-
-            phone=request.form.get(
-                "phone"
-            ),
-
-            whatsapp=request.form.get(
-                "whatsapp"
-            ),
-
-            email=request.form.get(
-                "email"
-            ),
-
-            website=request.form.get(
-                "website"
-            ),
-
-            area=request.form.get(
-                "area"
-            ),
-
-            address=request.form.get(
-                "address"
-            ),
-
-            description=request.form.get(
-                "description"
-            ),
-
+            chamber_name=request.form.get("name"),
+            phone=request.form.get("phone"),
+            whatsapp=request.form.get("whatsapp"),
+            email=request.form.get("email"),
+            website=request.form.get("website"),
+            area=request.form.get("area"),
+            address=request.form.get("address"),
+            description=request.form.get("description"),
             profile_image=profile_image_path,
             cover_image=cover_image_path,
             logo=logo_path
@@ -254,20 +171,11 @@ def create_chamber():
         db.session.add(profile)
         db.session.commit()
 
-        flash(
-            "Chamber & Profile created successfully.",
-            "success"
-        )
+        flash("Chamber & Profile created successfully.", "success")
 
-        return redirect(
-            url_for(
-                "admin_chambers.chambers"
-            )
-        )
+        return redirect(url_for("admin_chambers.chambers"))
 
-    return render_template(
-        "admin/create_chamber.html"
-    )
+    return render_template("admin/create_chamber.html")
 # ==========================================
 # EDIT CHAMBER
 # ==========================================
@@ -386,30 +294,42 @@ def reset_password(chamber_id):
 )
 def create_doctor(chamber_id):
 
-    # Admin Login
     admin_id = session.get("user_id")
-
-    # Chamber Login
     chamber_session = session.get("chamber_id")
 
-    # Login Check
     if not admin_id and not chamber_session:
         return redirect("/login")
 
-    # Chamber Owner শুধু নিজের Chamber-এ Add করতে পারবে
     if chamber_session and chamber_session != chamber_id:
-        flash(
-            "Access Denied",
-            "danger"
-        )
+        flash("Access Denied", "danger")
         return redirect("/chamber/dashboard")
 
-    chamber = Chamber.query.get_or_404(
-        chamber_id
-    )
+    chamber = Chamber.query.get_or_404(chamber_id)
 
     if request.method == "POST":
 
+        # ======================
+        # CLOUDINARY UPLOAD
+        # ======================
+        def upload(file, folder):
+            if file and file.filename:
+                result = cloudinary.uploader.upload(file, folder=folder)
+                return result["secure_url"]
+            return None
+
+        profile_photo_url = upload(
+            request.files.get("profile_photo"),
+            "doctors/profile"
+        )
+
+        cover_photo_url = upload(
+            request.files.get("cover_photo"),
+            "doctors/cover"
+        )
+
+        # ======================
+        # CREATE DOCTOR
+        # ======================
         doctor = Doctor(
             chamber_id=chamber.id,
             name=request.form.get("name"),
@@ -417,27 +337,20 @@ def create_doctor(chamber_id):
             specialization=request.form.get("specialization"),
             hospital=request.form.get("hospital"),
             experience=request.form.get("experience"),
-            about=request.form.get("about")
+            about=request.form.get("about"),
+            profile_photo=profile_photo_url,
+            cover_photo=cover_photo_url
         )
 
         db.session.add(doctor)
         db.session.commit()
 
-        flash(
-            "Doctor Added Successfully",
-            "success"
-        )
+        flash("Doctor Added Successfully", "success")
 
-        # Admin হলে
         if admin_id:
-            return redirect(
-                "/admin/chambers"
-            )
+            return redirect("/admin/chambers")
 
-        # Chamber Owner হলে
-        return redirect(
-            "/chamber/dashboard"
-        )
+        return redirect("/chamber/dashboard")
 
     return render_template(
         "doctor/create_doctor.html",
