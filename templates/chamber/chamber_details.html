@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ chamber.chamber_name }} | Chamber Details
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8faff);
+    font-family:Inter,sans-serif;
+}
+
+/* HERO */
+.hero{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:60px 20px;
+    text-align:center;
+    border-radius:0 0 30px 30px;
+}
+
+.hero h1{
+    font-size:34px;
+    font-weight:800;
+}
+
+.hero p{
+    margin-top:8px;
+    opacity:.9;
+}
+
+/* WRAPPER */
+.wrapper{
+    max-width:1200px;
+    margin:-40px auto 50px;
+    padding:0 20px;
+}
+
+/* CARD */
+.card{
+    background:white;
+    border-radius:22px;
+    padding:25px;
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+/* IMAGE HEADER */
+.cover{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    border-radius:18px;
+}
+
+.profile-row{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-top:-40px;
+    padding-left:15px;
+}
+
+.profile-img{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid white;
+    background:white;
+}
+
+/* INFO */
+.info h2{
+    margin:0;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:12px;
+    background:#dcfce7;
+    color:#166534;
+    margin-top:5px;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+    margin-top:15px;
+}
+
+.item{
+    font-size:14px;
+    color:#334155;
+}
+
+/* DOCTOR GRID */
+.doctors{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:15px;
+    margin-top:15px;
+}
+
+/* DOCTOR CARD */
+.doctor{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    padding:15px;
+    transition:.3s;
+}
+
+.doctor:hover{
+    transform:translateY(-5px);
+}
+
+.doctor h3{
+    margin:0;
+    font-size:18px;
+    color:#0f172a;
+}
+
+.doctor p{
+    margin:4px 0;
+    font-size:14px;
+    color:#475569;
+}
+
+/* BUTTON */
+.btn{
+    display:inline-block;
+    margin-top:10px;
+    padding:10px 14px;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    border-radius:12px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+}
+
+/* EMPTY */
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#64748b;
+}
+
+</style>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>🏥 {{ chamber.chamber_name }}</h1>
+    <p>{{ chamber.area or "Location not available" }}</p>
+</div>
+
+<div class="wrapper">
+
+    <!-- CHAMBER INFO -->
+    <div class="card">
+
+        <!-- COVER IMAGE (CLOUDINARY SAFE) -->
+        <img
+            src="{% if chamber.profile and chamber.profile.cover_image %}
+                {{ chamber.profile.cover_image }}
+            {% else %}
+                https://res.cloudinary.com/demo/image/upload/v1690000000/default-cover.jpg
+            {% endif %}"
+            class="cover"
+        >
+
+        <!-- PROFILE -->
+        <div class="profile-row">
+
+            <img
+                src="{% if chamber.profile and chamber.profile.profile_image %}
+                    {{ chamber.profile.profile_image }}
+                {% else %}
+                    https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png
+                {% endif %}"
+                class="profile-img"
+            >
+
+            <div class="info">
+                <h2>{{ chamber.chamber_name }}</h2>
+
+                <span class="badge">
+                    {% if chamber.profile and chamber.profile.verified %}
+                        Verified Chamber
+                    {% else %}
+                        Unverified
+                    {% endif %}
+                </span>
+            </div>
+
+        </div>
+
+        <!-- DETAILS -->
+        <div class="grid">
+
+            <div class="item">
+                📞 {{ chamber.phone or "Not added" }}
+            </div>
+
+            <div class="item">
+                📧 {{ chamber.email or "Not added" }}
+            </div>
+
+            <div class="item">
+                🌐 {{ chamber.website or "Not added" }}
+            </div>
+
+            <div class="item">
+                📍 {{ chamber.address or "Not added" }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DOCTORS -->
+    <div class="card">
+
+        <h2>👨‍⚕️ Doctors</h2>
+
+        {% if chamber.doctors and chamber.doctors|length > 0 %}
+
+        <div class="doctors">
+
+            {% for doctor in chamber.doctors %}
+
+            <div class="doctor">
+
+                <!-- DOCTOR IMAGE SAFE -->
+                <img
+                    src="{% if doctor.profile_photo %}
+                        {{ doctor.profile_photo }}
+                    {% else %}
+                        https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png
+                    {% endif %}"
+                    style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:10px;"
+                >
+
+                <h3>{{ doctor.name }}</h3>
+
+                <p>🎓 {{ doctor.degree }}</p>
+
+                <p>🩺 {{ doctor.specialization }}</p>
+
+                <p>🏥 {{ doctor.hospital }}</p>
+
+                <a href="/chamber/doctor/{{ doctor.id }}" class="btn">
+                    View Doctor
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            No doctors added yet
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
