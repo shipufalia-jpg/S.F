@@ -372,7 +372,7 @@ def reset_password(chamber_id):
   )
 
 
-@doctor.route(
+@admin_chambers.route(
     "/doctor/create/<int:chamber_id>",
     methods=["GET", "POST"]
 )
