@@ -221,9 +221,13 @@ body{
 
     </a>
 
-    <a href="/doctor/create/{{ chamber.id }}">
-    Add Doctor
-   </a>
+    <a
+    href="{{ url_for('admin_chambers.create_doctor', chamber_id=chamber.id) }}"
+    class="btn btn-success">
+
+    ➕ Add Doctor
+
+    </a>
 
     <a href="/admin/chambers"
        class="control-card">
