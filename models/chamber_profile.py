@@ -19,6 +19,14 @@ class ChamberProfile(db.Model):
         index=True
     )
 
+    chamber = db.relationship(
+        "Chamber",
+        backref=db.backref(
+        "profile",
+        uselist=False
+    )
+    
+
     # =========================
     # BASIC INFO
     # =========================
