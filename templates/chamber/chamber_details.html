@@ -196,29 +196,34 @@ body{
     margin-bottom:10px;
 }
 
-.rating-card{
-    background:#fff;
-    border-radius:20px;
-    padding:25px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-    text-align:center;
-    margin-top:20px;
-}
-
-.rating-summary{
-    margin-bottom:20px;
+.rating-mini{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#f1f5f9;
+    padding:6px 12px;
+    border-radius:999px;
+    margin:10px auto;
+    width:fit-content;
 }
 
 .rating-value{
-    font-size:42px;
+    font-size:14px;
     font-weight:700;
     color:#2563eb;
-    display:block;
 }
 
-.rating-stars{
-    margin:10px 0;
+.rating-stars i{
+    font-size:12px;
+    color:#fbbf24;
 }
+
+.rating-count{
+    font-size:12px;
+    color:#64748b;
+}
+
 
 .rating-stars i{
     color:#fbbf24;
@@ -755,134 +760,71 @@ body{
     </div>
 
     <!-- DOCTORS -->
-<div class="card">
+<div class="doctor-card">
 
-    <h2>👨‍⚕️ Our Doctors</h2>
+    <div class="doctor-cover">
+        <img
+            src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f' }}"
+        >
 
-    {% if doctors %}
-
-    <div class="doctors">
-
-        {% for doctor in doctors %}
-
-        <div class="doctor-card">
-
-            <div class="doctor-cover">
-                <img
-                    src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f' }}"
-                    alt="{{ doctor.name }}"
-                >
-
-                <div class="doctor-status">
-                    🟢 Available
-                </div>
-            </div>
-
-            <div class="doctor-profile">
-
-                <img
-                    src="{{ doctor.profile_photo if doctor.profile_photo else 'https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png' }}"
-                    alt="{{ doctor.name }}"
-                >
-
-            </div>
-
-            <div class="doctor-body">
-
-                <h3>
-                    Dr. {{ doctor.name }}
-
-                    {% if doctor.verified %}
-                    <span class="verified">✔</span>
-                    {% endif %}
-                </h3>
-
-                <div class="speciality">
-                    {{ doctor.specialization }}
-                </div>
-
-                <div class="rating-card">
-
-    <div class="rating-summary">
-        <span class="rating-value">
-            {{ avg_rating }}
-        </span>
-
-        <div class="rating-stars">
-            {% for i in range(5) %}
-                {% if i < avg_rating|int %}
-                    <i class="fas fa-star"></i>
-                {% else %}
-                    <i class="far fa-star"></i>
-                {% endif %}
-            {% endfor %}
+        <div class="doctor-status">
+            🟢 Available
         </div>
-
-        <span class="rating-count">
-            {{ total_ratings }} Reviews
-        </span>
     </div>
 
-    <form
-        method="POST"
-        action="{{ url_for('doctor.rate_doctor', doctor_id=doctor.id) }}"
-        class="rating-form"
-    >
+    <div class="doctor-profile">
+        <img
+            src="{{ doctor.profile_photo if doctor.profile_photo else 'https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png' }}"
+        >
+    </div>
 
-        <div class="star-rating">
+    <div class="doctor-body">
 
-            <input type="radio" id="star5" name="rating" value="5">
-            <label for="star5">★</label>
+        <h3>
+            Dr. {{ doctor.name }}
+            {% if doctor.verified %}
+                <span class="verified">✔</span>
+            {% endif %}
+        </h3>
 
-            <input type="radio" id="star4" name="rating" value="4">
-            <label for="star4">★</label>
-
-            <input type="radio" id="star3" name="rating" value="3">
-            <label for="star3">★</label>
-
-            <input type="radio" id="star2" name="rating" value="2">
-            <label for="star2">★</label>
-
-            <input type="radio" id="star1" name="rating" value="1">
-            <label for="star1">★</label>
-
+        <div class="speciality">
+            {{ doctor.specialization }}
         </div>
 
-        <button type="submit" class="rate-btn">
-            Submit Rating
-        </button>
+        <!-- ⭐ MINI RATING (NEW CLEAN STYLE) -->
+        <div class="rating-mini">
+            <span class="rating-value">{{ avg_rating }}</span>
 
-    </form>
-
-                </div>
-
-                <div class="info-row">
-                    🎓 {{ doctor.degree }}
-                </div>
-
-                <div class="info-row">
-                    🏥 {{ doctor.hospital }}
-                </div>
-
-                <div class="info-row">
-                    💼 {{ doctor.experience or 'N/A' }}
-                </div>
-
-                <div class="info-row">
-                    👁️ {{ doctor.views or 0 }} Views
-                </div>
-
-                <a
-                    href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
-                    class="view-btn"
-                >
-                    View Full Profile →
-                </a>
-
+            <div class="rating-stars">
+                {% for i in range(5) %}
+                    {% if i < avg_rating|int %}
+                        <i class="fas fa-star"></i>
+                    {% else %}
+                        <i class="far fa-star"></i>
+                    {% endif %}
+                {% endfor %}
             </div>
 
+            <span class="rating-count">
+                ({{ total_ratings }})
+            </span>
         </div>
 
+        <div class="info-row">🎓 {{ doctor.degree }}</div>
+        <div class="info-row">🏥 {{ doctor.hospital }}</div>
+        <div class="info-row">💼 {{ doctor.experience or 'N/A' }}</div>
+        <div class="info-row">👁️ {{ doctor.views or 0 }} Views</div>
+
+        <a
+            href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
+            class="view-btn"
+        >
+            View Profile →
+        </a>
+
+    </div>
+
+</div>
         {% endfor %}
 
     </div>
