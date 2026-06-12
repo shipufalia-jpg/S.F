@@ -534,7 +534,62 @@ body{
     </div>
 
 </div>
+<!-- CHAMBER INFO -->
+<div class="card chamber-profile-card">
 
+    <div class="profile-header">
+
+        <!-- Verified Badge -->
+        <div class="verify-floating">
+            {% if profile and profile.verified %}
+                ✔ Verified
+            {% else %}
+                ⚠ Unverified
+            {% endif %}
+        </div>
+
+        <!-- Profile Image -->
+        <img
+            src="{% if profile and profile.profile_image %}{{ profile.profile_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png{% endif %}"
+            class="profile-img-modern"
+        >
+
+        <!-- Contact Info -->
+        <div class="profile-info">
+
+            <div class="contact-item">
+                <span>📞</span>
+                <strong>{{ chamber.phone or "Not Added" }}</strong>
+            </div>
+
+            {% if profile and profile.email %}
+            <div class="contact-item">
+                <span>📧</span>
+                <strong>{{ profile.email }}</strong>
+            </div>
+            {% endif %}
+
+            {% if profile and profile.website %}
+            <div class="contact-item">
+                <span>🌐</span>
+                <a href="{{ profile.website }}" target="_blank">
+                    Visit Website
+                </a>
+            </div>
+            {% endif %}
+
+            {% if profile and profile.address %}
+            <div class="contact-item">
+                <span>📍</span>
+                <strong>{{ profile.address }}</strong>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
     <!-- SEARCH & SPECIALITY -->
 
 <div class="card">
@@ -601,86 +656,6 @@ body{
         <div class="icon">🧠</div>
         <h4>Neurology</h4>
         <p>Brain Specialist</p>
-    </div>
-
-    </div>
-
-    <!-- CHAMBER INFO -->
-    <div class="card chamber-profile-card">
-
-    <div class="profile-header">
-
-        <img
-            src="{% if profile and profile.profile_image %}{{ profile.profile_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png{% endif %}"
-            class="profile-img-modern"
-        >
-
-        <div class="profile-info">
-
-            <h2 class="chamber-title">
-                🏥 {{ profile.chamber_name if profile else chamber.name }}
-            </h2>
-
-            <p class="location">
-                📍 {{ profile.area if profile and profile.area else "Location Not Available" }}
-            </p>
-
-            <span class="verified-badge">
-                {% if profile and profile.verified %}
-                    ✔ Verified Chamber
-                {% else %}
-                    ⚠ Unverified Chamber
-                {% endif %}
-            </span>
-
-        </div>
-
-    </div>
-
-    <div class="info-grid">
-
-        <div class="info-box">
-            <span class="icon">📞</span>
-            <div>
-                <small>Phone</small>
-                <strong>{{ chamber.phone or "Not Added" }}</strong>
-            </div>
-        </div>
-
-        {% if profile and profile.email %}
-        <div class="info-box">
-            <span class="icon">📧</span>
-            <div>
-                <small>Email</small>
-                <strong>{{ profile.email }}</strong>
-            </div>
-        </div>
-        {% endif %}
-
-        {% if profile and profile.website %}
-        <div class="info-box">
-            <span class="icon">🌐</span>
-            <div>
-                <small>Website</small>
-                <strong>
-                    <a href="{{ profile.website }}" target="_blank">
-                        Visit Website
-                    </a>
-                </strong>
-            </div>
-        </div>
-        {% endif %}
-
-        {% if profile and profile.address %}
-        <div class="info-box">
-            <span class="icon">📍</span>
-            <div>
-                <small>Address</small>
-                <strong>{{ profile.address }}</strong>
-            </div>
-        </div>
-        {% endif %}
-
     </div>
 
     </div>
