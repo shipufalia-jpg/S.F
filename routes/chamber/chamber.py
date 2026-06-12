@@ -9,7 +9,7 @@ from flask import (
 )
 
 from extensions import db
-
+from sqlalchemy import func
 from models.chamber import Chamber
 from models.doctor.doctor import Doctor
 from models.appointment import Appointment
