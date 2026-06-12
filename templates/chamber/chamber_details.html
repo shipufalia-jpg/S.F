@@ -134,6 +134,9 @@ body{
     box-shadow:0 15px 40px rgba(0,0,0,.08);
     transition:.35s;
     position:relative;
+    display:flex;
+    flex-direction:column;
+    height:100%;
 }
 
 .doctor-card:hover{
@@ -181,47 +184,54 @@ body{
 }
 
 .doctor-body{
-    padding:20px;
+    padding:25px;
     text-align:center;
 }
 
 .doctor-body h3{
     margin:10px 0;
+    font-size:24px;
+    font-weight:700;
     color:#0f172a;
 }
 
-.speciality{
-    color:#2563eb;
+.info-row{
+    margin:12px 0;
+    padding:12px 15px;
+    background:#f8fafc;
+    border-radius:12px;
+    font-size:15px;
     font-weight:600;
-    margin-bottom:10px;
+    color:#334155;
+    text-align:left;
+    word-break:break-word;
 }
 
 .rating-mini{
     display:flex;
+    flex-direction:column;
     align-items:center;
-    justify-content:center;
     gap:8px;
-    background:#f1f5f9;
-    padding:6px 12px;
-    border-radius:999px;
-    margin:10px auto;
-    width:fit-content;
+    background:#f8fafc;
+    padding:12px;
+    border-radius:16px;
+    margin:15px 0;
 }
 
 .rating-value{
-    font-size:14px;
+    font-size:18px;
     font-weight:700;
     color:#2563eb;
 }
 
 .rating-stars i{
-    font-size:12px;
     color:#fbbf24;
+    font-size:18px;
 }
 
 .rating-count{
-    font-size:12px;
     color:#64748b;
+    font-size:14px;
 }
 
 
