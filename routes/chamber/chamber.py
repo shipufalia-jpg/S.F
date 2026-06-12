@@ -459,7 +459,10 @@ def chambers():
     )
 
 
-@chamber_bp.route("/rate/<int:chamber_id>", methods=["POST"])
+@chamber_panel.route(
+    "/rate/<int:chamber_id>",
+    methods=["POST"]
+)
 def rate_chamber(chamber_id):
 
     try:
@@ -468,10 +471,7 @@ def rate_chamber(chamber_id):
         )
 
         if rating_value not in [1, 2, 3, 4, 5]:
-            flash(
-                "Invalid rating.",
-                "danger"
-            )
+            flash("Invalid rating.", "danger")
             return redirect(
                 f"/chamber/view/{chamber_id}"
             )
@@ -503,7 +503,6 @@ def rate_chamber(chamber_id):
 
     except Exception:
         db.session.rollback()
-
         flash(
             "Something went wrong.",
             "danger"
