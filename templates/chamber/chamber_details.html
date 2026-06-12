@@ -760,118 +760,103 @@ body{
     <!-- DOCTORS -->
     {% if doctors %}
 
-<div class="doctors">
+<div class="doctors">{% for doctor in doctors %}
 
-{% for doctor in doctors %}
-<div class="doctor-card">
+<div class="doctor-card"><div class="doctor-cover">
+    <img
+        src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f' }}"
+        alt="{{ doctor.name }}"
+    >
 
-    <div class="doctor-cover">
-        <img
-            src="{{ doctor.cover_photo if doctor.cover_photo else 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f' }}"
-        >
-
-        <div class="doctor-status">
-            🟢 Available
-        </div>
+    <div class="doctor-status">
+        🟢 Available
     </div>
+</div>
 
-    <div class="doctor-profile">
-        <img
-            src="{{ doctor.profile_photo if doctor.profile_photo else 'https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png' }}"
-        >
-    </div>
+<div class="doctor-profile">
+    <img
+        src="{{ doctor.profile_photo if doctor.profile_photo else 'https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png' }}"
+        alt="{{ doctor.name }}"
+    >
+</div>
 
-    <div class="doctor-body">
+<div class="doctor-body">
 
-        <h3>
-            Dr. {{ doctor.name }}
-            {% if doctor.verified %}
-                <span class="verified">✔</span>
-            {% endif %}
-        </h3>
-
-        <div class="speciality">
-            {{ doctor.specialization }}
-        </div>
-
-        <!-- ⭐ MINI RATING (NEW CLEAN STYLE) -->
-        {% set avg = rating_map.get(doctor.id, {}).get('avg', 0) %}
-{% set count = rating_map.get(doctor.id, {}).get('count', 0) %}
-
-<span class="rating-value">{{ avg }}</span>
-
-<div class="rating-stars">
-    {% for i in range(5) %}
-        {% if i < avg|int %}
-            <i class="fas fa-star"></i>
-        {% else %}
-            <i class="far fa-star"></i>
+    <h3>
+        Dr. {{ doctor.name }}
+        {% if doctor.verified %}
+            <span class="verified">✔</span>
         {% endif %}
-    {% endfor %}
-</div>
+    </h3>
 
-<span class="rating-count">
-    ({{ count }})
-</span>
+    <div class="speciality">
+        {{ doctor.specialization or "General Physician" }}
+    </div>
+
+    {% set avg = rating_map.get(doctor.id, {}).get('avg', 0) %}
+    {% set count = rating_map.get(doctor.id, {}).get('count', 0) %}
+
+    <div class="rating-mini">
+
+        <span class="rating-value">
+            ⭐ {{ avg }}
+        </span>
+
+        <div class="rating-stars">
+            {% for i in range(5) %}
+                {% if i < avg|int %}
+                    <i class="fas fa-star"></i>
+                {% else %}
+                    <i class="far fa-star"></i>
+                {% endif %}
+            {% endfor %}
         </div>
 
-        <div class="info-row">🎓 {{ doctor.degree }}</div>
-        <div class="info-row">🏥 {{ doctor.hospital }}</div>
-        <div class="info-row">💼 {{ doctor.experience or 'N/A' }}</div>
-        <div class="info-row">👁️ {{ doctor.views or 0 }} Views</div>
-
-        <a
-            href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
-            class="view-btn"
-        >
-            View Profile →
-        </a>
+        <span class="rating-count">
+            {{ count }} Reviews
+        </span>
 
     </div>
+
+    <div class="info-row">
+        🎓 <strong>{{ doctor.degree }}</strong>
+    </div>
+
+    <div class="info-row">
+        🏥 <strong>{{ doctor.hospital or "Not Available" }}</strong>
+    </div>
+
+    <div class="info-row">
+        💼 <strong>{{ doctor.experience or "N/A" }}</strong>
+    </div>
+
+    <div class="info-row">
+        👁️ <strong>{{ doctor.views or 0 }}</strong> Views
+    </div>
+
+    <a
+        href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
+        class="rate-btn"
+        style="display:block;text-decoration:none;text-align:center;margin-top:15px;"
+    >
+        ⭐ Rate Doctor
+    </a>
+
+    <a
+        href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
+        class="view-btn"
+    >
+        View Profile →
+    </a>
 
 </div>
-        {% endfor %}
 
-    </div>
+</div>{% endfor %}
 
-    {% else %}
+</div>{% else %}
 
-    <div class="empty">
-        No doctors added yet.
-    </div>
-
-    {% endif %}
-
+<div class="empty">
+    No doctors added yet.
 </div>
-<script>
-
-document
-.getElementById("doctorSearch")
-.addEventListener(
-"keyup",
-function(){
-
-let value =
-this.value.toLowerCase();
-
-document
-.querySelectorAll(".doctor-card")
-.forEach(card=>{
-
-let text =
-card.innerText.toLowerCase();
-
-card.style.display =
-text.includes(value)
-? "block"
-: "none";
-
-});
-
-});
-
-</script>
-
-    </div>
-
-{% endblock %}
+{% endif %}
+    
