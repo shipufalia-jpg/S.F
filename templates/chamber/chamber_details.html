@@ -439,11 +439,9 @@ body{
 
     <div class="hero-content">
 
-        <div class="hero">
-    <h1 style="color:white !important;">
-        TEST: {{ chamber.chamber_name }}
-    </h1>
-        </div>
+        <h1>
+         🏥 {{ profile.chamber_name if profile else chamber.name }}
+        </h1>
 
         <p>
             📍 {{ profile.area if profile and profile.area else "Location Not Available" }}
