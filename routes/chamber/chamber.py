@@ -13,6 +13,7 @@ from extensions import db
 from models.chamber import Chamber
 from models.doctor.doctor import Doctor
 from models.appointment import Appointment
+from models.chamber import ChamberRating
 from models.chamber_profile import ChamberProfile
 
 
