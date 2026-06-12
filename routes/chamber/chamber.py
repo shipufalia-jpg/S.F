@@ -184,51 +184,10 @@ def profile():
 # ==========================================
 # PUBLIC CHAMBER DETAILS
 # ==========================================
-
-
-@chamber_panel.route(
-    "/doctor/view/<int:doctor_id>"
-)
-def doctor_details(doctor_id):
-
-    doctor = Doctor.query.get_or_404(
-        doctor_id
-    )
-
-    doctor.views = (doctor.views or 0) + 1
-
-    avg_rating = db.session.query(
-        func.avg(
-            DoctorRating.rating
-        )
-    ).filter(
-        DoctorRating.doctor_id == doctor.id
-    ).scalar()
-
-    total_ratings = DoctorRating.query.filter(
-        DoctorRating.doctor_id == doctor.id
-    ).count()
-
-    db.session.commit()
-
-    return render_template(
-        "doctor/doctor_details.html",
-        doctor=doctor,
-        avg_rating=round(
-            avg_rating or 0,
-            1
-        ),
-        total_ratings=total_ratings
-    )
-# ==========================================
-# PUBLIC DOCTOR DETAILS
-# ==========================================
-@chamber_panel.route("/view/<int:chamber_id>")
+@chamber_panel.route("/chamber/<int:chamber_id>")
 def chamber_details(chamber_id):
 
-    chamber = Chamber.query.get_or_404(
-        chamber_id
-    )
+    chamber = Chamber.query.get_or_404(chamber_id)
 
     profile = ChamberProfile.query.filter_by(
         chamber_id=chamber_id
@@ -238,15 +197,61 @@ def chamber_details(chamber_id):
         chamber_id=chamber_id
     ).all()
 
+    # ⭐ ALL DOCTORS RATING (FAST + OPTIMIZED)
+    doctor_ratings = db.session.query(
+        DoctorRating.doctor_id,
+        func.avg(DoctorRating.rating).label("avg"),
+        func.count(DoctorRating.id).label("count")
+    ).group_by(DoctorRating.doctor_id).all()
+
+    rating_map = {
+        r.doctor_id: {
+            "avg": round(r.avg or 0, 1),
+            "count": r.count or 0
+        }
+        for r in doctor_ratings
+    }
+
     return render_template(
         "chamber/chamber_details.html",
         chamber=chamber,
         profile=profile,
         doctors=doctors,
-        avg_rating=profile.rating if profile else 0,
-        total_ratings=profile.total_reviews if profile else 0
+        rating_map=rating_map
     )
 
+
+# ==========================================
+# PUBLIC DOCTOR DETAILS
+# ==========================================
+@chamber_panel.route("/doctor/view/<int:doctor_id>")
+def doctor_details(doctor_id):
+
+    doctor = Doctor.query.get_or_404(doctor_id)
+
+    doctor.views = (doctor.views or 0) + 1
+    db.session.add(doctor)
+
+    avg_rating = db.session.query(
+        func.avg(DoctorRating.rating)
+    ).filter(
+        DoctorRating.doctor_id == doctor.id
+    ).scalar()
+
+    total_ratings = db.session.query(
+        func.count(DoctorRating.id)
+    ).filter(
+        DoctorRating.doctor_id == doctor.id
+    ).scalar()
+
+    db.session.commit()
+
+    return render_template(
+        "doctor/doctor_details.html",
+        doctor=doctor,
+        avg_rating=round(avg_rating or 0, 1),
+        total_ratings=total_ratings or 0
+    )
 # ==========================================
 # DOCTORS
 # ==========================================
