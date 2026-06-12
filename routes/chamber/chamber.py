@@ -242,9 +242,10 @@ def chamber_details(chamber_id):
         "chamber/chamber_details.html",
         chamber=chamber,
         profile=profile,
-        doctors=doctors
+        doctors=doctors,
+        avg_rating=profile.rating if profile else 0,
+        total_ratings=profile.total_reviews if profile else 0
     )
-
 
 # ==========================================
 # DOCTORS
