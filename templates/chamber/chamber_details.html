@@ -481,6 +481,34 @@ body{
     {% endif %}
 
 </div>
+<script>
+
+document
+.getElementById("doctorSearch")
+.addEventListener(
+"keyup",
+function(){
+
+let value =
+this.value.toLowerCase();
+
+document
+.querySelectorAll(".doctor-card")
+.forEach(card=>{
+
+let text =
+card.innerText.toLowerCase();
+
+card.style.display =
+text.includes(value)
+? "block"
+: "none";
+
+});
+
+});
+
+</script>
 
     </div>
 
