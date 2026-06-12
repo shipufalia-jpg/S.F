@@ -456,3 +456,58 @@ def chambers():
         "chamber/chambers.html",
         chambers=chambers
     )
+
+
+@chamber_bp.route("/rate/<int:chamber_id>", methods=["POST"])
+def rate_chamber(chamber_id):
+
+    try:
+        rating_value = int(
+            request.form.get("rating", 0)
+        )
+
+        if rating_value not in [1, 2, 3, 4, 5]:
+            flash(
+                "Invalid rating.",
+                "danger"
+            )
+            return redirect(
+                f"/chamber/view/{chamber_id}"
+            )
+
+        ip = request.remote_addr
+
+        existing = ChamberRating.query.filter_by(
+            chamber_id=chamber_id,
+            ip_address=ip
+        ).first()
+
+        if existing:
+            existing.rating = rating_value
+        else:
+            db.session.add(
+                ChamberRating(
+                    chamber_id=chamber_id,
+                    rating=rating_value,
+                    ip_address=ip
+                )
+            )
+
+        db.session.commit()
+
+        flash(
+            "Rating submitted successfully.",
+            "success"
+        )
+
+    except Exception:
+        db.session.rollback()
+
+        flash(
+            "Something went wrong.",
+            "danger"
+        )
+
+    return redirect(
+        f"/chamber/view/{chamber_id}"
+    )
