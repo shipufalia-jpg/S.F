@@ -439,9 +439,11 @@ body{
 
     <div class="hero-content">
 
-        <h1>
-            🏥 {{ chamber.chamber_name }}
-        </h1>
+        <div class="hero">
+    <h1 style="color:white !important;">
+        TEST: {{ chamber.chamber_name }}
+    </h1>
+        </div>
 
         <p>
             📍 {{ profile.area if profile and profile.area else "Location Not Available" }}
@@ -594,14 +596,6 @@ body{
         </div>
 
     </div>
-
-    <!-- DOCTORS SECTION -->
-    <div class="card">
-        <h2>👨‍⚕️ Our Doctors</h2>
-        ...
-    </div>
-
-</div>
 
     <!-- DOCTORS -->
 <div class="card">
