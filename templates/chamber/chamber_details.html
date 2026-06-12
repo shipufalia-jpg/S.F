@@ -277,63 +277,78 @@ body{
 
 /* SPECIALITY */
 
-.speciality-tags{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
+.speciality-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:15px;
+    margin-top:20px;
 }
 
-.tag{
-    padding:10px 18px;
-    border-radius:50px;
-    font-size:14px;
-    font-weight:700;
+.speciality-card{
+    background:#fff;
+    border-radius:22px;
+    padding:20px;
+    text-align:center;
     cursor:pointer;
-    transition:.3s;
+    transition:.35s;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+    border:1px solid #eef2ff;
 }
 
-.tag:hover{
-    transform:translateY(-3px);
+.speciality-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 20px 40px rgba(37,99,235,.15);
 }
 
-.medicine{
-    background:#dbeafe;
-    color:#2563eb;
+.speciality-card .icon{
+    font-size:34px;
+    margin-bottom:10px;
 }
 
-.heart{
-    background:#fee2e2;
-    color:#dc2626;
+.speciality-card h4{
+    margin:0;
+    font-size:16px;
+    font-weight:700;
 }
 
-.diabetic{
-    background:#fef3c7;
-    color:#d97706;
+.speciality-card p{
+    margin-top:6px;
+    font-size:12px;
+    color:#64748b;
 }
 
-.skin{
-    background:#fae8ff;
-    color:#a21caf;
+/* Color Themes */
+
+.speciality-card.medicine{
+    background:linear-gradient(135deg,#eff6ff,#dbeafe);
 }
 
-.ortho{
-    background:#dcfce7;
-    color:#16a34a;
+.speciality-card.heart{
+    background:linear-gradient(135deg,#fef2f2,#fee2e2);
 }
 
-.gastro{
-    background:#e0f2fe;
-    color:#0284c7;
+.speciality-card.diabetic{
+    background:linear-gradient(135deg,#fffbeb,#fef3c7);
 }
 
-.sexual{
-    background:#ffe4e6;
-    color:#e11d48;
+.speciality-card.skin{
+    background:linear-gradient(135deg,#faf5ff,#f3e8ff);
 }
 
-.neuro{
-    background:#ede9fe;
-    color:#6d28d9;
+.speciality-card.ortho{
+    background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+}
+
+.speciality-card.gastro{
+    background:linear-gradient(135deg,#ecfeff,#cffafe);
+}
+
+.speciality-card.sexual{
+    background:linear-gradient(135deg,#fff1f2,#ffe4e6);
+}
+
+.speciality-card.neuro{
+    background:linear-gradient(135deg,#f5f3ff,#ede9fe);
 }
 
 /* PROFILE CARD */
@@ -538,43 +553,57 @@ body{
 
     </div>
 
-    <div class="speciality-tags">
+    <div class="speciality-grid">
 
-        <span class="tag medicine">
-            💊 Medicine
-        </span>
-
-        <span class="tag heart">
-            ❤️ Cardiology
-        </span>
-
-        <span class="tag diabetic">
-            🩸 Diabetics
-        </span>
-
-        <span class="tag skin">
-            🧴 Skin
-        </span>
-
-        <span class="tag ortho">
-            🦴 Orthopedic
-        </span>
-
-        <span class="tag gastro">
-            🫃 Gastro
-        </span>
-
-        <span class="tag sexual">
-            🔥 Sexual
-        </span>
-
-        <span class="tag neuro">
-            🧠 Neuro
-        </span>
-
+    <div class="speciality-card medicine">
+        <div class="icon">💊</div>
+        <h4>Medicine</h4>
+        <p>General Medicine</p>
     </div>
 
-</div>
+    <div class="speciality-card heart">
+        <div class="icon">❤️</div>
+        <h4>Cardiology</h4>
+        <p>Heart Specialist</p>
+    </div>
+
+    <div class="speciality-card diabetic">
+        <div class="icon">🩸</div>
+        <h4>Diabetics</h4>
+        <p>Diabetes Care</p>
+    </div>
+
+    <div class="speciality-card skin">
+        <div class="icon">🧴</div>
+        <h4>Dermatology</h4>
+        <p>Skin Specialist</p>
+    </div>
+
+    <div class="speciality-card ortho">
+        <div class="icon">🦴</div>
+        <h4>Orthopedic</h4>
+        <p>Bone & Joint</p>
+    </div>
+
+    <div class="speciality-card gastro">
+        <div class="icon">🫃</div>
+        <h4>Gastro</h4>
+        <p>Digestive Care</p>
+    </div>
+
+    <div class="speciality-card sexual">
+        <div class="icon">🔥</div>
+        <h4>Sexual Health</h4>
+        <p>Men & Women Care</p>
+    </div>
+
+    <div class="speciality-card neuro">
+        <div class="icon">🧠</div>
+        <h4>Neurology</h4>
+        <p>Brain Specialist</p>
+    </div>
+
+    </div>
 
     <!-- CHAMBER INFO -->
     <div class="card chamber-profile-card">
