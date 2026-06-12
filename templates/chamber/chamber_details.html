@@ -237,36 +237,96 @@ body{
 
 <div class="wrapper">
 
-    <!-- CHAMBER INFO -->
-    <div class="card">
+    <!-- SEARCH & SPECIALITY -->
 
-        <!-- COVER -->
-        <img
-            src="{% if profile and profile.cover_image %}{{ profile.cover_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-cover.jpg{% endif %}"
-            class="cover"
+<div class="card">
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="doctorSearch"
+            placeholder="🔍 Search Doctor, Specialist..."
         >
 
-        <!-- PROFILE -->
-        <div class="profile-row">
+        <button>
+            Search
+        </button>
 
-            <img
-                src="{% if profile and profile.profile_image %}{{ profile.profile_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png{% endif %}"
-                class="profile-img"
-            >
+    </div>
 
-            <div class="info">
-                <h2>{{ chamber.chamber_name }}</h2>
+    <div class="speciality-tags">
 
-                <span class="badge">
-                    {% if profile and profile.verified %}
-                        Verified Chamber
-                    {% else %}
-                        Unverified
-                    {% endif %}
-                </span>
-            </div>
+        <span class="tag medicine">
+            💊 Medicine
+        </span>
+
+        <span class="tag heart">
+            ❤️ Cardiology
+        </span>
+
+        <span class="tag diabetic">
+            🩸 Diabetics
+        </span>
+
+        <span class="tag skin">
+            🧴 Skin
+        </span>
+
+        <span class="tag ortho">
+            🦴 Orthopedic
+        </span>
+
+        <span class="tag gastro">
+            🫃 Gastro
+        </span>
+
+        <span class="tag sexual">
+            🔥 Sexual
+        </span>
+
+        <span class="tag neuro">
+            🧠 Neuro
+        </span>
+
+    </div>
+
+</div>
+
+    <!-- CHAMBER INFO -->
+    <div class="card chamber-profile-card">
+
+    <div class="profile-header">
+
+        <img
+            src="{% if profile and profile.profile_image %}{{ profile.profile_image }}{% else %}https://res.cloudinary.com/demo/image/upload/v1690000000/default-user.png{% endif %}"
+            class="profile-img-modern"
+        >
+
+        <div>
+
+            <h2>
+                {{ chamber.chamber_name }}
+            </h2>
+
+            <p class="location">
+                📍 {{ profile.area if profile else "Location" }}
+            </p>
+
+            <span class="verified-badge">
+                {% if profile and profile.verified %}
+                    ✔ Verified Chamber
+                {% else %}
+                    ⚠ Unverified
+                {% endif %}
+            </span>
 
         </div>
+
+    </div>
+
+    </div>
+
 
         <!-- DETAILS -->
         <div class="grid">
@@ -280,7 +340,6 @@ body{
 
     </div>
 
-    <!-- DOCTORS -->
     <!-- DOCTORS -->
 <div class="card">
 
