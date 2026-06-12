@@ -843,14 +843,14 @@ body{
     <div class="info-row">
         👁️ <strong>{{ doctor.views or 0 }}</strong> Views
     </div>
-
     <a
-        href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
-        class="rate-btn"
-        style="display:block;text-decoration:none;text-align:center;margin-top:15px;"
+    href="{{ url_for('doctor.rating_page', doctor_id=doctor.id) }}"
+    class="rate-btn"
+    style="display:block;text-decoration:none;text-align:center;margin-top:15px;"
     >
-        ⭐ Rate Doctor
+    ⭐ Rate Doctor
     </a>
+
 
     <a
         href="{{ url_for('chamber_panel.doctor_details', doctor_id=doctor.id) }}"
