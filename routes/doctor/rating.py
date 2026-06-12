@@ -51,3 +51,10 @@ def rate_doctor(doctor_id):
     return redirect(
         f"/doctors/{doctor_id}"
         )
+
+@doctor_bp.route("/<int:doctor_id>/rating")
+def rating_page(doctor_id):
+    return render_template(
+        "doctor/rating.html",
+        doctor_id=doctor_id
+    )
