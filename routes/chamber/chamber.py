@@ -186,26 +186,41 @@ def profile():
 # PUBLIC CHAMBER DETAILS
 # ==========================================
 
-@chamber_panel.route("/view/<int:chamber_id>")
-def chamber_details(chamber_id):
 
-    chamber = Chamber.query.get_or_404(chamber_id)
+@chamber_panel.route(
+    "/doctor/view/<int:doctor_id>"
+)
+def doctor_details(doctor_id):
 
-    profile = ChamberProfile.query.filter_by(
-        chamber_id=chamber_id
-    ).first()
-
-    doctors = Doctor.query.filter_by(
-        chamber_id=chamber_id
-    ).all()
-
-    return render_template(
-        "chamber/chamber_details.html",
-        chamber=chamber,
-        profile=profile,
-        doctors=doctors
+    doctor = Doctor.query.get_or_404(
+        doctor_id
     )
 
+    doctor.views = (doctor.views or 0) + 1
+
+    avg_rating = db.session.query(
+        func.avg(
+            DoctorRating.rating
+        )
+    ).filter(
+        DoctorRating.doctor_id == doctor.id
+    ).scalar()
+
+    total_ratings = DoctorRating.query.filter(
+        DoctorRating.doctor_id == doctor.id
+    ).count()
+
+    db.session.commit()
+
+    return render_template(
+        "doctor/doctor_details.html",
+        doctor=doctor,
+        avg_rating=round(
+            avg_rating or 0,
+            1
+        ),
+        total_ratings=total_ratings
+    )
 # ==========================================
 # PUBLIC DOCTOR DETAILS
 # ==========================================
