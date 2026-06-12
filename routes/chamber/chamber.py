@@ -223,24 +223,26 @@ def doctor_details(doctor_id):
 # ==========================================
 # PUBLIC DOCTOR DETAILS
 # ==========================================
-
-@chamber_panel.route(
-    "/view/<int:chamber_id>"
-)
+@chamber_panel.route("/view/int:chamber_id")
 def chamber_details(chamber_id):
 
-    chamber = ChamberProfile.query.filter_by(
-        chamber_id=chamber_id
-    ).first_or_404()
+chamber = Chamber.query.get_or_404(chamber_id)  
 
-    chamber.views = (chamber.views or 0) + 1
+profile = ChamberProfile.query.filter_by(  
+    chamber_id=chamber_id  
+).first()  
 
-    db.session.commit()
+doctors = Doctor.query.filter_by(  
+    chamber_id=chamber_id  
+).all()  
 
-    return render_template(
-        "chamber/chamber_details.html",
-        chamber=chamber
-    )
+return render_template(  
+    "chamber/chamber_details.html",  
+    chamber=chamber,  
+    profile=profile,  
+    doctors=doctors  
+)
+
 
 # ==========================================
 # DOCTORS
