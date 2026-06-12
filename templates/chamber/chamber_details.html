@@ -608,8 +608,7 @@ body{
 
     <!-- CHAMBER INFO -->
     <div class="card chamber-profile-card">
-    </div>
-
+    
 </div>
     <div class="profile-header">
 
@@ -760,6 +759,11 @@ body{
     </div>
 
     <!-- DOCTORS -->
+    {% if doctors %}
+
+<div class="doctors">
+
+{% for doctor in doctors %}
 <div class="doctor-card">
 
     <div class="doctor-cover">
