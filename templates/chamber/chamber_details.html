@@ -795,22 +795,24 @@ body{
         </div>
 
         <!-- ⭐ MINI RATING (NEW CLEAN STYLE) -->
-        <div class="rating-mini">
-            <span class="rating-value">{{ avg_rating }}</span>
+        {% set avg = rating_map.get(doctor.id, {}).get('avg', 0) %}
+{% set count = rating_map.get(doctor.id, {}).get('count', 0) %}
 
-            <div class="rating-stars">
-                {% for i in range(5) %}
-                    {% if i < avg_rating|int %}
-                        <i class="fas fa-star"></i>
-                    {% else %}
-                        <i class="far fa-star"></i>
-                    {% endif %}
-                {% endfor %}
-            </div>
+<span class="rating-value">{{ avg }}</span>
 
-            <span class="rating-count">
-                ({{ total_ratings }})
-            </span>
+<div class="rating-stars">
+    {% for i in range(5) %}
+        {% if i < avg|int %}
+            <i class="fas fa-star"></i>
+        {% else %}
+            <i class="far fa-star"></i>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<span class="rating-count">
+    ({{ count }})
+</span>
         </div>
 
         <div class="info-row">🎓 {{ doctor.degree }}</div>
