@@ -339,6 +339,56 @@ body{
         </div>
 
     </div>
+<!-- HERO -->
+<div class="hero">
+    <h1>🏥 {{ chamber.chamber_name }}</h1>
+    <p>{{ chamber.profile.area if chamber.profile else "Location not available" }}</p>
+</div>
+
+<div class="wrapper">
+
+    <!-- SEARCH BAR -->
+    <div class="card">
+        ...
+    </div>
+
+    <!-- CHAMBER PROFILE -->
+    <div class="card chamber-profile-card">
+        ...
+    </div>
+
+    <!-- STATS SECTION -->
+    <div class="stats-grid">
+
+        <div class="stat-card blue">
+            <h3>{{ doctors|length }}</h3>
+            <p>Doctors</p>
+        </div>
+
+        <div class="stat-card green">
+            <h3>500+</h3>
+            <p>Patients</p>
+        </div>
+
+        <div class="stat-card orange">
+            <h3>24/7</h3>
+            <p>Support</p>
+        </div>
+
+        <div class="stat-card purple">
+            <h3>4.9★</h3>
+            <p>Rating</p>
+        </div>
+
+    </div>
+
+    <!-- DOCTORS SECTION -->
+    <div class="card">
+        <h2>👨‍⚕️ Our Doctors</h2>
+        ...
+    </div>
+
+</div>
 
     <!-- DOCTORS -->
 <div class="card">
