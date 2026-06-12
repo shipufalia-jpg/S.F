@@ -242,11 +242,31 @@ def doctors():
         chamber_id=chamber_id
     ).all()
 
+    for doctor in doctors:
+
+        avg_rating = db.session.query(
+            func.avg(
+                DoctorRating.rating
+            )
+        ).filter_by(
+            doctor_id=doctor.id
+        ).scalar()
+
+        total_ratings = DoctorRating.query.filter_by(
+            doctor_id=doctor.id
+        ).count()
+
+        doctor.avg_rating = round(
+            avg_rating or 0,
+            1
+        )
+
+        doctor.total_ratings = total_ratings
+
     return render_template(
         "chamber/doctors.html",
         doctors=doctors
     )
-
 
 # ==========================================
 # ADD DOCTOR
