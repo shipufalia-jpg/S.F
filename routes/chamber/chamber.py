@@ -225,23 +225,22 @@ def doctor_details(doctor_id):
 # ==========================================
 
 @chamber_panel.route(
-    "/doctor/view/<int:doctor_id>"
+    "/view/<int:chamber_id>"
 )
-def doctor_details(doctor_id):
+def chamber_details(chamber_id):
 
-    doctor = Doctor.query.get_or_404(
-        doctor_id
-    )
+    chamber = ChamberProfile.query.filter_by(
+        chamber_id=chamber_id
+    ).first_or_404()
 
-    doctor.views += 1
+    chamber.views = (chamber.views or 0) + 1
+
     db.session.commit()
 
     return render_template(
-        "doctor/doctor_details.html",
-        doctor=doctor
+        "chamber/chamber_details.html",
+        chamber=chamber
     )
-
-
 
 # ==========================================
 # DOCTORS
