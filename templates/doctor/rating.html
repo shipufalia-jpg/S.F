@@ -1,5 +1,3 @@
-templates/doctor/rating.html
-
 {% extends "base.html" %}
 
 {% block title %}
@@ -8,9 +6,158 @@ Rate Doctor
 
 {% block content %}
 
-<div class="container"><div class="card">
+<style>
 
-    <h2>⭐ Rate Doctor</h2>
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family:Inter,sans-serif;
+}
+
+.rating-wrapper{
+    min-height:80vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px 15px;
+}
+
+.rating-card{
+    width:100%;
+    max-width:500px;
+    background:#fff;
+    border-radius:24px;
+    padding:40px 30px;
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.08);
+    text-align:center;
+}
+
+.rating-icon{
+    font-size:60px;
+    margin-bottom:10px;
+}
+
+.rating-title{
+    font-size:28px;
+    font-weight:700;
+    color:#1e293b;
+    margin-bottom:10px;
+}
+
+.rating-subtitle{
+    color:#64748b;
+    margin-bottom:35px;
+}
+
+.star-rating{
+    display:flex;
+    justify-content:center;
+    flex-direction:row-reverse;
+    gap:10px;
+    margin-bottom:35px;
+}
+
+.star-rating input{
+    display:none;
+}
+
+.star-rating label{
+    font-size:55px;
+    color:#dbe3ee;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label{
+    color:#fbbf24;
+    transform:scale(1.08);
+}
+
+.star-rating input:checked ~ label{
+    color:#fbbf24;
+}
+
+.btn-rate{
+    width:100%;
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn-rate:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 12px 25px rgba(37,99,235,.25);
+}
+
+.flash{
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+.flash-success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.flash-danger{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.flash-warning{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+@media(max-width:600px){
+
+    .rating-card{
+        padding:30px 20px;
+    }
+
+    .star-rating label{
+        font-size:45px;
+    }
+
+}
+
+</style><div class="rating-wrapper"><div class="rating-card">
+
+    <div class="rating-icon">
+        ⭐
+    </div>
+
+    <h2 class="rating-title">
+        Rate This Doctor
+    </h2>
+
+    <p class="rating-subtitle">
+        Your feedback helps other patients choose better healthcare.
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     <form
         method="POST"
@@ -38,7 +185,7 @@ Rate Doctor
 
         <button
             type="submit"
-            class="btn"
+            class="btn-rate"
         >
             Submit Rating
         </button>
