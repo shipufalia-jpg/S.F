@@ -12,6 +12,18 @@
 
         <form method="POST">
 
+            <input
+                type="hidden"
+                name="chamber_id"
+                value="{{ chamber_id }}"
+            >
+
+            <input
+                type="hidden"
+                name="doctor_id"
+                value="{{ doctor_id }}"
+            >
+
             <div class="mb-3">
                 <label>Name</label>
                 <input
@@ -27,26 +39,6 @@
                 <input
                     type="tel"
                     name="phone"
-                    class="form-control"
-                    required
-                >
-            </div>
-
-            <div class="mb-3">
-                <label>Date</label>
-                <input
-                    type="date"
-                    name="appointment_date"
-                    class="form-control"
-                    required
-                >
-            </div>
-
-            <div class="mb-3">
-                <label>Time</label>
-                <input
-                    type="time"
-                    name="appointment_time"
                     class="form-control"
                     required
                 >
