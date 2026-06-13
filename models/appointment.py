@@ -56,3 +56,4 @@ class Appointment(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
+    doctor = db.relationship("Doctor", backref="appointments")
