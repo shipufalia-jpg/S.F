@@ -1,98 +1,134 @@
 {% extends "base.html" %}
 
-{% block title %}
-Appointments
-{% endblock %}
+{% block title %}Appointments{% endblock %}
 
 {% block content %}
 
 <style>
 :root{
-    --primary:#2563eb;
-    --success:#22c55e;
+    --primary:#4f46e5;
+    --success:#16a34a;
     --warning:#f59e0b;
     --danger:#ef4444;
     --dark:#0f172a;
     --muted:#64748b;
+    --bg:#f4f7ff;
 }
 
+body{
+    background:var(--bg);
+}
+
+/* HEADER */
 .page-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     flex-wrap:wrap;
     gap:15px;
-    margin-bottom:25px;
+    margin-bottom:20px;
 }
 
 .page-title h2{
+    font-size:28px;
+    font-weight:900;
     color:var(--dark);
-    font-weight:800;
-    font-size:26px;
 }
 
 .page-title p{
     color:var(--muted);
 }
 
+/* SEARCH */
 .search-box input{
     width:280px;
-    height:48px;
+    height:45px;
+    border-radius:12px;
     border:none;
     outline:none;
-    border-radius:14px;
-    padding-left:42px;
-    background:rgba(255,255,255,.9);
-    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    padding:0 15px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
+/* STATS */
 .stats{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
     gap:15px;
-    margin-bottom:25px;
+    margin-bottom:20px;
 }
 
 .stat-card{
     background:#fff;
-    border-radius:18px;
+    border-radius:16px;
     padding:18px;
-    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+    transition:.3s;
 }
 
+.stat-card:hover{
+    transform:translateY(-3px);
+}
+
+.stat-card h4{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.stat-card h2{
+    font-size:24px;
+    font-weight:800;
+    color:var(--dark);
+}
+
+/* TABLE CARD */
 .table-card{
     background:#fff;
     border-radius:18px;
     overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
 }
 
+/* TABLE */
 table{
     width:100%;
     border-collapse:collapse;
 }
 
-th{
-    background:#f1f5f9;
+thead th{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
     padding:14px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    position:sticky;
+    top:0;
 }
 
-td{
+tbody td{
     padding:14px;
     border-bottom:1px solid #f1f5f9;
+    font-size:14px;
 }
 
+tbody tr:hover{
+    background:#f9fbff;
+}
+
+/* BADGES */
 .badge{
-    padding:6px 12px;
+    padding:5px 10px;
     border-radius:999px;
     font-size:12px;
-    font-weight:600;
+    font-weight:700;
 }
 
-.pending{ background:#fef3c7; color:#92400e; }
-.confirmed{ background:#dcfce7; color:#166534; }
-.completed{ background:#dbeafe; color:#1d4ed8; }
-.cancelled{ background:#fee2e2; color:#991b1b; }
+.pending{background:#fff7ed;color:#9a3412;}
+.confirmed{background:#ecfdf5;color:#166534;}
+.completed{background:#eff6ff;color:#1d4ed8;}
+.cancelled{background:#fef2f2;color:#991b1b;}
 
+/* BUTTONS */
 .actions{
     display:flex;
     gap:6px;
@@ -100,29 +136,42 @@ td{
 }
 
 .btn{
-    text-decoration:none;
-    padding:7px 10px;
+    padding:6px 10px;
     border-radius:10px;
     font-size:12px;
-    font-weight:600;
+    font-weight:700;
+    text-decoration:none;
+    transition:.2s;
 }
 
-.btn-view{ background:#eef2ff; color:#4338ca; }
-.btn-confirm{ background:#dcfce7; color:#166534; }
-.btn-complete{ background:#dbeafe; color:#1d4ed8; }
-.btn-cancel{ background:#fee2e2; color:#991b1b; }
+.btn:hover{
+    transform:scale(1.05);
+}
 
+.btn-view{background:#eef2ff;color:#4f46e5;}
+.btn-confirm{background:#dcfce7;color:#166534;}
+.btn-complete{background:#dbeafe;color:#1d4ed8;}
+.btn-cancel{background:#fee2e2;color:#991b1b;}
+
+/* EMPTY */
 .empty{
     text-align:center;
-    padding:70px 20px;
+    padding:60px;
     color:var(--muted);
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+    .search-box input{
+        width:100%;
+    }
 }
 </style>
 
 <div class="page-header">
     <div class="page-title">
         <h2>Appointments</h2>
-        <p>Manage patient bookings</p>
+        <p>Manage bookings in real time</p>
     </div>
 
     <div class="search-box">
@@ -130,22 +179,20 @@ td{
     </div>
 </div>
 
+<!-- STATS -->
 <div class="stats">
     <div class="stat-card">
         <h4>Total</h4>
         <h2>{{ appointments|length }}</h2>
     </div>
-
     <div class="stat-card">
         <h4>Pending</h4>
         <h2>{{ pending_count }}</h2>
     </div>
-
     <div class="stat-card">
         <h4>Confirmed</h4>
         <h2>{{ confirmed_count }}</h2>
     </div>
-
     <div class="stat-card">
         <h4>Completed</h4>
         <h2>{{ completed_count }}</h2>
@@ -156,16 +203,15 @@ td{
 
 {% if appointments %}
 
-<table>
-
+<table id="apptTable">
 <thead>
 <tr>
-    <th>Patient</th>
-    <th>Phone</th>
+    <th onclick="sortTable(0)">Patient ⬍</th>
+    <th onclick="sortTable(1)">Phone ⬍</th>
     <th>Doctor</th>
     <th>Chamber</th>
     <th>Status</th>
-    <th>Date</th>
+    <th onclick="sortTable(5)">Date ⬍</th>
     <th>Actions</th>
 </tr>
 </thead>
@@ -173,20 +219,15 @@ td{
 <tbody id="appointmentTable">
 
 {% for a in appointments %}
-
 <tr class="row-item">
 
     <td>{{ a.patient_name }}</td>
     <td>{{ a.patient_phone }}</td>
     <td>{{ a.doctor.name if a.doctor else "-" }}</td>
-
-    <!-- FIXED: Chamber column -->
-    <td>{{ a.chamber.chamber_name if a.chamber else "No Chamber" }}</td>
+    <td>{{ a.chamber.chamber_name if a.chamber else "-" }}</td>
 
     <td>
-        <span class="badge {{ a.status }}">
-            {{ a.status }}
-        </span>
+        <span class="badge {{ a.status }}">{{ a.status }}</span>
     </td>
 
     <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
@@ -194,19 +235,16 @@ td{
     <td>
         <div class="actions">
 
-            <!-- OPEN PAGE -->
             <a href="{{ url_for('chamber_panel.confirm_page', id=a.id) }}" class="btn btn-view">
                 Open
             </a>
 
-            <!-- CONFIRM (POST ROUTE PAGE হওয়া উচিত, direct link না) -->
             {% if a.status == "pending" %}
             <a href="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}" class="btn btn-confirm">
                 Confirm
             </a>
             {% endif %}
 
-            <!-- UPDATE (এইটা তোমার existing update route অনুযায়ী) -->
             <a href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='completed') }}" class="btn btn-complete">
                 Done
             </a>
@@ -219,33 +257,72 @@ td{
     </td>
 
 </tr>
-
 {% endfor %}
 
 </tbody>
-
 </table>
 
 {% else %}
-
 <div class="empty">
     <h3>No Appointments Found</h3>
 </div>
-
 {% endif %}
 
 </div>
 
 <script>
+// SEARCH
 document.getElementById("searchInput").addEventListener("keyup", function () {
     let value = this.value.toLowerCase();
-
     document.querySelectorAll(".row-item").forEach(row => {
         row.style.display = row.innerText.toLowerCase().includes(value)
             ? "table-row"
             : "none";
     });
 });
+
+// SORT (UP/DOWN FIX)
+function sortTable(n){
+    let table = document.getElementById("apptTable");
+    let switching = true;
+    let dir = "asc";
+    let switchcount = 0;
+
+    while (switching){
+        switching = false;
+        let rows = table.rows;
+
+        for (let i = 1; i < (rows.length - 1); i++){
+            let shouldSwitch = false;
+
+            let x = rows[i].getElementsByTagName("TD")[n];
+            let y = rows[i + 1].getElementsByTagName("TD")[n];
+
+            if (dir == "asc"){
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()){
+                    shouldSwitch = true;
+                    break;
+                }
+            } else {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()){
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+
+        if (shouldSwitch){
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc"){
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
 </script>
 
 {% endblock %}
