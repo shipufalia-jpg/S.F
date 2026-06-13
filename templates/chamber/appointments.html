@@ -13,8 +13,11 @@ Appointments
     --success:#22c55e;
     --warning:#f59e0b;
     --danger:#ef4444;
+    --dark:#0f172a;
+    --muted:#64748b;
 }
 
+/* HEADER */
 .page-header{
     display:flex;
     justify-content:space-between;
@@ -25,71 +28,70 @@ Appointments
 }
 
 .page-title h2{
-    color:#0f172a;
-    font-weight:700;
+    color:var(--dark);
+    font-weight:800;
+    font-size:26px;
 }
 
 .page-title p{
-    color:#64748b;
+    color:var(--muted);
 }
 
+/* SEARCH */
 .search-box{
     position:relative;
 }
 
 .search-box input{
     width:280px;
-    height:50px;
+    height:48px;
     border:none;
     outline:none;
-    border-radius:16px;
-    padding-left:45px;
-    background:rgba(255,255,255,.85);
-    backdrop-filter:blur(20px);
+    border-radius:14px;
+    padding-left:42px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
 }
 
 .search-box i{
     position:absolute;
-    left:16px;
-    top:17px;
-    color:#64748b;
+    left:14px;
+    top:16px;
+    color:var(--muted);
 }
 
 /* STATS */
-
 .stats{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:18px;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
     margin-bottom:25px;
 }
 
 .stat-card{
-    background:rgba(255,255,255,.75);
-    backdrop-filter:blur(20px);
-    border-radius:24px;
-    padding:22px;
-    border:1px solid rgba(255,255,255,.5);
+    background:#fff;
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    border:1px solid #f1f5f9;
 }
 
 .stat-card h4{
-    color:#64748b;
-    font-size:14px;
+    color:var(--muted);
+    font-size:13px;
 }
 
 .stat-card h2{
-    margin-top:10px;
-    color:#0f172a;
+    margin-top:8px;
+    color:var(--dark);
 }
 
 /* TABLE */
-
 .table-card{
-    background:rgba(255,255,255,.75);
-    backdrop-filter:blur(20px);
-    border-radius:28px;
+    background:#fff;
+    border-radius:18px;
     overflow:hidden;
-    border:1px solid rgba(255,255,255,.5);
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
 }
 
 .table-wrap{
@@ -102,68 +104,65 @@ table{
 }
 
 th{
-    background:rgba(37,99,235,.08);
-    color:#0f172a;
-    font-weight:600;
+    background:#f1f5f9;
+    color:var(--dark);
+    font-weight:700;
+    padding:14px;
 }
 
-th,td{
-    padding:16px;
-    text-align:left;
+td{
+    padding:14px;
+    border-bottom:1px solid #f1f5f9;
 }
 
-tr{
-    border-bottom:1px solid #e2e8f0;
-}
-
-/* BADGES */
-
+/* BADGE */
 .badge{
-    padding:8px 12px;
-    border-radius:50px;
+    padding:6px 12px;
+    border-radius:999px;
     font-size:12px;
     font-weight:600;
+    text-transform:capitalize;
 }
 
-.pending{
-    background:#fef3c7;
-    color:#92400e;
-}
-
-.confirmed{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.completed{
-    background:#dbeafe;
-    color:#1d4ed8;
-}
-
-.cancelled{
-    background:#fee2e2;
-    color:#991b1b;
-}
+.pending{ background:#fef3c7; color:#92400e; }
+.confirmed{ background:#dcfce7; color:#166534; }
+.completed{ background:#dbeafe; color:#1d4ed8; }
+.cancelled{ background:#fee2e2; color:#991b1b; }
 
 /* BUTTONS */
-
 .actions{
     display:flex;
-    gap:8px;
+    gap:6px;
     flex-wrap:wrap;
 }
 
+/* COMMON BTN */
 .btn{
     text-decoration:none;
-    padding:8px 12px;
-    border-radius:12px;
-    font-size:13px;
+    padding:7px 10px;
+    border-radius:10px;
+    font-size:12px;
     font-weight:600;
+    transition:.2s;
+}
+
+/* PREMIUM BUTTONS */
+.btn-view{
+    background:#eef2ff;
+    color:#4338ca;
+}
+
+.btn-view:hover{
+    background:#e0e7ff;
 }
 
 .btn-confirm{
     background:#dcfce7;
     color:#166534;
+}
+
+.btn-confirm:hover{
+    background:#bbf7d0;
 }
 
 .btn-complete{
@@ -176,10 +175,11 @@ tr{
     color:#991b1b;
 }
 
+/* EMPTY */
 .empty{
     text-align:center;
-    padding:80px 20px;
-    color:#64748b;
+    padding:70px 20px;
+    color:var(--muted);
 }
 
 </style>
@@ -193,10 +193,7 @@ tr{
 
     <div class="search-box">
         <i class="fa fa-search"></i>
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search patient...">
+        <input type="text" id="searchInput" placeholder="Search patient...">
     </div>
 
 </div>
@@ -204,7 +201,7 @@ tr{
 <div class="stats">
 
     <div class="stat-card">
-        <h4>Total Appointments</h4>
+        <h4>Total</h4>
         <h2>{{ appointments|length }}</h2>
     </div>
 
@@ -239,7 +236,7 @@ tr{
     <th>Phone</th>
     <th>Doctor</th>
     <th>Status</th>
-    <th>Created</th>
+    <th>Date</th>
     <th>Actions</th>
 </tr>
 </thead>
@@ -251,45 +248,39 @@ tr{
 <tr class="row-item">
 
     <td>{{ a.patient_name }}</td>
-
     <td>{{ a.patient_phone }}</td>
-
     <td>{{ a.doctor.name }}</td>
 
     <td>
-
         <span class="badge {{ a.status }}">
-            {{ a.status|title }}
+            {{ a.status }}
         </span>
-
     </td>
 
-    <td>
-        {{ a.created_at.strftime('%d-%m-%Y') }}
-    </td>
+    <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
 
     <td>
 
         <div class="actions">
 
-            <a
-            href="/chamber/appointment/{{ a.id }}/confirmed"
-            class="btn btn-confirm">
+            <!-- ⭐ NEW PREMIUM CONFIRM PAGE -->
+            <a href="/chamber/confirm/{{ a.id }}" class="btn btn-view">
+                Open
+            </a>
 
+            {% if a.status == "pending" %}
+
+            <a href="/chamber/appointment/{{ a.id }}/confirmed" class="btn btn-confirm">
                 Confirm
             </a>
 
-            <a
-            href="/chamber/appointment/{{ a.id }}/completed"
-            class="btn btn-complete">
+            {% endif %}
 
-                Complete
+            <a href="/chamber/appointment/{{ a.id }}/completed" class="btn btn-complete">
+                Done
             </a>
 
-            <a
-            href="/chamber/appointment/{{ a.id }}/cancelled"
-            class="btn btn-cancel">
-
+            <a href="/chamber/appointment/{{ a.id }}/cancelled" class="btn btn-cancel">
                 Cancel
             </a>
 
@@ -310,13 +301,8 @@ tr{
 {% else %}
 
 <div class="empty">
-
     <h3>No Appointments Found</h3>
-
-    <p>
-        Patient bookings will appear here.
-    </p>
-
+    <p>Patient bookings will appear here</p>
 </div>
 
 {% endif %}
@@ -325,24 +311,17 @@ tr{
 
 <script>
 
-document
-.getElementById("searchInput")
-.addEventListener("keyup",function(){
+document.getElementById("searchInput")
+.addEventListener("keyup", function () {
 
-let value=this.value.toLowerCase();
+let value = this.value.toLowerCase();
 
-document
-.querySelectorAll(".row-item")
-.forEach(row=>{
+document.querySelectorAll(".row-item").forEach(row => {
 
-row.style.display=
-row.innerText
-.toLowerCase()
-.includes(value)
-?
-"table-row"
-:
-"none";
+row.style.display =
+row.innerText.toLowerCase().includes(value)
+? "table-row"
+: "none";
 
 });
 
