@@ -1,4 +1,3 @@
-from . import doctor_bp
 from flask import (
     render_template,
     request,
@@ -26,5 +25,55 @@ def rating_page(doctor_id):
 )
 def rate_doctor(doctor_id):
 
-    # rating save code
-    pass
+    rating = request.form.get("rating")
+
+    if not rating:
+        flash(
+            "Please select a rating.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "doctor.rating_page",
+                doctor_id=doctor_id
+            )
+        )
+
+    # একই IP থেকে একবারের বেশি rating না দিতে চাইলে
+    existing_rating = DoctorRating.query.filter_by(
+        doctor_id=doctor_id,
+        ip_address=request.remote_addr
+    ).first()
+
+    if existing_rating:
+        flash(
+            "You have already rated this doctor.",
+            "warning"
+        )
+        return redirect(
+            url_for(
+                "doctor.rating_page",
+                doctor_id=doctor_id
+            )
+        )
+
+    new_rating = DoctorRating(
+        doctor_id=doctor_id,
+        rating=int(rating),
+        ip_address=request.remote_addr
+    )
+
+    db.session.add(new_rating)
+    db.session.commit()
+
+    flash(
+        "Rating submitted successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "doctor.rating_page",
+            doctor_id=doctor_id
+        )
+    )
