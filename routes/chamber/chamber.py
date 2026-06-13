@@ -566,6 +566,28 @@ def save_appointment():
         )
     )
 
+
+@chamber_panel.route("/confirm/<int:id>")
+def confirm_page(id):
+
+    appointment = Appointment.query.get_or_404(id)
+
+    return render_template("chamber/confirm.html", a=appointment)
+
+
+@chamber_panel.route("/confirm/submit/<int:id>", methods=["POST"])
+def confirm_submit(id):
+
+    appointment = Appointment.query.get_or_404(id)
+
+    appointment.status = "confirmed"
+
+    db.session.commit()
+
+    return redirect("/chamber/appointments")
+
+
+
 @chamber_panel.route(
     "/rate/<int:chamber_id>",
     methods=["POST"]
