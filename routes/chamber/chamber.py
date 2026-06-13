@@ -585,27 +585,22 @@ def confirm_page(id):
     return render_template("chamber/confirm.html", a=appointment)
 
 
-@chamber_panel.route("/confirm/submit/<int:id>", methods=["POST"])
-def confirm_submit(id):
-
-    appointment = Appointment.query.get_or_404(id)
-
-    appointment.status = "confirmed"
-
-    db.session.commit()
-
-    return redirect("/chamber/appointments")
-
-
 @chamber_panel.route("/my-appointments")
 def my_appointments():
 
-    appointments = Appointment.query.all()
+    chamber_id = session.get("chamber_id")
+
+    if not chamber_id:
+        return redirect("/chamber/login")
+
+    appointments = Appointment.query.filter_by(
+        chamber_id=chamber_id
+    ).order_by(Appointment.id.desc()).all()
+
     return render_template(
         "chamber/my_appointments.html",
         appointments=appointments
     )
-
 
 
 @chamber_panel.route(
