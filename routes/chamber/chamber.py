@@ -505,44 +505,59 @@ def chambers():
 @chamber_panel.route("/book-appointment")
 def book_appointment():
 
-    return render_template(
-        "chamber/book_appointment.html"
-    )
-
+return render_template(
+    "chamber/book_appointment.html"
+)
 
 @chamber_panel.route(
-    "/book-appointment",
-    methods=["POST"]
+"/book-appointment",
+methods=["POST"]
 )
 def save_appointment():
 
-    name = request.form.get("name")
-    phone = request.form.get("phone")
-    appointment_date = request.form.get("appointment_date")
-    appointment_time = request.form.get("appointment_time")
+name = request.form.get("name")
+phone = request.form.get("phone")
 
-    appointment = Appointment(
-        patient_name=name,
-        phone=phone,
-        appointment_date=appointment_date,
-        appointment_time=appointment_time,
-        chamber_id=session.get("chamber_id"),
-        status="pending"
-    )
+chamber_id = request.form.get("chamber_id")
+doctor_id = request.form.get("doctor_id")
 
-    db.session.add(appointment)
-    db.session.commit()
-
+if not all([
+    name,
+    phone,
+    chamber_id,
+    doctor_id
+]):
     flash(
-        "Appointment booked successfully.",
-        "success"
+        "All fields are required.",
+        "danger"
     )
-
     return redirect(
         url_for(
-            "chamber_panel.appointments"
+            "chamber_panel.book_appointment"
         )
+    )
+
+appointment = Appointment(
+    chamber_id=int(chamber_id),
+    doctor_id=int(doctor_id),
+    patient_name=name,
+    patient_phone=phone,
+    status="pending"
 )
+
+db.session.add(appointment)
+db.session.commit()
+
+flash(
+    "Appointment booked successfully.",
+    "success"
+)
+
+return redirect(
+    url_for(
+        "chamber_panel.chambers"
+    )
+    )
 
 @chamber_panel.route(
     "/rate/<int:chamber_id>",
