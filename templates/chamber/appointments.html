@@ -250,6 +250,7 @@ td{
     <td>{{ a.patient_name }}</td>
     <td>{{ a.patient_phone }}</td>
     <td>{{ a.doctor.name }}</td>
+    <td>{{ a.chamber.chamber_name if a.chamber else "No Chamber" }}</td>
 
     <td>
         <span class="badge {{ a.status }}">
@@ -270,18 +271,18 @@ td{
 
             {% if a.status == "pending" %}
 
-            <a href="/chamber/appointment/{{ a.id }}/confirmed" class="btn btn-confirm">
-                Confirm
+            <a href="{{ url_for('chamber_panel.confirm_appointment', id=a.id) }}" class="btn btn-confirm">
+            Confirm
             </a>
 
             {% endif %}
 
-            <a href="/chamber/appointment/{{ a.id }}/completed" class="btn btn-complete">
-                Done
+            <a href="{{ url_for('chamber_panel.complete_appointment', id=a.id) }}" class="btn btn-complete">
+            Done
             </a>
 
-            <a href="/chamber/appointment/{{ a.id }}/cancelled" class="btn btn-cancel">
-                Cancel
+            <a href="{{ url_for('chamber_panel.cancel_appointment', id=a.id) }}" class="btn btn-cancel">
+            Cancel
             </a>
 
         </div>
