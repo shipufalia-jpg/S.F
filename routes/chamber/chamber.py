@@ -502,6 +502,47 @@ def chambers():
         chambers=chambers
     )
 
+@chamber_panel.route("/book-appointment")
+def book_appointment():
+
+    return render_template(
+        "chamber/book_appointment.html"
+    )
+
+
+@chamber_panel.route(
+    "/book-appointment",
+    methods=["POST"]
+)
+def save_appointment():
+
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    appointment_date = request.form.get("appointment_date")
+    appointment_time = request.form.get("appointment_time")
+
+    appointment = Appointment(
+        patient_name=name,
+        phone=phone,
+        appointment_date=appointment_date,
+        appointment_time=appointment_time,
+        chamber_id=session.get("chamber_id"),
+        status="pending"
+    )
+
+    db.session.add(appointment)
+    db.session.commit()
+
+    flash(
+        "Appointment booked successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "chamber_panel.appointments"
+        )
+)
 
 @chamber_panel.route(
     "/rate/<int:chamber_id>",
