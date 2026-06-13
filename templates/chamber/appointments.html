@@ -282,47 +282,38 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
 });
 
 // SORT (UP/DOWN FIX)
-function sortTable(n){
+let sortDirection = {};
+
+function sortTable(n) {
     let table = document.getElementById("apptTable");
-    let switching = true;
-    let dir = "asc";
-    let switchcount = 0;
+    let rows = Array.from(table.rows).slice(1); // header বাদ
+    let dir = sortDirection[n] === "asc" ? "desc" : "asc";
+    sortDirection[n] = dir;
 
-    while (switching){
-        switching = false;
-        let rows = table.rows;
+    rows.sort((a, b) => {
+        let x = a.cells[n].innerText.trim();
+        let y = b.cells[n].innerText.trim();
 
-        for (let i = 1; i < (rows.length - 1); i++){
-            let shouldSwitch = false;
+        // DATE CHECK (dd-mm-yyyy)
+        let dateRegex = /^\d{2}-\d{2}-\d{4}$/;
 
-            let x = rows[i].getElementsByTagName("TD")[n];
-            let y = rows[i + 1].getElementsByTagName("TD")[n];
-
-            if (dir == "asc"){
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()){
-                    shouldSwitch = true;
-                    break;
-                }
-            } else {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()){
-                    shouldSwitch = true;
-                    break;
-                }
-            }
+        if (dateRegex.test(x) && dateRegex.test(y)) {
+            x = new Date(x.split("-").reverse().join("-"));
+            y = new Date(y.split("-").reverse().join("-"));
+        } 
+        else if (!isNaN(x) && !isNaN(y)) {
+            x = Number(x);
+            y = Number(y);
+        } 
+        else {
+            x = x.toLowerCase();
+            y = y.toLowerCase();
         }
 
-        if (shouldSwitch){
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
-            switchcount++;
-        } else {
-            if (switchcount == 0 && dir == "asc"){
-                dir = "desc";
-                switching = true;
-            }
-        }
-    }
+        return dir === "asc" ? (x > y ? 1 : -1) : (x < y ? 1 : -1);
+    });
+
+    rows.forEach(row => table.tBodies[0].appendChild(row));
+
+    updateHeaderIcons(n, dir);
 }
-</script>
-
-{% endblock %}
