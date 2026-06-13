@@ -6,67 +6,36 @@
 
 <style>
 
-/* ===== ROOT ===== */
-:root{
-    --primary:#6366f1;
-    --success:#22c55e;
-    --warning:#f59e0b;
-    --danger:#ef4444;
-    --dark:#0f172a;
-    --glass: rgba(255,255,255,0.7);
-}
-
-/* BACKGROUND */
-body{
-    background: linear-gradient(135deg,#eef2ff,#f8fafc);
-    font-family: system-ui;
-}
-
-/* ===== HERO ===== */
+/* HERO */
 .hero{
-    background: linear-gradient(135deg,#6366f1,#8b5cf6);
+    background:linear-gradient(135deg,#6366f1,#4f46e5);
     color:#fff;
-    padding:25px;
-    border-radius:18px;
+    padding:20px;
+    border-radius:16px;
     margin-bottom:20px;
-    box-shadow:0 15px 40px rgba(99,102,241,0.3);
 }
 
-/* ===== STATS CARDS ===== */
+/* STATS */
 .stats{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
     gap:15px;
     margin:20px 0;
 }
 
 .card{
-    background:var(--glass);
-    backdrop-filter: blur(10px);
-    border:1px solid rgba(255,255,255,0.4);
-    border-radius:16px;
-    padding:18px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.05);
-    transition:0.3s;
+    background:#fff;
+    padding:15px;
+    border-radius:14px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.06);
 }
 
-.card:hover{
-    transform:translateY(-5px);
-}
-
-.card h2{
-    font-size:26px;
-    font-weight:800;
-    color:var(--dark);
-}
-
-/* ===== TABLE ===== */
+/* TABLE */
 .table-box{
-    background:var(--glass);
-    backdrop-filter: blur(12px);
-    border-radius:18px;
+    background:#fff;
+    border-radius:16px;
     overflow:hidden;
-    box-shadow:0 15px 35px rgba(0,0,0,0.08);
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
 table{
@@ -74,113 +43,45 @@ table{
     border-collapse:collapse;
 }
 
-thead{
-    background: linear-gradient(135deg,#6366f1,#8b5cf6);
-    color:white;
-}
-
 th{
-    padding:14px;
+    background:#eef2ff;
+    padding:12px;
     cursor:pointer;
-    user-select:none;
-    font-size:13px;
 }
 
 td{
-    padding:14px;
-    border-bottom:1px solid rgba(0,0,0,0.05);
+    padding:12px;
+    border-bottom:1px solid #f1f5f9;
 }
 
-tr:hover{
-    background:rgba(255,255,255,0.6);
-}
-
-/* ===== BADGES ===== */
-.badge{
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:700;
-}
-
-.pending{background:#fff7ed;color:#9a3412;}
-.confirmed{background:#ecfdf5;color:#166534;}
-.completed{background:#eff6ff;color:#1d4ed8;}
-.cancelled{background:#fef2f2;color:#991b1b;}
-
-/* ===== BUTTONS ===== */
+/* BUTTONS */
 .btn{
-    padding:6px 10px;
-    border-radius:10px;
+    padding:5px 10px;
+    border-radius:8px;
     font-size:12px;
-    font-weight:700;
-    border:none;
-    cursor:pointer;
-    transition:0.2s;
     text-decoration:none;
 }
 
-.btn:hover{
-    transform:scale(1.05);
-}
-
-/* gradient buttons */
-.btn-view{
-    background:linear-gradient(135deg,#6366f1,#4f46e5);
-    color:#fff;
-}
-
-.btn-confirm{
-    background:linear-gradient(135deg,#22c55e,#16a34a);
-    color:#fff;
-}
-
-.btn-complete{
-    background:linear-gradient(135deg,#3b82f6,#2563eb);
-    color:#fff;
-}
-
-.btn-cancel{
-    background:linear-gradient(135deg,#ef4444,#dc2626);
-    color:#fff;
-}
-
-/* SEARCH */
-.search{
-    margin-top:10px;
-}
-
-.search input{
-    width:280px;
-    padding:10px 15px;
-    border-radius:12px;
-    border:none;
-    outline:none;
-    box-shadow:0 10px 20px rgba(0,0,0,0.08);
-}
-
-@media(max-width:768px){
-    .search input{ width:100%; }
-}
+.btn-view{background:#6366f1;color:#fff;}
+.btn-confirm{background:#22c55e;color:#fff;}
+.btn-complete{background:#3b82f6;color:#fff;}
+.btn-cancel{background:#ef4444;color:#fff;}
 
 </style>
 
 <!-- HERO -->
 <div class="hero">
-    <h2>Appointments Dashboard</h2>
-    <p>Manage bookings in premium UI style</p>
-
-    <div class="search">
-        <input type="text" id="searchInput" placeholder="Search patient...">
-    </div>
+    <h2>Appointments</h2>
+    <input type="text" id="searchInput" placeholder="Search patient..."
+    style="padding:10px;border:none;border-radius:10px;width:250px;">
 </div>
 
 <!-- STATS -->
 <div class="stats">
-    <div class="card"><h4>Total</h4><h2>{{ appointments|length }}</h2></div>
-    <div class="card"><h4>Pending</h4><h2>{{ pending_count }}</h2></div>
-    <div class="card"><h4>Confirmed</h4><h2>{{ confirmed_count }}</h2></div>
-    <div class="card"><h4>Completed</h4><h2>{{ completed_count }}</h2></div>
+    <div class="card">Total: {{ appointments|length }}</div>
+    <div class="card">Pending: {{ pending_count }}</div>
+    <div class="card">Confirmed: {{ confirmed_count }}</div>
+    <div class="card">Completed: {{ completed_count }}</div>
 </div>
 
 <!-- TABLE -->
@@ -189,13 +90,13 @@ tr:hover{
 <table id="apptTable">
 <thead>
 <tr>
-    <th onclick="sortTable(0,this)" data-key="patient">Patient ⬍</th>
-    <th onclick="sortTable(1,this)" data-key="phone">Phone ⬍</th>
-    <th data-key="doctor">Doctor</th>
-    <th data-key="chamber">Chamber</th>
-    <th data-key="status">Status</th>
-    <th onclick="sortTable(5,this)" data-key="date">Date ⬍</th>
-    <th data-key="actions">Actions</th>
+    <th onclick="sortTable(0)">Patient ⬍</th>
+    <th onclick="sortTable(1)">Phone ⬍</th>
+    <th>Doctor</th>
+    <th>Chamber</th>
+    <th>Status</th>
+    <th onclick="sortTable(5)">Date ⬍</th>
+    <th>Actions</th>
 </tr>
 </thead>
 
@@ -208,20 +109,18 @@ tr:hover{
 <td>{{ a.doctor.name if a.doctor else "-" }}</td>
 <td>{{ a.chamber.chamber_name if a.chamber else "-" }}</td>
 
-<td><span class="badge {{ a.status }}">{{ a.status }}</span></td>
-
+<td>{{ a.status }}</td>
 <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
 
 <td>
-    <a class="btn btn-view" href="{{ url_for('chamber_panel.confirm_page', id=a.id) }}">Open</a>
+    <a class="btn btn-view" href="#">Open</a>
 
     {% if a.status == "pending" %}
-    <a class="btn btn-confirm" href="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">Confirm</a>
+    <a class="btn btn-confirm" href="#">Confirm</a>
     {% endif %}
 
-    <a class="btn btn-complete" href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='completed') }}">Done</a>
-
-    <a class="btn btn-cancel" href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='cancelled') }}">Cancel</a>
+    <a class="btn btn-complete" href="#">Done</a>
+    <a class="btn btn-cancel" href="#">Cancel</a>
 </td>
 
 </tr>
@@ -235,63 +134,28 @@ tr:hover{
 
 /* SEARCH */
 document.getElementById("searchInput").addEventListener("keyup", function(){
-    let value = this.value.toLowerCase();
-    document.querySelectorAll("tbody tr").forEach(row=>{
-        row.style.display = row.innerText.toLowerCase().includes(value)
-        ? "" : "none";
+    let v = this.value.toLowerCase();
+    document.querySelectorAll("tbody tr").forEach(r=>{
+        r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none";
     });
 });
 
 /* SORT */
-let sortState = {};
-
-function sortTable(index, th){
-
+function sortTable(n){
     let table = document.getElementById("apptTable");
     let rows = Array.from(table.tBodies[0].rows);
 
-    let key = th.dataset.key;
-    sortState[key] = sortState[key] === "asc" ? "desc" : "asc";
-    let dir = sortState[key];
-
     rows.sort((a,b)=>{
+        let x = a.cells[n].innerText;
+        let y = b.cells[n].innerText;
 
-        let x = a.cells[index].innerText.trim();
-        let y = b.cells[index].innerText.trim();
-
-        if(/^\d{2}-\d{2}-\d{4}$/.test(x)){
-            x = new Date(x.split("-").reverse().join("-"));
-            y = new Date(y.split("-").reverse().join("-"));
+        if(!isNaN(x) && !isNaN(y)){
+            return x-y;
         }
-        else if(!isNaN(x) && !isNaN(y)){
-            x = Number(x);
-            y = Number(y);
-        }
-        else{
-            x = x.toLowerCase();
-            y = y.toLowerCase();
-        }
-
-        return dir === "asc" ? (x>y?1:-1) : (x<y?1:-1);
+        return x.localeCompare(y);
     });
 
     rows.forEach(r=>table.tBodies[0].appendChild(r));
-
-    updateIcons(index,dir);
-}
-
-/* ICON */
-function updateIcons(index,dir){
-    let headers = document.querySelectorAll("#apptTable th");
-
-    headers.forEach((th,i)=>{
-        let base = th.innerText.replace(" ⬆","").replace(" ⬇","");
-        th.innerText = base;
-
-        if(i===index){
-            th.innerText += dir==="asc"?" ⬆":" ⬇";
-        }
-    });
 }
 
 </script>
