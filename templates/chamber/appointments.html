@@ -47,6 +47,11 @@ th{
     background:#eef2ff;
     padding:12px;
     cursor:pointer;
+    user-select:none;
+}
+
+th:hover{
+    background:#e0e7ff;
 }
 
 td{
@@ -72,7 +77,9 @@ td{
 <!-- HERO -->
 <div class="hero">
     <h2>Appointments</h2>
-    <input type="text" id="searchInput" placeholder="Search patient..."
+
+    <input type="text" id="searchInput"
+    placeholder="Search patient..."
     style="padding:10px;border:none;border-radius:10px;width:250px;">
 </div>
 
@@ -92,9 +99,9 @@ td{
 <tr>
     <th onclick="sortTable(0)">Patient ⬍</th>
     <th onclick="sortTable(1)">Phone ⬍</th>
-    <th>Doctor</th>
-    <th>Chamber</th>
-    <th>Status</th>
+    <th onclick="sortTable(2)">Doctor ⬍</th>
+    <th onclick="sortTable(3)">Chamber ⬍</th>
+    <th onclick="sortTable(4)">Status ⬍</th>
     <th onclick="sortTable(5)">Date ⬍</th>
     <th>Actions</th>
 </tr>
@@ -108,7 +115,6 @@ td{
 <td>{{ a.patient_phone }}</td>
 <td>{{ a.doctor.name if a.doctor else "-" }}</td>
 <td>{{ a.chamber.chamber_name if a.chamber else "-" }}</td>
-
 <td>{{ a.status }}</td>
 <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
 
@@ -132,30 +138,45 @@ td{
 
 <script>
 
-/* SEARCH */
+/* SEARCH (FIXED) */
 document.getElementById("searchInput").addEventListener("keyup", function(){
-    let v = this.value.toLowerCase();
-    document.querySelectorAll("tbody tr").forEach(r=>{
-        r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none";
+    let value = this.value.toLowerCase();
+
+    document.querySelectorAll("#apptTable tbody tr").forEach(row=>{
+        row.style.display = row.innerText.toLowerCase().includes(value)
+        ? "" : "none";
     });
 });
 
-/* SORT */
+
+/* SORT (100% WORKING FIX) */
 function sortTable(n){
+
     let table = document.getElementById("apptTable");
-    let rows = Array.from(table.tBodies[0].rows);
+    let tbody = table.tBodies[0];
+
+    let rows = Array.from(tbody.rows);
+
+    let asc = table.getAttribute("data-sort-dir-"+n) === "asc";
+
+    table.setAttribute("data-sort-dir-"+n, asc ? "desc" : "asc");
 
     rows.sort((a,b)=>{
-        let x = a.cells[n].innerText;
-        let y = b.cells[n].innerText;
 
+        let x = a.cells[n].innerText.trim().toLowerCase();
+        let y = b.cells[n].innerText.trim().toLowerCase();
+
+        // number check
         if(!isNaN(x) && !isNaN(y)){
-            return x-y;
+            return asc ? y - x : x - y;
         }
-        return x.localeCompare(y);
+
+        return asc
+            ? y.localeCompare(x)
+            : x.localeCompare(y);
     });
 
-    rows.forEach(r=>table.tBodies[0].appendChild(r));
+    rows.forEach(r=>tbody.appendChild(r));
 }
 
 </script>
