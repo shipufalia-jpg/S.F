@@ -65,12 +65,17 @@ td{
     border-radius:8px;
     font-size:12px;
     text-decoration:none;
+    font-weight:600;
 }
 
 .btn-view{background:#6366f1;color:#fff;}
 .btn-confirm{background:#22c55e;color:#fff;}
 .btn-complete{background:#3b82f6;color:#fff;}
 .btn-cancel{background:#ef4444;color:#fff;}
+
+.btn:hover{
+    opacity:0.85;
+}
 
 </style>
 
@@ -119,14 +124,35 @@ td{
 <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
 
 <td>
-    <a class="btn btn-view" href="#">Open</a>
+    <!-- VIEW -->
+    <a class="btn btn-view"
+       href="{{ url_for('chamber_panel.confirm_page', id=a.id) }}">
+       Open
+    </a>
 
+    <!-- CONFIRM -->
     {% if a.status == "pending" %}
-    <a class="btn btn-confirm" href="#">Confirm</a>
+    <a class="btn btn-confirm"
+       href="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">
+       Confirm
+    </a>
     {% endif %}
 
-    <a class="btn btn-complete" href="#">Done</a>
-    <a class="btn btn-cancel" href="#">Cancel</a>
+    <!-- DONE -->
+    <a class="btn btn-complete"
+       href="{{ url_for('chamber_panel.update_appointment',
+       appointment_id=a.id,
+       status='completed') }}">
+       Done
+    </a>
+
+    <!-- CANCEL -->
+    <a class="btn btn-cancel"
+       href="{{ url_for('chamber_panel.update_appointment',
+       appointment_id=a.id,
+       status='cancelled') }}">
+       Cancel
+    </a>
 </td>
 
 </tr>
@@ -138,7 +164,7 @@ td{
 
 <script>
 
-/* SEARCH (FIXED) */
+/* SEARCH */
 document.getElementById("searchInput").addEventListener("keyup", function(){
     let value = this.value.toLowerCase();
 
@@ -148,8 +174,7 @@ document.getElementById("searchInput").addEventListener("keyup", function(){
     });
 });
 
-
-/* SORT (100% WORKING FIX) */
+/* SORT (WORKING FULL FIX) */
 function sortTable(n){
 
     let table = document.getElementById("apptTable");
@@ -157,23 +182,22 @@ function sortTable(n){
 
     let rows = Array.from(tbody.rows);
 
-    let asc = table.getAttribute("data-sort-dir-"+n) === "asc";
+    let asc = table.getAttribute("data-sort-"+n) !== "asc";
 
-    table.setAttribute("data-sort-dir-"+n, asc ? "desc" : "asc");
+    table.setAttribute("data-sort-"+n, asc ? "asc" : "desc");
 
     rows.sort((a,b)=>{
 
         let x = a.cells[n].innerText.trim().toLowerCase();
         let y = b.cells[n].innerText.trim().toLowerCase();
 
-        // number check
         if(!isNaN(x) && !isNaN(y)){
-            return asc ? y - x : x - y;
+            return asc ? x - y : y - x;
         }
 
         return asc
-            ? y.localeCompare(x)
-            : x.localeCompare(y);
+            ? x.localeCompare(y)
+            : y.localeCompare(x);
     });
 
     rows.forEach(r=>tbody.appendChild(r));
