@@ -247,7 +247,7 @@ def create_app():
     app.register_blueprint(
     doctor_bp
     )   
-print("🔥 CHAMBER PANEL REGISTERED")
+    print("🔥 CHAMBER PANEL REGISTERED")
 
     return app
 
