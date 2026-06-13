@@ -502,13 +502,19 @@ def chambers():
         chambers=chambers
     )
 
-@chamber_panel.route("/book-appointment")
-def book_appointment():
-
-return render_template(
-    "chamber/book_appointment.html"
+@chamber_panel.route(
+    "/book-appointment/<int:chamber_id>/<int:doctor_id>"
 )
+def book_appointment(
+    chamber_id,
+    doctor_id
+):
 
+    return render_template(
+        "chamber/book_appointment.html",
+        chamber_id=chamber_id,
+        doctor_id=doctor_id
+    )
 @chamber_panel.route(
 "/book-appointment",
 methods=["POST"]
