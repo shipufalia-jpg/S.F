@@ -286,7 +286,8 @@ let sortDirection = {};
 
 function sortTable(n) {
     let table = document.getElementById("apptTable");
-    let rows = Array.from(table.rows).slice(1); // header বাদ
+    let rows = Array.from(table.rows).slice(1);
+
     let dir = sortDirection[n] === "asc" ? "desc" : "asc";
     sortDirection[n] = dir;
 
@@ -294,12 +295,11 @@ function sortTable(n) {
         let x = a.cells[n].innerText.trim();
         let y = b.cells[n].innerText.trim();
 
-        // DATE CHECK (dd-mm-yyyy)
-        let dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+        let isDate = /^\d{2}-\d{2}-\d{4}$/;
 
-        if (dateRegex.test(x) && dateRegex.test(y)) {
-            x = new Date(x.split("-").reverse().join("-"));
-            y = new Date(y.split("-").reverse().join("-"));
+        if (isDate.test(x) && isDate.test(y)) {
+            x = Date.parse(x.split("-").reverse().join("-"));
+            y = Date.parse(y.split("-").reverse().join("-"));
         } 
         else if (!isNaN(x) && !isNaN(y)) {
             x = Number(x);
@@ -317,3 +317,19 @@ function sortTable(n) {
 
     updateHeaderIcons(n, dir);
 }
+
+
+// 👉 এখানে বসবে (IMPORTANT)
+function updateHeaderIcons(activeIndex, dir) {
+    let headers = document.querySelectorAll("#apptTable th");
+
+    headers.forEach((th, i) => {
+        th.innerHTML = th.innerText.replace(" ⬆", "").replace(" ⬇", "");
+
+        if (i === activeIndex) {
+            th.innerHTML += dir === "asc" ? " ⬆" : " ⬇";
+        }
+    });
+}
+
+</script>
