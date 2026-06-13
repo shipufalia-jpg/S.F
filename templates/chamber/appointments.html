@@ -7,7 +7,6 @@ Appointments
 {% block content %}
 
 <style>
-
 :root{
     --primary:#2563eb;
     --success:#22c55e;
@@ -17,7 +16,6 @@ Appointments
     --muted:#64748b;
 }
 
-/* HEADER */
 .page-header{
     display:flex;
     justify-content:space-between;
@@ -37,11 +35,6 @@ Appointments
     color:var(--muted);
 }
 
-/* SEARCH */
-.search-box{
-    position:relative;
-}
-
 .search-box input{
     width:280px;
     height:48px;
@@ -53,14 +46,6 @@ Appointments
     box-shadow:0 10px 25px rgba(0,0,0,.05);
 }
 
-.search-box i{
-    position:absolute;
-    left:14px;
-    top:16px;
-    color:var(--muted);
-}
-
-/* STATS */
 .stats{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -73,29 +58,12 @@ Appointments
     border-radius:18px;
     padding:18px;
     box-shadow:0 10px 25px rgba(0,0,0,.05);
-    border:1px solid #f1f5f9;
 }
 
-.stat-card h4{
-    color:var(--muted);
-    font-size:13px;
-}
-
-.stat-card h2{
-    margin-top:8px;
-    color:var(--dark);
-}
-
-/* TABLE */
 .table-card{
     background:#fff;
     border-radius:18px;
     overflow:hidden;
-    box-shadow:0 10px 25px rgba(0,0,0,.05);
-}
-
-.table-wrap{
-    overflow-x:auto;
 }
 
 table{
@@ -105,8 +73,6 @@ table{
 
 th{
     background:#f1f5f9;
-    color:var(--dark);
-    font-weight:700;
     padding:14px;
 }
 
@@ -115,13 +81,11 @@ td{
     border-bottom:1px solid #f1f5f9;
 }
 
-/* BADGE */
 .badge{
     padding:6px 12px;
     border-radius:999px;
     font-size:12px;
     font-weight:600;
-    text-transform:capitalize;
 }
 
 .pending{ background:#fef3c7; color:#92400e; }
@@ -129,77 +93,44 @@ td{
 .completed{ background:#dbeafe; color:#1d4ed8; }
 .cancelled{ background:#fee2e2; color:#991b1b; }
 
-/* BUTTONS */
 .actions{
     display:flex;
     gap:6px;
     flex-wrap:wrap;
 }
 
-/* COMMON BTN */
 .btn{
     text-decoration:none;
     padding:7px 10px;
     border-radius:10px;
     font-size:12px;
     font-weight:600;
-    transition:.2s;
 }
 
-/* PREMIUM BUTTONS */
-.btn-view{
-    background:#eef2ff;
-    color:#4338ca;
-}
+.btn-view{ background:#eef2ff; color:#4338ca; }
+.btn-confirm{ background:#dcfce7; color:#166534; }
+.btn-complete{ background:#dbeafe; color:#1d4ed8; }
+.btn-cancel{ background:#fee2e2; color:#991b1b; }
 
-.btn-view:hover{
-    background:#e0e7ff;
-}
-
-.btn-confirm{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.btn-confirm:hover{
-    background:#bbf7d0;
-}
-
-.btn-complete{
-    background:#dbeafe;
-    color:#1d4ed8;
-}
-
-.btn-cancel{
-    background:#fee2e2;
-    color:#991b1b;
-}
-
-/* EMPTY */
 .empty{
     text-align:center;
     padding:70px 20px;
     color:var(--muted);
 }
-
 </style>
 
 <div class="page-header">
-
     <div class="page-title">
         <h2>Appointments</h2>
         <p>Manage patient bookings</p>
     </div>
 
     <div class="search-box">
-        <i class="fa fa-search"></i>
         <input type="text" id="searchInput" placeholder="Search patient...">
     </div>
-
 </div>
 
 <div class="stats">
-
     <div class="stat-card">
         <h4>Total</h4>
         <h2>{{ appointments|length }}</h2>
@@ -219,14 +150,11 @@ td{
         <h4>Completed</h4>
         <h2>{{ completed_count }}</h2>
     </div>
-
 </div>
 
 <div class="table-card">
 
 {% if appointments %}
-
-<div class="table-wrap">
 
 <table>
 
@@ -235,6 +163,7 @@ td{
     <th>Patient</th>
     <th>Phone</th>
     <th>Doctor</th>
+    <th>Chamber</th>
     <th>Status</th>
     <th>Date</th>
     <th>Actions</th>
@@ -249,7 +178,9 @@ td{
 
     <td>{{ a.patient_name }}</td>
     <td>{{ a.patient_phone }}</td>
-    <td>{{ a.doctor.name }}</td>
+    <td>{{ a.doctor.name if a.doctor else "-" }}</td>
+
+    <!-- FIXED: Chamber column -->
     <td>{{ a.chamber.chamber_name if a.chamber else "No Chamber" }}</td>
 
     <td>
@@ -261,32 +192,30 @@ td{
     <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
 
     <td>
-
         <div class="actions">
 
-            <!-- ⭐ NEW PREMIUM CONFIRM PAGE -->
+            <!-- OPEN PAGE -->
             <a href="{{ url_for('chamber_panel.confirm_page', id=a.id) }}" class="btn btn-view">
-            Open
+                Open
             </a>
 
+            <!-- CONFIRM (POST ROUTE PAGE হওয়া উচিত, direct link না) -->
             {% if a.status == "pending" %}
-
-            <a href="{{ url_for('chamber_panel.confirm_appointment', id=a.id) }}" class="btn btn-confirm">
-            Confirm
+            <a href="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}" class="btn btn-confirm">
+                Confirm
             </a>
-
             {% endif %}
 
-            <a href="{{ url_for('chamber_panel.update_appointment', id=a.id) }}" class="btn btn-complete">
-            Done
+            <!-- UPDATE (এইটা তোমার existing update route অনুযায়ী) -->
+            <a href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='completed') }}" class="btn btn-complete">
+                Done
             </a>
 
-            <a href="{{ url_for('chamber_panel.cancel_appointment', id=a.id) }}" class="btn btn-cancel">
-            Cancel
+            <a href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='cancelled') }}" class="btn btn-cancel">
+                Cancel
             </a>
 
         </div>
-
     </td>
 
 </tr>
@@ -297,13 +226,10 @@ td{
 
 </table>
 
-</div>
-
 {% else %}
 
 <div class="empty">
     <h3>No Appointments Found</h3>
-    <p>Patient bookings will appear here</p>
 </div>
 
 {% endif %}
@@ -311,23 +237,15 @@ td{
 </div>
 
 <script>
+document.getElementById("searchInput").addEventListener("keyup", function () {
+    let value = this.value.toLowerCase();
 
-document.getElementById("searchInput")
-.addEventListener("keyup", function () {
-
-let value = this.value.toLowerCase();
-
-document.querySelectorAll(".row-item").forEach(row => {
-
-row.style.display =
-row.innerText.toLowerCase().includes(value)
-? "table-row"
-: "none";
-
+    document.querySelectorAll(".row-item").forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value)
+            ? "table-row"
+            : "none";
+    });
 });
-
-});
-
 </script>
 
 {% endblock %}
