@@ -156,8 +156,12 @@ class="cover">
 
     </div>
 
-    <a href="{{ url_for('chamber_panel.book_appointment') }}"
-   class="btn btn-primary">
+    <a href="{{ url_for(
+        'chamber_panel.book_appointment',
+        chamber_id=doctor.chamber_id,
+        doctor_id=doctor.id
+    ) }}"
+    class="btn btn-primary">
     📅 Book Appointment
     </a>
 
