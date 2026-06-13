@@ -1,3 +1,4 @@
+print("🔥 APP.PY LOADED")
 from gevent import monkey
 monkey.patch_all()
 import shutil
@@ -41,7 +42,7 @@ from routes.admin_panel.chambers import admin_chambers
 from routes.chamber.auth import chamber
 from routes.doctor import doctor_bp
 import cloudinary
-
+print("🔥 CHAMBER PANEL IMPORTED")
 
 # ================= LOGIN MANAGER =================
 login_manager = LoginManager()
@@ -245,8 +246,8 @@ def create_app():
     app.register_blueprint(chamber)
     app.register_blueprint(
     doctor_bp
-    )
-    
+    )   
+print("🔥 CHAMBER PANEL REGISTERED")
 
     return app
 
