@@ -56,5 +56,5 @@ class Appointment(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
-    chamber = db.relationship('Chamber')
+    chamber = db.relationship('Chamber', backref='appointments')
     doctor = db.relationship("Doctor", backref="appointments")
