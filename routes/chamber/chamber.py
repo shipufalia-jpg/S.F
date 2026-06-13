@@ -445,7 +445,7 @@ def delete_doctor(doctor_id):
 # ==========================================
 @chamber_panel.route("/appointments")
 def appointments():
-
+    return "<h1>APPOINTMENTS ROUTE WORKING</h1>"
     chamber_id = session.get("chamber_id")
 
     appointments = Appointment.query.filter_by(
