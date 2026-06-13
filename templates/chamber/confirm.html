@@ -1,15 +1,16 @@
 <h2>Confirm Appointment</h2>
 
-<p><b>Doctor ID:</b> {{ a.doctor_id }} → {{ a.doctor.name }}</p>
-<p><b>Chamber ID:</b> {{ a.chamber_id }} → {{ a.chamber.chamber_name }}</p>
-<p><b>Chamber Phone:</b> {{ a.chamber.phone }}</p>
+<p><b>Doctor:</b> {{ a.doctor.name if a.doctor else "-" }}</p>
 
-<p><b>Date:</b> {{ a.date }}</p>
-<p><b>Time:</b> {{ a.time }}</p>
+<p><b>Chamber:</b> {{ a.chamber.chamber_name if a.chamber else "-" }}</p>
+
+<p><b>Chamber Phone:</b> {{ a.chamber.phone if a.chamber and a.chamber.phone else "-" }}</p>
+
+<p><b>Date:</b> {{ a.created_at.strftime('%d-%m-%Y') }}</p>
 
 <hr>
 
-<form method="POST" action="/confirm/submit/{{ a.id }}">
+<form method="POST" action="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">
 
     <button type="submit" style="
         background:green;
