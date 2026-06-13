@@ -1,0 +1,24 @@
+<h2>Confirm Appointment</h2>
+
+<p><b>Doctor ID:</b> {{ a.doctor_id }} → {{ a.doctor.name }}</p>
+<p><b>Chamber ID:</b> {{ a.chamber_id }} → {{ a.chamber.chamber_name }}</p>
+<p><b>Chamber Phone:</b> {{ a.chamber.phone }}</p>
+
+<p><b>Date:</b> {{ a.date }}</p>
+<p><b>Time:</b> {{ a.time }}</p>
+
+<hr>
+
+<form method="POST" action="/confirm/submit/{{ a.id }}">
+
+    <button type="submit" style="
+        background:green;
+        color:white;
+        padding:10px;
+        border:none;
+        border-radius:5px;
+    ">
+        Confirm Appointment
+    </button>
+
+</form>
