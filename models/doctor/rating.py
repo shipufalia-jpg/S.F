@@ -1,4 +1,3 @@
-from . import doctor_bp
 from flask import (
     render_template,
     request,
