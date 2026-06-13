@@ -441,23 +441,33 @@ def delete_doctor(doctor_id):
 # ==========================================
 # APPOINTMENTS
 # ==========================================
-
 @chamber_panel.route("/appointments")
 def appointments():
 
-    chamber_id = session.get(
-        "chamber_id"
-    )
+    chamber_id = session.get("chamber_id")
 
     appointments = Appointment.query.filter_by(
         chamber_id=chamber_id
-    ).order_by(
-        Appointment.id.desc()
-    ).all()
+    ).order_by(Appointment.id.desc()).all()
+
+    pending_count = Appointment.query.filter_by(
+        chamber_id=chamber_id, status="pending"
+    ).count()
+
+    confirmed_count = Appointment.query.filter_by(
+        chamber_id=chamber_id, status="confirmed"
+    ).count()
+
+    completed_count = Appointment.query.filter_by(
+        chamber_id=chamber_id, status="completed"
+    ).count()
 
     return render_template(
         "chamber/appointments.html",
-        appointments=appointments
+        appointments=appointments,
+        pending_count=pending_count,
+        confirmed_count=confirmed_count,
+        completed_count=completed_count
     )
 
 
