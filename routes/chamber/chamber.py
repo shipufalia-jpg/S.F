@@ -7,7 +7,9 @@ from flask import (
     url_for,
     flash
 )
+import os
 
+print("🔥 FILE LOADED:", __file__)
 from extensions import db
 from sqlalchemy import func
 from models.chamber import Chamber
