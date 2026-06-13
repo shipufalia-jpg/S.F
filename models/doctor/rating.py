@@ -1,79 +1,21 @@
-from flask import (
-    render_template,
-    request,
-    redirect,
-    flash,
-    url_for
-)
-
-from models.doctor import DoctorRating
 from extensions import db
+from datetime import datetime
 
+class DoctorRating(db.Model):
 
-@doctor_bp.route("/<int:doctor_id>/rating")
-def rating_page(doctor_id):
+__tablename__ = "doctor_ratings"  
 
-    return render_template(
-        "doctor/rating.html",
-        doctor_id=doctor_id
-    )
+id = db.Column(db.Integer, primary_key=True)  
 
+doctor_id = db.Column(  
+    db.Integer,  
+    db.ForeignKey("doctors.id"),  
+    nullable=False,  
+    index=True  
+)  
 
-@doctor_bp.route(
-    "/rate/<int:doctor_id>",
-    methods=["POST"]
-)
-def rate_doctor(doctor_id):
+rating = db.Column(db.Integer, nullable=False)  
 
-    rating = request.form.get("rating")
+ip_address = db.Column(db.String(50), index=True)  
 
-    if not rating:
-        flash(
-            "Please select a rating.",
-            "danger"
-        )
-        return redirect(
-            url_for(
-                "doctor.rating_page",
-                doctor_id=doctor_id
-            )
-        )
-
-    # একই IP থেকে একবারের বেশি rating না দিতে চাইলে
-    existing_rating = DoctorRating.query.filter_by(
-        doctor_id=doctor_id,
-        ip_address=request.remote_addr
-    ).first()
-
-    if existing_rating:
-        flash(
-            "You have already rated this doctor.",
-            "warning"
-        )
-        return redirect(
-            url_for(
-                "doctor.rating_page",
-                doctor_id=doctor_id
-            )
-        )
-
-    new_rating = DoctorRating(
-        doctor_id=doctor_id,
-        rating=int(rating),
-        ip_address=request.remote_addr
-    )
-
-    db.session.add(new_rating)
-    db.session.commit()
-
-    flash(
-        "Rating submitted successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "doctor.rating_page",
-            doctor_id=doctor_id
-        )
-    )
+created_at = db.Column(db.DateTime, default=datetime.utcnow)
