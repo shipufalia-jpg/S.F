@@ -515,54 +515,55 @@ def book_appointment(
         chamber_id=chamber_id,
         doctor_id=doctor_id
     )
+
 @chamber_panel.route(
-"/book-appointment",
-methods=["POST"]
+    "/book-appointment",
+    methods=["POST"]
 )
 def save_appointment():
 
-name = request.form.get("name")
-phone = request.form.get("phone")
+    name = request.form.get("name")
+    phone = request.form.get("phone")
 
-chamber_id = request.form.get("chamber_id")
-doctor_id = request.form.get("doctor_id")
+    chamber_id = request.form.get("chamber_id")
+    doctor_id = request.form.get("doctor_id")
 
-if not all([
-    name,
-    phone,
-    chamber_id,
-    doctor_id
-]):
-    flash(
-        "All fields are required.",
-        "danger"
+    if not all([
+        name,
+        phone,
+        chamber_id,
+        doctor_id
+    ]):
+        flash(
+            "All fields are required.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "chamber_panel.chambers"
+            )
+        )
+
+    appointment = Appointment(
+        chamber_id=int(chamber_id),
+        doctor_id=int(doctor_id),
+        patient_name=name,
+        patient_phone=phone,
+        status="pending"
     )
+
+    db.session.add(appointment)
+    db.session.commit()
+
+    flash(
+        "Appointment booked successfully.",
+        "success"
+    )
+
     return redirect(
         url_for(
-            "chamber_panel.book_appointment"
+            "chamber_panel.chambers"
         )
-    )
-
-appointment = Appointment(
-    chamber_id=int(chamber_id),
-    doctor_id=int(doctor_id),
-    patient_name=name,
-    patient_phone=phone,
-    status="pending"
-)
-
-db.session.add(appointment)
-db.session.commit()
-
-flash(
-    "Appointment booked successfully.",
-    "success"
-)
-
-return redirect(
-    url_for(
-        "chamber_panel.chambers"
-    )
     )
 
 @chamber_panel.route(
