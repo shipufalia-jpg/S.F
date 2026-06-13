@@ -587,6 +587,19 @@ def confirm_submit(id):
     return redirect("/chamber/appointments")
 
 
+@chamber_panel.route("/my-appointments")
+def my_appointments():
+
+    user_id = session.get("user_id")
+
+    appointments = Appointment.query.filter_by(user_id=user_id).all()
+
+    return render_template(
+        "chamber/my_appointments.html",
+        appointments=appointments
+    )
+
+
 
 @chamber_panel.route(
     "/rate/<int:chamber_id>",
