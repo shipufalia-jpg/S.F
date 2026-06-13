@@ -10,7 +10,10 @@
             📅 Book Appointment
         </h3>
 
-        <form method="POST">
+        <form
+    method="POST"
+    action="{{ url_for('chamber_panel.save_appointment') }}"
+    >
 
             <input
                 type="hidden"
