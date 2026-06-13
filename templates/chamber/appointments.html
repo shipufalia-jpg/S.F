@@ -264,8 +264,8 @@ td{
         <div class="actions">
 
             <!-- ⭐ NEW PREMIUM CONFIRM PAGE -->
-            <a href="/chamber/confirm/{{ a.id }}" class="btn btn-view">
-                Open
+            <a href="{{ url_for('chamber_panel.confirm_page', id=a.id) }}" class="btn btn-view">
+            Open
             </a>
 
             {% if a.status == "pending" %}
