@@ -590,10 +590,7 @@ def confirm_submit(id):
 @chamber_panel.route("/my-appointments")
 def my_appointments():
 
-    user_id = session.get("user_id")
-
-    appointments = Appointment.query.filter_by(user_id=user_id).all()
-
+    appointments = Appointment.query.all()
     return render_template(
         "chamber/my_appointments.html",
         appointments=appointments
