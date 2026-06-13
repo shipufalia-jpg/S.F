@@ -1,1 +1,274 @@
+{% extends "base.html" %}
 
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+
+<style>
+:root{
+    --primary:#4f46e5;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+    --dark:#0f172a;
+    --muted:#64748b;
+    --bg:#f4f7ff;
+}
+
+body{ background:var(--bg); }
+
+/* HEADER */
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.page-title h2{
+    font-size:28px;
+    font-weight:900;
+    color:var(--dark);
+}
+
+.page-title p{ color:var(--muted); }
+
+/* SEARCH */
+.search-box input{
+    width:280px;
+    height:45px;
+    border-radius:12px;
+    border:none;
+    outline:none;
+    padding:0 15px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+/* STATS */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat-card{
+    background:#fff;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+}
+
+/* TABLE */
+.table-card{
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+thead th{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    padding:14px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    position:sticky;
+    top:0;
+}
+
+tbody td{
+    padding:14px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:14px;
+}
+
+tbody tr:hover{ background:#f9fbff; }
+
+/* BADGES */
+.badge{
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.pending{background:#fff7ed;color:#9a3412;}
+.confirmed{background:#ecfdf5;color:#166534;}
+.completed{background:#eff6ff;color:#1d4ed8;}
+.cancelled{background:#fef2f2;color:#991b1b;}
+
+/* BUTTONS */
+.actions{ display:flex; gap:6px; flex-wrap:wrap; }
+
+.btn{
+    padding:6px 10px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+    text-decoration:none;
+}
+
+.btn-view{background:#eef2ff;color:#4f46e5;}
+.btn-confirm{background:#dcfce7;color:#166534;}
+.btn-complete{background:#dbeafe;color:#1d4ed8;}
+.btn-cancel{background:#fee2e2;color:#991b1b;}
+
+.empty{
+    text-align:center;
+    padding:60px;
+    color:var(--muted);
+}
+</style>
+
+<div class="page-header">
+    <div class="page-title">
+        <h2>Appointments</h2>
+        <p>Manage bookings in real time</p>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search patient...">
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+    <div class="stat-card"><h4>Total</h4><h2>{{ appointments|length }}</h2></div>
+    <div class="stat-card"><h4>Pending</h4><h2>{{ pending_count }}</h2></div>
+    <div class="stat-card"><h4>Confirmed</h4><h2>{{ confirmed_count }}</h2></div>
+    <div class="stat-card"><h4>Completed</h4><h2>{{ completed_count }}</h2></div>
+</div>
+
+<div class="table-card">
+
+{% if appointments %}
+
+<table id="apptTable">
+<thead>
+<tr>
+    <th onclick="sortTable(0)" data-label="Patient">Patient ⬍</th>
+    <th onclick="sortTable(1)" data-label="Phone">Phone ⬍</th>
+    <th data-label="Doctor">Doctor</th>
+    <th data-label="Chamber">Chamber</th>
+    <th data-label="Status">Status</th>
+    <th onclick="sortTable(5)" data-label="Date">Date ⬍</th>
+    <th data-label="Actions">Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for a in appointments %}
+<tr class="row-item">
+
+    <td>{{ a.patient_name }}</td>
+    <td>{{ a.patient_phone }}</td>
+    <td>{{ a.doctor.name if a.doctor else "-" }}</td>
+    <td>{{ a.chamber.chamber_name if a.chamber else "-" }}</td>
+
+    <td><span class="badge {{ a.status }}">{{ a.status }}</span></td>
+
+    <td>{{ a.created_at.strftime('%d-%m-%Y') }}</td>
+
+    <td>
+        <div class="actions">
+            <a href="{{ url_for('chamber_panel.confirm_page', id=a.id) }}" class="btn btn-view">Open</a>
+
+            {% if a.status == "pending" %}
+            <a href="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}" class="btn btn-confirm">Confirm</a>
+            {% endif %}
+
+            <a href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='completed') }}" class="btn btn-complete">Done</a>
+
+            <a href="{{ url_for('chamber_panel.update_appointment', appointment_id=a.id, status='cancelled') }}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% else %}
+<div class="empty">
+    <h3>No Appointments Found</h3>
+</div>
+{% endif %}
+
+</div>
+
+<script>
+
+// SEARCH
+document.getElementById("searchInput").addEventListener("keyup", function () {
+    let value = this.value.toLowerCase();
+    document.querySelectorAll(".row-item").forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value)
+            ? "table-row"
+            : "none";
+    });
+});
+
+// SORT
+let sortDirection = {};
+
+function sortTable(n) {
+    let table = document.getElementById("apptTable");
+    let rows = Array.from(table.tBodies[0].rows);
+
+    let dir = sortDirection[n] === "asc" ? "desc" : "asc";
+    sortDirection[n] = dir;
+
+    rows.sort((a, b) => {
+        let x = a.cells[n].innerText.trim();
+        let y = b.cells[n].innerText.trim();
+
+        let isDate = /^\d{2}-\d{2}-\d{4}$/;
+
+        if (isDate.test(x) && isDate.test(y)) {
+            x = Date.parse(x.split("-").reverse().join("-"));
+            y = Date.parse(y.split("-").reverse().join("-"));
+        }
+        else if (!isNaN(x) && !isNaN(y)) {
+            x = Number(x);
+            y = Number(y);
+        }
+        else {
+            x = x.toLowerCase();
+            y = y.toLowerCase();
+        }
+
+        return dir === "asc" ? (x > y ? 1 : -1) : (x < y ? 1 : -1);
+    });
+
+    rows.forEach(r => table.tBodies[0].appendChild(r));
+
+    updateHeaderIcons(n, dir);
+}
+
+// HEADER ICONS
+function updateHeaderIcons(activeIndex, dir) {
+    let headers = document.querySelectorAll("#apptTable th");
+
+    headers.forEach((th, i) => {
+        let base = th.getAttribute("data-label") || th.innerText.replace(" ⬆","").replace(" ⬇","");
+        th.innerHTML = base;
+
+        if (i === activeIndex) {
+            th.innerHTML += dir === "asc" ? " ⬆" : " ⬇";
+        }
+    });
+}
+
+// SEARCH END
+
+</script>
+
+{% endblock %}
