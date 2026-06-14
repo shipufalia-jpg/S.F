@@ -183,6 +183,11 @@ def fix_db(app):
                 END $$;
             """))
 
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS user_id INTEGER;
+            """))
+
             # ================= COMMIT =================
             db.session.commit()
             print("✅ DB FIXED SUCCESSFULLY")
