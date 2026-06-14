@@ -141,150 +141,174 @@ Confirm Appointment
 
 <div class="confirm-wrapper">
 
-    <div class="confirm-card">
+    <div class="confirm-wrapper"><div class="confirm-card">
 
-        <div class="card-header">
-            <h2>📅 Confirm Appointment</h2>
-            <p>Review appointment details before confirmation</p>
-        </div>
+    <div class="card-header">
+        <h2>📅 Confirm Appointment</h2>
+        <p>Review appointment details before confirmation</p>
+    </div>
 
-        <div class="card-body">
+    <div class="card-body">
 
-            <div class="info-grid">
+        <div class="info-grid">
 
-                <div class="info-box">
-                    <div class="info-label">
-                        Doctor
-                    </div>
-                    <div class="info-value">
-                        {{ a.doctor.name if a.doctor else "-" }}
-                    </div>
+            <div class="info-box">
+                <div class="info-label">
+                    Doctor
                 </div>
-
-                <div class="info-box">
-                    <div class="info-label">
-                        Chamber
-                    </div>
-                    <div class="info-value">
-                        {{ a.chamber.profile.chamber_name if a.chamber and a.chamber.profile else a.chamber.name }}
-                    </div>
+                <div class="info-value">
+                    {{ a.doctor.name if a.doctor else "-" }}
                 </div>
-
-                <div class="info-box">
-                    <div class="info-label">
-                        Phone
-                    </div>
-                    <div class="info-value">
-                        {{ a.chamber.profile.phone if a.chamber and a.chamber.profile else a.chamber.phone }}
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <div class="info-label">
-                        Appointment Date
-                    </div>
-                    <div class="info-value">
-                        {{ a.created_at.strftime('%d-%m-%Y') }}
-                    </div>
-                </div>
-
             </div>
-            <!-- Patient Requested Details --><div class="info-box">
-    <div class="info-label">
-        Patient Requested Date
-    </div>
-    <div class="info-value">
-        {{ a.appointment_date.strftime('%d-%m-%Y') if a.appointment_date else '-' }}
-    </div>
-</div><div class="info-box">
-    <div class="info-label">
-        Patient Requested Time
-    </div>
-    <div class="info-value">
-        {{ a.appointment_time or '-' }}
-    </div>
-</div><div class="info-box">
-    <div class="info-label">
-        Patient Notes
-    </div>
-    <div class="info-value">
-        {{ a.notes or '-' }}
-    </div>
-</div></div><div class="action-box"><form method="POST"
-      action="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">
-            📅 Confirmed Date
-        </label>
-        <input
-            type="date"
-            name="confirmed_date"
-            class="form-control"
-            required
-        >
-    </div>
+            <div class="info-box">
+                <div class="info-label">
+                    Chamber
+                </div>
+                <div class="info-value">
+                    {{ a.chamber.profile.chamber_name if a.chamber and a.chamber.profile else a.chamber.name }}
+                </div>
+            </div>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">
-            ⏰ Confirmed Time
-        </label>
-        <input
-            type="time"
-            name="confirmed_time"
-            class="form-control"
-            required
-        >
-    </div>
+            <div class="info-box">
+                <div class="info-label">
+                    Chamber Phone
+                </div>
+                <div class="info-value">
+                    {{ a.chamber.profile.phone if a.chamber and a.chamber.profile else a.chamber.phone }}
+                </div>
+            </div>
 
-    <div class="mb-4">
-        <label class="form-label fw-bold">
-            📝 Confirmation Note
-        </label>
-        <textarea
-            name="confirmation_note"
-            class="form-control"
-            rows="4"
-            placeholder="Appointment confirmed. Please arrive 15 minutes early."
-        ></textarea>
-    </div>
+            <div class="info-box">
+                <div class="info-label">
+                    Patient Name
+                </div>
+                <div class="info-value">
+                    {{ a.patient_name }}
+                </div>
+            </div>
 
-    <button
-        type="submit"
-        class="confirm-btn">
+            <div class="info-box">
+                <div class="info-label">
+                    Patient Phone
+                </div>
+                <div class="info-value">
+                    {{ a.patient_phone }}
+                </div>
+            </div>
 
-        ✅ Confirm Appointment
+            <div class="info-box">
+                <div class="info-label">
+                    Booking Created
+                </div>
+                <div class="info-value">
+                    {{ a.created_at.strftime('%d-%m-%Y %I:%M %p') }}
+                </div>
+            </div>
 
-    </button>
+            <div class="info-box">
+                <div class="info-label">
+                    Patient Requested Date
+                </div>
+                <div class="info-value">
+                    {{ a.appointment_date.strftime('%d-%m-%Y') if a.appointment_date else '-' }}
+                </div>
+            </div>
 
-</form>
-
-        </div>
-
-            <div class="status-badge">
-                ⏳ Pending Confirmation
+            <div class="info-box">
+                <div class="info-label">
+                    Patient Requested Time
+                </div>
+                <div class="info-value">
+                    {{ a.appointment_time or '-' }}
+                </div>
             </div>
 
         </div>
 
-        <div class="action-box">
+        <div class="info-box mt-3">
 
-            <form method="POST"
-                  action="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">
+            <div class="info-label">
+                Patient Notes
+            </div>
 
-                <button type="submit"
-                        class="confirm-btn">
-
-                    ✅ Confirm Appointment
-
-                </button>
-
-            </form>
+            <div class="info-value">
+                {{ a.notes or 'No notes provided' }}
+            </div>
 
         </div>
+
+        <div class="status-badge">
+            ⏳ Pending Confirmation
+        </div>
+
+    </div>
+
+    <div class="action-box">
+
+        <form method="POST"
+              action="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label fw-bold">
+                        📅 Confirmed Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="confirmed_date"
+                        class="form-control"
+                        required>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label fw-bold">
+                        ⏰ Confirmed Time
+                    </label>
+
+                    <input
+                        type="time"
+                        name="confirmed_time"
+                        class="form-control"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="form-label fw-bold">
+                    📝 Confirmation Note
+                </label>
+
+                <textarea
+                    name="confirmation_note"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Appointment confirmed. Please arrive 15 minutes early.">
+                </textarea>
+
+            </div>
+
+            <button
+                type="submit"
+                class="confirm-btn">
+
+                ✅ Confirm Appointment
+
+            </button>
+
+        </form>
 
     </div>
 
 </div>
 
-{% endblock %}
+    </div>
+        
