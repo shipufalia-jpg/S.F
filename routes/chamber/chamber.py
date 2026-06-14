@@ -532,72 +532,71 @@ methods=["POST"]
 )
 def save_appointment():
 
-try:
+    try:
+        name = request.form.get("name")
+        phone = request.form.get("phone")
 
-    name = request.form.get("name")
-    phone = request.form.get("phone")
+        appointment_date = request.form.get("appointment_date")
+        appointment_time = request.form.get("appointment_time")
+        notes = request.form.get("notes")
 
-    appointment_date = request.form.get("appointment_date")
-    appointment_time = request.form.get("appointment_time")
-    notes = request.form.get("notes")
+        chamber_id = request.form.get("chamber_id")
+        doctor_id = request.form.get("doctor_id")
 
-    chamber_id = request.form.get("chamber_id")
-    doctor_id = request.form.get("doctor_id")
+        if not all([
+            name,
+            phone,
+            chamber_id,
+            doctor_id,
+            appointment_date,
+            appointment_time
+        ]):
+            flash(
+                "All fields are required.",
+                "danger"
+            )
+            return redirect(
+                url_for("chamber_panel.chambers")
+            )
 
-    if not all([
-        name,
-        phone,
-        chamber_id,
-        doctor_id,
-        appointment_date,
-        appointment_time
-    ]):
+        appointment = Appointment(
+            user_id=session.get("user_id"),
+            chamber_id=int(chamber_id),
+            doctor_id=int(doctor_id),
+            patient_name=name,
+            patient_phone=phone,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            notes=notes,
+            status="pending"
+        )
+
+        db.session.add(appointment)
+        db.session.commit()
+
         flash(
-            "All fields are required.",
+            "✅ Appointment booked successfully.",
+            "success"
+        )
+
+        return redirect(
+            url_for("chamber_panel.chambers")
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print("BOOKING ERROR:", e)
+
+        flash(
+            "❌ Appointment booking failed.",
             "danger"
         )
+
         return redirect(
-            url_for(
-                "chamber_panel.chambers"
-            )
-        )
-
-    appointment = Appointment(
-        user_id=session.get("user_id"),
-        chamber_id=int(chamber_id),
-        doctor_id=int(doctor_id),
-        patient_name=name,
-        patient_phone=phone,
-        appointment_date=appointment_date,
-        appointment_time=appointment_time,
-        notes=notes,
-        status="pending"
+            url_for("chamber_panel.chambers")
     )
-
-    db.session.add(appointment)
-    db.session.commit()
-
-    flash(
-        "✅ Appointment booked successfully.",
-        "success"
-    )
-
-except Exception as e:
-
-    db.session.rollback()
-
-    print("BOOKING ERROR:", e)
-
-    flash(
-        "❌ Appointment booking failed.",
-        "danger"
-    )
-
-return redirect(
-    url_for(
-        "chamber_panel.chambers"
-    )
-)
 
 
 @chamber_panel.route("/confirm/<int:id>")
