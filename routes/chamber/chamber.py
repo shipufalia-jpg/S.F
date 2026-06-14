@@ -606,12 +606,31 @@ def confirm_page(id):
 
     return render_template("chamber/confirm.html", a=appointment)
 
+from flask import request, redirect
+from datetime import datetime
 
 @chamber_panel.route("/confirm/submit/<int:id>", methods=["POST"])
 def confirm_submit(id):
+
     appointment = Appointment.query.get_or_404(id)
+
+    confirmed_date = request.form.get("confirmed_date")
+    confirmed_time = request.form.get("confirmed_time")
+    confirmation_note = request.form.get("confirmation_note")
+
+    # DATE convert (important)
+    if confirmed_date:
+        appointment.confirmed_date = datetime.strptime(
+            confirmed_date, "%Y-%m-%d"
+        ).date()
+
+    appointment.confirmed_time = confirmed_time
+    appointment.confirmation_note = confirmation_note
+
     appointment.status = "confirmed"
+
     db.session.commit()
+
     return redirect("/chamber/appointments")
 
 
