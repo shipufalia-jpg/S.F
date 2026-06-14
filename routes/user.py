@@ -525,6 +525,8 @@ def settings():
     return render_template("user/settings.html")
 
 
+from sqlalchemy.orm import joinedload
+
 @user.route("/my-appointments")
 def my_appointments():
 
@@ -533,8 +535,11 @@ def my_appointments():
     if not user_id:
         return redirect("/auth/login")
 
-    appointments = Appointment.query.filter_by(
-        user_id=user_id
+    appointments = Appointment.query.options(
+        joinedload(Appointment.chamber),
+        joinedload(Appointment.doctor)
+    ).filter(
+        Appointment.user_id == user_id
     ).order_by(
         Appointment.id.desc()
     ).all()
