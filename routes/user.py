@@ -522,3 +522,23 @@ def referral():
 @login_required
 def settings():
     return render_template("user/settings.html")
+
+
+@user.route("/my-appointments")
+def my_appointments():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/auth/login")
+
+    appointments = Appointment.query.filter_by(
+        user_id=user_id
+    ).order_by(
+        Appointment.id.desc()
+    ).all()
+
+    return render_template(
+        "user/my_appointments.html",
+        appointments=appointments
+    )
