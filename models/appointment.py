@@ -56,6 +56,20 @@ class Appointment(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
+    appointment_date = db.Column(
+        db.Date,
+        nullable=True
+    )
+
+    appointment_time = db.Column(
+        db.String(20),
+        nullable=True
+    )
+
+    notes = db.Column(
+        db.Text,
+        nullable=True
+    )
 
     user_id = db.Column(
         db.Integer,
