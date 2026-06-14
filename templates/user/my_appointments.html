@@ -155,9 +155,11 @@ My Appointments
         👨‍⚕️ {{ a.doctor.name if a.doctor else "-" }}
     </div>
 
-    <div class="chamber-name">
-    🏥 {{ a.chamber.chamber_name if a.chamber and a.chamber.chamber_name else "-" }}
-    </div>
+    {% set chamber = a.chamber.profile if a.chamber and a.chamber.profile else None %}
+
+<div class="chamber-name">
+    🏥 {{ chamber.chamber_name if chamber else "-" }}
+</div>
 
 </div>
 
