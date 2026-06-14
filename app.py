@@ -187,7 +187,36 @@ def fix_db(app):
                 ALTER TABLE appointments
                 ADD COLUMN IF NOT EXISTS user_id INTEGER;
             """))
+    
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS appointment_date DATE;
+            """))
 
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS appointment_time VARCHAR(20);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS notes TEXT;
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS confirmed_date DATE;
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS confirmed_time VARCHAR(20);
+            """))
+
+            db.session.execute(text("""
+                ALTER TABLE appointments
+                ADD COLUMN IF NOT EXISTS confirmation_note TEXT;
+            """))
             # ================= COMMIT =================
             db.session.commit()
             print("✅ DB FIXED SUCCESSFULLY")
