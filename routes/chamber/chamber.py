@@ -555,11 +555,12 @@ def save_appointment():
         )
 
     appointment = Appointment(
-        chamber_id=int(chamber_id),
-        doctor_id=int(doctor_id),
-        patient_name=name,
-        patient_phone=phone,
-        status="pending"
+    user_id=session.get("user_id"),
+    chamber_id=int(chamber_id),
+    doctor_id=int(doctor_id),
+    patient_name=name,
+    patient_phone=phone,
+    status="pending"
     )
 
     db.session.add(appointment)
@@ -591,25 +592,6 @@ def confirm_submit(id):
     appointment.status = "confirmed"
     db.session.commit()
     return redirect("/chamber/appointments")
-
-
-
-@chamber_panel.route("/my-appointments")
-def my_appointments():
-
-    chamber_id = session.get("chamber_id")
-
-    if not chamber_id:
-        return redirect("/chamber/login")
-
-    appointments = Appointment.query.filter_by(
-        chamber_id=chamber_id
-    ).order_by(Appointment.id.desc()).all()
-
-    return render_template(
-        "chamber/my_appointments.html",
-        appointments=appointments
-    )
 
 
 @chamber_panel.route(
