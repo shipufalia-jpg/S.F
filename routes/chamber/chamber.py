@@ -630,6 +630,7 @@ def confirm_submit(id):
     appointment.status = "confirmed"
 
     db.session.commit()
+    flash("Appointment confirmed successfully", "success")
 
     return redirect("/chamber/appointments")
 
