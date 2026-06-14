@@ -2,18 +2,122 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<style>
 
-    <div class="card shadow p-4">
+:root{
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --bg:#f1f5f9;
+}
 
-        <h3 class="mb-4">
-            📅 Book Appointment
-        </h3>
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+}
+
+.booking-wrap{
+    max-width:700px;
+    margin:40px auto;
+    padding:15px;
+}
+
+.booking-card{
+    border:none;
+    border-radius:24px;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:0 20px 50px rgba(0,0,0,.08);
+}
+
+.booking-header{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:#fff;
+    padding:35px;
+    text-align:center;
+}
+
+.booking-header h2{
+    margin:0;
+    font-weight:700;
+}
+
+.booking-header p{
+    margin-top:8px;
+    opacity:.9;
+}
+
+.booking-body{
+    padding:30px;
+}
+
+.form-label{
+    font-weight:600;
+    margin-bottom:8px;
+    color:#0f172a;
+}
+
+.form-control{
+    border-radius:14px;
+    min-height:52px;
+    border:1px solid #dbe3ef;
+}
+
+.form-control:focus{
+    box-shadow:0 0 0 .25rem rgba(37,99,235,.15);
+    border-color:#2563eb;
+}
+
+textarea.form-control{
+    min-height:120px;
+}
+
+.info-box{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    padding:15px;
+    margin-bottom:25px;
+}
+
+.submit-btn{
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:14px;
+    font-size:17px;
+    font-weight:700;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:#fff;
+    transition:.3s;
+}
+
+.submit-btn:hover{
+    transform:translateY(-2px);
+}
+
+</style><div class="booking-wrap"><div class="booking-card">
+
+    <div class="booking-header">
+
+        <h2>📅 Book Appointment</h2>
+
+        <p>
+            Select your preferred date & time for consultation
+        </p>
+
+    </div>
+
+    <div class="booking-body">
+
+        <div class="info-box">
+            <strong>ℹ️ Appointment Request</strong><br>
+            Submit your preferred date and time.
+            The chamber can confirm or reschedule later.
+        </div>
 
         <form
-    method="POST"
-    action="{{ url_for('chamber_panel.save_appointment') }}"
-    >
+            method="POST"
+            action="{{ url_for('chamber_panel.save_appointment') }}"
+        >
 
             <input
                 type="hidden"
@@ -28,60 +132,84 @@
             >
 
             <div class="mb-3">
-                <label>Name</label>
+                <label class="form-label">
+                    👤 Patient Name
+                </label>
                 <input
                     type="text"
                     name="name"
                     class="form-control"
+                    placeholder="Enter your full name"
                     required
                 >
             </div>
 
             <div class="mb-3">
-                <label>Phone Number</label>
+                <label class="form-label">
+                    📞 Phone Number
+                </label>
                 <input
                     type="tel"
                     name="phone"
                     class="form-control"
+                    placeholder="Enter mobile number"
                     required
                 >
             </div>
 
-            <div class="mb-3">
-    <label>Preferred Appointment Date</label>
-    <input
-        type="date"
-        name="appointment_date"
-        class="form-control"
-        required
-    >
-</div>
+            <div class="row">
 
-<div class="mb-3">
-    <label>Preferred Appointment Time</label>
-    <input
-        type="time"
-        name="appointment_time"
-        class="form-control"
-        required
-    >
-</div>
+                <div class="col-md-6 mb-3">
 
-<div class="mb-3">
-    <label>Reason / Notes</label>
-    <textarea
-        name="notes"
-        class="form-control"
-        rows="3"
-        placeholder="ডাক্তারকে কি দেখাতে চান লিখুন..."
-    ></textarea>
-</div>
+                    <label class="form-label">
+                        📅 Preferred Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="appointment_date"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        ⏰ Preferred Time
+                    </label>
+
+                    <input
+                        type="time"
+                        name="appointment_time"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    🩺 Problem / Notes
+                </label>
+
+                <textarea
+                    name="notes"
+                    class="form-control"
+                    placeholder="Describe your symptoms or reason for consultation..."
+                ></textarea>
+
+            </div>
 
             <button
                 type="submit"
-                class="btn btn-primary w-100"
+                class="submit-btn"
             >
-                Confirm Appointment
+                ✅ Confirm Appointment Request
             </button>
 
         </form>
@@ -90,4 +218,4 @@
 
 </div>
 
-{% endblock %}
+</div>{% endblock %}
