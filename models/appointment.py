@@ -3,7 +3,7 @@ from datetime import datetime
 
 class Appointment(db.Model):
 
-__tablename__ = "appointments"
+    __tablename__ = "appointments"
 
 id = db.Column(
     db.Integer,
