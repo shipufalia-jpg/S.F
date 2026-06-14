@@ -56,5 +56,16 @@ class Appointment(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+    user = db.relationship(
+        "User",
+        backref="appointments"
+    )
     chamber = db.relationship('Chamber', backref='appointments')
     doctor = db.relationship("Doctor", backref="appointments")
