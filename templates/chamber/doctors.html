@@ -424,9 +424,317 @@ body{
     }
 
 }
+/* PREMIUM HERO */
 
+.hero-section{
+
+display:grid;
+grid-template-columns:1.5fr 1fr;
+gap:30px;
+
+margin-bottom:35px;
+
+padding:35px;
+
+border-radius:35px;
+
+background:
+linear-gradient(
+    135deg,
+    #2563eb,
+    #4f46e5
+);
+
+color:white;
+
+overflow:hidden;
+
+position:relative;
+
+box-shadow:
+0 25px 60px rgba(
+    37,
+    99,
+    235,
+    .25
+);
+
+}
+
+.hero-section::before{
+
+content:'';
+
+position:absolute;
+
+width:350px;
+height:350px;
+
+right:-120px;
+top:-120px;
+
+border-radius:50%;
+
+background:
+rgba(
+    255,
+    255,
+    255,
+    .08
+);
+
+}
+
+.hero-badge{
+
+display:inline-block;
+
+background:
+rgba(
+    255,
+    255,
+    255,
+    .15
+);
+
+padding:10px 18px;
+
+border-radius:999px;
+
+font-size:14px;
+
+margin-bottom:15px;
+
+}
+
+.hero-left h1{
+
+font-size:46px;
+font-weight:800;
+
+margin-bottom:12px;
+
+}
+
+.hero-left p{
+
+max-width:600px;
+
+opacity:.9;
+
+line-height:1.7;
+
+}
+
+.hero-buttons{
+
+margin-top:25px;
+
+display:flex;
+
+gap:15px;
+
+flex-wrap:wrap;
+
+}
+
+.hero-btn{
+
+background:white;
+
+color:#2563eb;
+
+text-decoration:none;
+
+padding:14px 24px;
+
+border-radius:16px;
+
+font-weight:700;
+
+}
+
+.hero-btn-outline{
+
+border:1px solid rgba(
+    255,
+    255,
+    255,
+    .3
+);
+
+color:white;
+
+text-decoration:none;
+
+padding:14px 24px;
+
+border-radius:16px;
+
+font-weight:700;
+
+}
+
+.hero-right{
+
+display:flex;
+
+flex-direction:column;
+
+gap:15px;
+
+}
+
+.hero-stat-card{
+
+background:
+rgba(
+    255,
+    255,
+    255,
+    .12
+);
+
+backdrop-filter:blur(20px);
+
+padding:20px;
+
+border-radius:22px;
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
+.hero-stat-icon{
+
+width:60px;
+height:60px;
+
+border-radius:18px;
+
+background:white;
+
+color:#2563eb;
+
+display:flex;
+
+align-items:center;
+justify-content:center;
+
+font-size:28px;
+
+}
+
+.hero-stat-icon.green{
+color:#22c55e;
+}
+
+.hero-stat-icon.orange{
+color:#f59e0b;
+}
+
+.hero-stat-card h2{
+
+margin:0;
+
+font-size:28px;
+
+}
+
+.hero-stat-card span{
+
+opacity:.8;
+
+}
+
+@media(max-width:900px){
+
+.hero-section{
+    grid-template-columns:1fr;
+}
+
+.hero-left h1{
+    font-size:34px;
+}
+
+}
 </style>
+<!-- PREMIUM HERO --><div class="hero-section"><div class="hero-left">
 
+    <span class="hero-badge">
+        🏥 Smart Chamber Management
+    </span>
+
+    <h1>
+        Doctors Dashboard
+    </h1>
+
+    <p>
+        Manage doctors, appointments, patient flow and chamber performance from one premium dashboard.
+    </p>
+
+    <div class="hero-buttons">
+
+        <a href="/chamber/doctor/add" class="hero-btn">
+            ➕ Add Doctor
+        </a>
+
+        <a href="#doctorGrid" class="hero-btn-outline">
+            👨‍⚕️ View Doctors
+        </a>
+
+    </div>
+
+</div>
+
+<div class="hero-right">
+
+    <div class="hero-stat-card">
+
+        <div class="hero-stat-icon">
+            👨‍⚕️
+        </div>
+
+        <div>
+            <h2>{{ doctors|length }}</h2>
+            <span>Total Doctors</span>
+        </div>
+
+    </div>
+
+    <div class="hero-stat-card">
+
+        <div class="hero-stat-icon green">
+            ✅
+        </div>
+
+        <div>
+            <h2>{{ doctors|selectattr('verified')|list|length }}</h2>
+            <span>Verified Doctors</span>
+        </div>
+
+    </div>
+
+    <div class="hero-stat-card">
+
+        <div class="hero-stat-icon orange">
+            👁️
+        </div>
+
+        <div>
+            <h2>{{ doctors|sum(attribute='views') }}</h2>
+            <span>Total Views</span>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
 <div class="page-header">
 
     <div class="title-box">
