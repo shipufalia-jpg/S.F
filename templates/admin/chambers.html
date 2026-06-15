@@ -191,6 +191,88 @@ tr{
     }
 
 }
+.chamber-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(340px,1fr));
+    gap:24px;
+}
+
+.chamber-card{
+    background:white;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:
+    0 20px 50px rgba(0,0,0,.08);
+    transition:.35s;
+}
+
+.chamber-card:hover{
+    transform:translateY(-8px);
+}
+
+.cover{
+    height:180px;
+    overflow:hidden;
+}
+
+.cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.profile-section{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:0 20px;
+    margin-top:-40px;
+}
+
+.profile{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    border:5px solid white;
+    object-fit:cover;
+}
+
+.details{
+    padding:20px;
+}
+
+.details p{
+    margin-bottom:10px;
+    color:#475569;
+}
+
+.status-badge{
+    background:#dcfce7;
+    color:#166534;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    padding:20px;
+}
+
+.actions a{
+    flex:1;
+    text-align:center;
+    padding:12px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+    background:#2563eb;
+    color:white;
+}
+    
 
 </style>
 
@@ -218,70 +300,78 @@ tr{
 
 {% if chambers %}
 
-<div class="table-card">
-
-<table>
-
-<thead>
-<tr>
-    <th>Name</th>
-    <th>Username</th>
-    <th>Phone</th>
-    <th>Status</th>
-    <th>Doctors</th>
-    <th>Actions</th>
-</tr>
-</thead>
-
-<tbody>
+<div class="chamber-grid">
 
 {% for c in chambers %}
 
-<tr>
+<div class="chamber-card">
 
-    <td>{{ c.name }}</td>
-    <td>{{ c.username }}</td>
-    <td>{{ c.phone }}</td>
+    <div class="cover">
 
-    <td>
-        <span class="badge 
-            {% if c.status == 'active' %}active
-            {% else %}pending{% endif %}">
-            {{ c.status }}
-        </span>
-    </td>
+        <img src="{{ c.cover_photo or '/static/default-cover.jpg' }}">
 
-    <td>
-        {{ c.doctors|length if c.doctors else 0 }}
-    </td>
+    </div>
 
-    <td>
+    <div class="profile-section">
 
-        <div class="action-btns">
+        <img
+            src="{{ c.profile_photo or '/static/default-avatar.png' }}"
+            class="profile"
+        >
 
-            <a href="/admin/chamber/{{ c.id }}" class="btn-small view">
-                View
-            </a>
+        <div>
+            <h3>{{ c.name }}</h3>
 
-            <a href="/admin/chamber/{{ c.id }}/edit" class="btn-small edit">
-                Edit
-            </a>
-
-            <a href="{{ url_for('admin_chambers.create_doctor',
-                    chamber_id=c.id) }}"
-             class="btn-small add-doctor">
-                ➕ Doctor
-            </a>
-
+            <span class="status-badge">
+                {{ c.status }}
+            </span>
         </div>
 
-    </td>
+    </div>
 
-</tr>
+    <div class="details">
+
+        <p>
+            📍 {{ c.location or 'Location not set' }}
+        </p>
+
+        <p>
+            🏠 {{ c.address or 'Address not added' }}
+        </p>
+
+        <p>
+            👨‍⚕️ {{ c.doctors|length }}
+            Doctors
+        </p>
+
+        <p>
+            📞 {{ c.phone }}
+        </p>
+
+    </div>
+
+    <div class="actions">
+
+        <a href="/admin/chamber/{{ c.id }}">
+            View
+        </a>
+
+        <a href="/admin/chamber/{{ c.id }}/edit">
+            Edit
+        </a>
+
+        <a
+          href="{{ url_for('admin_chambers.create_doctor', chamber_id=c.id) }}">
+          Doctor
+        </a>
+
+    </div>
+
+</div>
 
 {% endfor %}
 
-</tbody>
+</div>
 
 </table>
 
