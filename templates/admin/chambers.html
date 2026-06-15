@@ -307,48 +307,49 @@ tr{
 <div class="chamber-card">
 
     <div class="cover">
+    <img src="{{ c.profile.cover_image if c.profile else '/static/default-cover.jpg' }}">
+</div>
 
-        <img src="{{ c.cover_photo or '/static/default-cover.jpg' }}">
+<div class="profile-section">
 
-    </div>
+    <img
+        src="{{ c.profile.profile_image if c.profile else '/static/default-avatar.png' }}"
+        class="profile">
 
-    <div class="profile-section">
+    <div>
 
-        <img
-            src="{{ c.profile_photo or '/static/default-avatar.png' }}"
-            class="profile"
-        >
+        <h3>
+            {{ c.profile.chamber_name if c.profile else c.name }}
+        </h3>
 
-        <div>
-            <h3>{{ c.name }}</h3>
-
-            <span class="status-badge">
-                {{ c.status }}
-            </span>
-        </div>
-
-    </div>
-
-    <div class="details">
-
-        <p>
-            📍 {{ c.location or 'Location not set' }}
-        </p>
-
-        <p>
-            🏠 {{ c.address or 'Address not added' }}
-        </p>
-
-        <p>
-            👨‍⚕️ {{ c.doctors|length }}
-            Doctors
-        </p>
-
-        <p>
-            📞 {{ c.phone }}
-        </p>
+        <span class="status-badge {{ c.status }}">
+            {{ c.status }}
+        </span>
 
     </div>
+
+</div>
+
+<div class="details">
+
+    <p>
+        📍 {{ c.profile.area if c.profile else 'Location not set' }}
+    </p>
+
+    <p>
+        🏠 {{ c.profile.address if c.profile else 'Address not added' }}
+    </p>
+
+    <p>
+        👨‍⚕️ {{ c.doctors|length }}
+        Doctors
+    </p>
+
+    <p>
+        📞 {{ c.profile.phone if c.profile else c.phone }}
+    </p>
+
+</div>
 
     <div class="actions">
 
@@ -373,10 +374,6 @@ tr{
 
 </div>
 
-</table>
-
-</div>
-
 {% else %}
 
 <div class="empty">
@@ -388,20 +385,20 @@ tr{
 
 <script>
 
-document.getElementById("search").addEventListener("keyup",function(){
+document.getElementById("search").addEventListener("keyup", function () {
 
-let value=this.value.toLowerCase();
+    let value = this.value.toLowerCase();
 
-document.querySelectorAll("tbody tr").forEach(row=>{
+    document.querySelectorAll(".chamber-card").forEach(card => {
 
-row.style.display=
-row.innerText.toLowerCase().includes(value)
-?"table-row":"none";
+        card.style.display =
+            card.innerText.toLowerCase().includes(value)
+            ? "block"
+            : "none";
+
+    });
 
 });
-
-});
-
 </script>
 
 {% endblock %}
