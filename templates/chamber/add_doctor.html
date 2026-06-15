@@ -1,1 +1,584 @@
+{% extends "base.html" %}
 
+{% block title %}
+{% if doctor %}
+Edit Doctor
+{% else %}
+Add Doctor
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+    --success:#22c55e;
+    --dark:#0f172a;
+    --text:#334155;
+    --border:#e2e8f0;
+}
+
+body{
+    background:
+    linear-gradient(
+        135deg,
+        #eef4ff 0%,
+        #f8fbff 40%,
+        #eef2ff 100%
+    );
+}
+
+.page-wrap{
+    max-width:1400px;
+    margin:auto;
+    padding:25px;
+}
+
+/* HERO */
+
+.hero-card{
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    border-radius:30px;
+
+    padding:40px;
+
+    color:white;
+
+    margin-bottom:25px;
+
+    box-shadow:
+    0 20px 60px rgba(
+        37,
+        99,
+        235,
+        .25
+    );
+}
+
+.hero-card h1{
+    margin:0;
+    font-size:34px;
+    font-weight:800;
+}
+
+.hero-card p{
+    margin-top:10px;
+    opacity:.92;
+    font-size:15px;
+}
+
+/* MAIN CARD */
+
+.form-card{
+
+    background:
+    rgba(
+        255,
+        255,
+        255,
+        .78
+    );
+
+    backdrop-filter:
+    blur(24px);
+
+    border-radius:30px;
+
+    padding:35px;
+
+    border:1px solid rgba(
+        255,
+        255,
+        255,
+        .7
+    );
+
+    box-shadow:
+    0 25px 70px rgba(
+        15,
+        23,
+        42,
+        .08
+    );
+}
+
+.header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:30px;
+
+    padding-bottom:20px;
+
+    border-bottom:
+    1px solid #e5e7eb;
+
+    flex-wrap:wrap;
+}
+
+.header h2{
+
+    margin:0;
+
+    color:var(--dark);
+
+    font-size:28px;
+
+    font-weight:800;
+}
+
+.header p{
+
+    margin-top:6px;
+
+    color:#64748b;
+}
+
+/* GRID */
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(
+        auto-fit,
+        minmax(340px,1fr)
+    );
+
+    gap:25px;
+}
+
+/* INPUTS */
+
+.form-group{
+    margin-bottom:20px;
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:var(--text);
+}
+
+input,
+textarea{
+
+    width:100%;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:15px 16px;
+
+    font-size:15px;
+
+    background:white;
+
+    transition:.25s;
+}
+
+input:focus,
+textarea:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:
+    0 0 0 4px rgba(
+        37,
+        99,
+        235,
+        .12
+    );
+}
+
+textarea{
+
+    min-height:170px;
+
+    resize:vertical;
+}
+
+/* IMAGE UPLOAD */
+
+.upload{
+
+    border:2px dashed #cbd5e1;
+
+    border-radius:22px;
+
+    background:#fafcff;
+
+    padding:35px;
+
+    text-align:center;
+
+    transition:.25s;
+}
+
+.upload:hover{
+
+    border-color:#2563eb;
+
+    background:#f5f9ff;
+}
+
+.upload input{
+
+    border:none;
+
+    background:none;
+
+    padding:0;
+}
+
+/* PREVIEW */
+
+.preview-box{
+
+    margin-top:10px;
+
+    display:flex;
+
+    justify-content:center;
+}
+
+.preview-box img{
+
+    width:110px;
+
+    height:110px;
+
+    border-radius:20px;
+
+    object-fit:cover;
+
+    border:4px solid white;
+
+    box-shadow:
+    0 10px 30px rgba(
+        0,
+        0,
+        0,
+        .12
+    );
+}
+
+/* VERIFIED */
+
+.switch{
+
+    margin-top:10px;
+
+    background:#f8fafc;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:18px;
+
+    padding:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.switch label{
+    margin:0;
+}
+
+/* BUTTON */
+
+.btn{
+
+    margin-top:25px;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:16px 35px;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    color:white;
+
+    cursor:pointer;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    box-shadow:
+    0 12px 30px rgba(
+        37,
+        99,
+        235,
+        .25
+    );
+
+    transition:.25s;
+}
+
+.btn:hover{
+
+    transform:
+    translateY(-2px);
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .hero-card{
+        padding:30px;
+    }
+
+    .hero-card h1{
+        font-size:26px;
+    }
+
+    .form-card{
+        padding:25px;
+    }
+
+    .header h2{
+        font-size:22px;
+    }
+}
+</style>
+
+<div class="page-wrap">
+    <div class="hero-card">
+
+    <h1>
+        👨‍⚕️ {% if doctor %}
+        Edit Doctor Profile
+        {% else %}
+        Add New Doctor
+        {% endif %}
+    </h1>
+
+    <p>
+        Manage doctor information, photos,
+        specialization, experience and profile details.
+    </p>
+
+    </div>
+
+<form
+method="POST"
+enctype="multipart/form-data">
+
+<div class="form-card">
+
+    <div class="header">
+
+        <div>
+
+            <h2>
+
+                {% if doctor %}
+                Edit Doctor
+                {% else %}
+                Add New Doctor
+                {% endif %}
+
+            </h2>
+
+            <p>
+                Manage doctor profile information
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="grid">
+
+        <div>
+
+            <div class="form-group">
+
+                <label>
+                    Doctor Name
+                </label>
+
+                <input
+                type="text"
+                name="name"
+                value="{{ doctor.name if doctor else '' }}"
+                required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Degree
+                </label>
+
+                <input
+                type="text"
+                name="degree"
+                value="{{ doctor.degree if doctor else '' }}"
+                required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Specialization
+                </label>
+
+                <input
+                type="text"
+                name="specialization"
+                value="{{ doctor.specialization if doctor else '' }}">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Hospital
+                </label>
+
+                <input
+                type="text"
+                name="hospital"
+                value="{{ doctor.hospital if doctor else '' }}">
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <div class="form-group">
+
+                <label>
+                    Experience
+                </label>
+
+                <input
+                type="text"
+                name="experience"
+                value="{{ doctor.experience if doctor else '' }}">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Profile Photo
+                </label>
+
+                <div class="upload">
+
+                    <input
+                    type="file"
+                    name="profile_photo">
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Cover Photo
+                </label>
+
+                <div class="upload">
+
+                    <input
+                    type="file"
+                    name="cover_photo">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        <label>
+            About Doctor
+        </label>
+
+        <textarea
+        name="about">{{
+        doctor.about if doctor else ''
+        }}</textarea>
+
+    </div>
+
+    <div class="switch">
+
+        <input
+        type="checkbox"
+        name="verified"
+
+        {% if doctor and doctor.verified %}
+        checked
+        {% endif %}
+        >
+
+        <label>
+            Verified Doctor
+        </label>
+
+    </div>
+
+    <button
+    type="submit"
+    class="btn">
+
+        {% if doctor %}
+        Update Doctor
+        {% else %}
+        Save Doctor
+        {% endif %}
+
+    </button>
+
+</div>
+
+</form>
+
+</div>
+
+{% endblock %}
