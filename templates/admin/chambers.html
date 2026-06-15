@@ -87,25 +87,7 @@ body{
     border:1px solid rgba(255,255,255,.5);
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
 
-th,td{
-    padding:14px;
-    text-align:left;
-    font-size:14px;
-}
-
-th{
-    background:rgba(37,99,235,.08);
-    color:#0f172a;
-}
-
-tr{
-    border-bottom:1px solid #e2e8f0;
-}
 
 /* BADGE */
 
@@ -169,32 +151,8 @@ tr{
 
 @media(max-width:768px){
 
-    table,thead,tbody,th,td,tr{
-        display:block;
-    }
-@media(max-width:768px){
-
     .chamber-grid{
         grid-template-columns:1fr;
-    }
-
-    }
-
-    tr{
-        margin-bottom:15px;
-        background:white;
-        border-radius:14px;
-        padding:10px;
-    }
-
-    th{
-        display:none;
-    }
-
-    td{
-        display:flex;
-        justify-content:space-between;
-        padding:10px;
     }
 
 }
@@ -225,9 +183,7 @@ tr{
     0 25px 60px rgba(37,99,235,.15);
 
 }
-.chamber-card:hover{
-    transform:translateY(-8px);
-}
+
 
 .cover{
     height:180px;
@@ -419,9 +375,9 @@ document.getElementById("search").addEventListener("keyup", function () {
     document.querySelectorAll(".chamber-card").forEach(card => {
 
         card.style.display =
-            card.innerText.toLowerCase().includes(value)
-            ? "block"
-            : "none";
+        card.innerText.toLowerCase().includes(value)
+        ? ""
+        : "none";
 
     });
 
