@@ -1,1 +1,172 @@
+{% extends "base.html" %}
 
+{% block title %}Edit Doctor{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:#f4f7ff;
+    font-family:Inter;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+h2{
+    margin-bottom:20px;
+    color:#0f172a;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+input, textarea{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #e2e8f0;
+    outline:none;
+}
+
+textarea{
+    min-height:100px;
+}
+
+label{
+    font-size:13px;
+    color:#64748b;
+    margin-bottom:5px;
+    display:block;
+}
+
+.btn{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:10px 15px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+.section-title{
+    margin:20px 0 10px;
+    color:#0f172a;
+}
+
+.file-box{
+    padding:10px;
+    border:1px dashed #cbd5e1;
+    border-radius:10px;
+}
+
+.preview{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+}
+
+.cover-preview{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+
+@media(max-width:768px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
+
+<div class="container">
+
+<div class="card">
+
+    <h2>🧑‍⚕️ Edit Doctor Profile</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <div class="form-grid">
+
+            <div>
+                <label>Name</label>
+                <input type="text" name="name" value="{{ doctor.name }}">
+            </div>
+
+            <div>
+                <label>Degree</label>
+                <input type="text" name="degree" value="{{ doctor.degree }}">
+            </div>
+
+            <div>
+                <label>Specialization</label>
+                <input type="text" name="specialization" value="{{ doctor.specialization }}">
+            </div>
+
+            <div>
+                <label>Hospital</label>
+                <input type="text" name="hospital" value="{{ doctor.hospital }}">
+            </div>
+
+            <div>
+                <label>Experience</label>
+                <input type="text" name="experience" value="{{ doctor.experience }}">
+            </div>
+
+        </div>
+
+        <label>About</label>
+        <textarea name="about">{{ doctor.about }}</textarea>
+
+        <!-- IMAGES -->
+        <h3 class="section-title">Images</h3>
+
+        {% if doctor.cover_photo %}
+        <img src="{{ doctor.cover_photo }}" class="cover-preview">
+        {% endif %}
+
+        <div class="file-box">
+            <label>Cover Photo</label>
+            <input type="file" name="cover_photo">
+        </div>
+
+        <br>
+
+        {% if doctor.profile_photo %}
+        <img src="{{ doctor.profile_photo }}" class="preview">
+        {% endif %}
+
+        <div class="file-box">
+            <label>Profile Photo</label>
+            <input type="file" name="profile_photo">
+        </div>
+
+        <button class="btn">Update Doctor</button>
+
+    </form>
+
+</div>
+
+</div>
+
+{% endblock %}
