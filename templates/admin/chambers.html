@@ -416,34 +416,31 @@ body{
             {{ c.status }}
         </span>
 
-    </div>
 
 </div>
 
 <div class="details">
 
     <p>
-        📍 {{ c.profile.area if c.profile else 'Location not set' }}
+        📍 {{ c.profile.area if c.profile and c.profile.area else 'Location not set' }}
     </p>
 
     <p>
-     🏠
-     {{ c.profile.address if c.profile and c.profile.address else 'Address not added' }}
+        🏠 {{ c.profile.address if c.profile and c.profile.address else 'Address not added' }}
     </p>
-    <div class="stats">
-
-    <div class="stat-box">
-        👨‍⚕️ {{ c.doctors|length }}
-        <span>Doctors</span>
-    </div>
-
-    </div>
 
     <p>
-        📞 {{ c.profile.phone if c.profile else c.phone }}
+        📞 {{ c.profile.phone if c.profile and c.profile.phone else c.phone }}
     </p>
 
 </div>
+
+<div class="stats">
+
+    <div class="stat-box">
+        👨‍⚕️ {{ c.doctors|length }}
+        <span>Registered Doctors</span>
+    </div>
 
     <div class="actions">
 
