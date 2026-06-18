@@ -20,6 +20,7 @@ from flask import request
 from models.transaction import Transaction
 from models.appointment import Appointment
 from models.payment_method import UserPaymentMethod
+from models.site_setting import SiteSetting
 
 user = Blueprint("user", __name__, url_prefix="/user")
 
