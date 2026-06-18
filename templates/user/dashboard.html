@@ -728,6 +728,39 @@ body{
     </div>
 
 </div>
+    </div>
+
+<!-- ================= LED ANNOUNCEMENT ================= -->
+
+{% if setting and setting.running_headline %}
+
+<div class="led-announcement-bar">
+
+    <div class="led-badge">
+
+        <span class="live-dot"></span>
+
+        LIVE UPDATE
+
+    </div>
+
+    <div class="led-display">
+
+        <div class="led-text">
+
+            ✦ {{ setting.running_headline }} ✦
+            {{ setting.running_headline }}
+            ✦ {{ setting.running_headline }} ✦
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
 
 <!-- ================= SEARCH ================= -->
 
