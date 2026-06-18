@@ -217,6 +217,8 @@ def dashboard():
         session.clear()
         return redirect('/auth/login')
 
+    setting = SiteSetting.query.first()
+
     # ================= APPROVED WORKS =================
     works = (
         db.session.query(Work, User)
@@ -246,6 +248,7 @@ def dashboard():
         profiles=profiles,
         total_works=total_works,
         total_profiles=total_profiles
+        setting=setting
     )
 
 
