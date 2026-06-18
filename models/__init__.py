@@ -8,3 +8,4 @@ from .doctor.doctor import Doctor
 from .doctor.schedule import DoctorSchedule
 from .appointment import Appointment
 from .chamber_profile import ChamberProfile
+from .site_setting import SiteSetting
