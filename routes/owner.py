@@ -17,6 +17,7 @@ from models.user import User
 from models.work_model import Work
 from models.booking import Booking
 from models.work_application import WorkApplication
+from models.site_setting import SiteSetting
 
 
 owner = Blueprint('owner', __name__)
