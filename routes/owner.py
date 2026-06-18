@@ -1020,5 +1020,37 @@ def mark_paid(id):
         flash("Something went wrong.", "danger")
 
         return redirect("/owner/withdraws")
+
+@owner.route("/headline", methods=["GET", "POST"])
+@owner_only
+def headline_control():
+
+    setting = SiteSetting.query.first()
+
+    if not setting:
+        setting = SiteSetting()
+        db.session.add(setting)
+        db.session.commit()
+
+    if request.method == "POST":
+
+        setting.running_headline = request.form.get(
+            "headline",
+            ""
+        )
+
+        db.session.commit()
+
+        flash(
+            "Headline Updated Successfully",
+            "success"
+        )
+
+        return redirect("/owner/headline")
+
+    return render_template(
+        "owner/headline.html",
+        setting=setting
+    )
         
 
