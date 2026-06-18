@@ -248,7 +248,7 @@ def dashboard():
         works=works,
         profiles=profiles,
         total_works=total_works,
-        total_profiles=total_profiles
+        total_profiles=total_profiles,
         setting=setting
     )
 
