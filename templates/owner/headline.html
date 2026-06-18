@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}
+Headline Control
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --secondary:#7c3aed;
+    --success:#22c55e;
+    --dark:#0f172a;
+}
+
+body{
+    background:linear-gradient(135deg,#eef4ff,#f8fbff);
+}
+
+/* PAGE */
+
+.page-wrap{
+    max-width:1000px;
+    margin:auto;
+}
+
+/* HEADER */
+
+.page-header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.page-header h1{
+    font-size:38px;
+    font-weight:900;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.page-header p{
+    color:#64748b;
+    margin-top:8px;
+}
+
+/* CARD */
+
+.control-card{
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:35px;
+
+    box-shadow:
+    0 20px 60px rgba(37,99,235,.12);
+
+    border:1px solid rgba(255,255,255,.8);
+}
+
+/* LABEL */
+
+.label{
+    font-size:15px;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:10px;
+    display:block;
+}
+
+/* TEXTAREA */
+
+.headline-box{
+
+    width:100%;
+
+    min-height:140px;
+
+    border:none;
+
+    outline:none;
+
+    resize:none;
+
+    padding:20px;
+
+    font-size:16px;
+
+    border-radius:20px;
+
+    background:#f8fafc;
+
+    box-shadow:
+    inset 0 0 0 1px #e2e8f0;
+
+    transition:.3s;
+}
+
+.headline-box:focus{
+
+    box-shadow:
+    0 0 0 4px rgba(37,99,235,.15);
+
+    background:white;
+}
+
+/* BUTTON */
+
+.save-btn{
+
+    border:none;
+
+    cursor:pointer;
+
+    margin-top:20px;
+
+    padding:16px 30px;
+
+    border-radius:16px;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    color:white;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    box-shadow:
+    0 15px 35px rgba(37,99,235,.25);
+
+    transition:.3s;
+}
+
+.save-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 20px 40px rgba(37,99,235,.35);
+}
+
+/* LIVE PREVIEW */
+
+.preview-title{
+
+    margin-top:35px;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    color:#0f172a;
+}
+
+/* LED DISPLAY */
+
+.led-announcement-bar{
+
+    margin-top:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    overflow:hidden;
+
+    border-radius:20px;
+
+    background:#050816;
+
+    border:2px solid #1e293b;
+
+    box-shadow:
+    0 0 30px rgba(59,130,246,.15);
+}
+
+.led-badge{
+
+    min-width:180px;
+
+    padding:18px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    color:white;
+
+    font-weight:800;
+}
+
+.live-dot{
+
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+
+    0%{opacity:1;}
+    50%{opacity:.4;}
+    100%{opacity:1;}
+}
+
+.led-display{
+
+    flex:1;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+}
+
+.led-text{
+
+    display:inline-block;
+
+    padding-left:100%;
+
+    color:#38bdf8;
+
+    font-weight:800;
+
+    letter-spacing:2px;
+
+    font-size:18px;
+
+    animation:marquee 25s linear infinite;
+
+    text-shadow:
+    0 0 10px #38bdf8,
+    0 0 20px #38bdf8;
+}
+
+@keyframes marquee{
+
+    0%{
+        transform:translateX(0);
+    }
+
+    100%{
+        transform:translateX(-100%);
+    }
+}
+
+/* FLASH */
+
+.flash{
+
+    padding:15px;
+
+    border-radius:14px;
+
+    margin-bottom:20px;
+
+    background:#dcfce7;
+
+    color:#166534;
+
+    font-weight:700;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .page-header h1{
+        font-size:28px;
+    }
+
+    .led-badge{
+        min-width:120px;
+        font-size:12px;
+    }
+
+    .led-text{
+        font-size:14px;
+    }
+}
+
+</style>
+
+<div class="page-wrap">
+
+    <div class="page-header">
+
+        <h1>📢 Running Headline Control</h1>
+
+        <p>
+            Control the premium LED announcement visible on all user dashboards
+        </p>
+
+    </div>
+
+    <div class="control-card">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash">
+                {{ messages[0] }}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <label class="label">
+                Headline Text
+            </label>
+
+            <textarea
+                name="headline"
+                class="headline-box"
+                placeholder="Enter premium announcement..."
+            >{{ setting.running_headline if setting else '' }}</textarea>
+
+            <button type="submit" class="save-btn">
+                🚀 Update Headline
+            </button>
+
+        </form>
+
+        <div class="preview-title">
+            Live Preview
+        </div>
+
+        <div class="led-announcement-bar">
+
+            <div class="led-badge">
+
+                <span class="live-dot"></span>
+
+                LIVE NEWS
+
+            </div>
+
+            <div class="led-display">
+
+                <div class="led-text">
+
+                    ✦ {{ setting.running_headline if setting else 'No headline available' }} ✦
+                    {{ setting.running_headline if setting else 'No headline available' }}
+                    ✦ {{ setting.running_headline if setting else 'No headline available' }} ✦
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
