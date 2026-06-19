@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Owner Applications</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+    padding:20px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.badge{
+    background:#334155;
+    padding:6px 12px;
+    border-radius:8px;
+}
+
+/* CARD */
+.card{
+    background:#111827;
+    padding:16px;
+    border-radius:16px;
+    margin-bottom:12px;
+    border:1px solid #1f2937;
+}
+
+/* GRID */
+.row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+}
+
+.small{
+    font-size:13px;
+    color:#cbd5e1;
+}
+
+/* BUTTONS */
+.btn{
+    padding:8px 12px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:bold;
+    display:inline-block;
+}
+
+.approve{background:#16a34a;color:white;}
+.reject{background:#dc2626;color:white;}
+.view{background:#2563eb;color:white;}
+.delete{background:#374151;color:white;}
+
+/* STATUS */
+.status{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:12px;
+    text-transform:uppercase;
+    font-weight:bold;
+}
+
+.status-pending{background:#2563eb;}
+.status-approved{background:#16a34a;}
+.status-rejected{background:#dc2626;}
+.status-unknown{background:#64748b;}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h2>📋 Work Applications</h2>
+        <div class="badge">
+            Total: {{ applications|length if applications else 0 }}
+        </div>
+    </div>
+
+    {% if applications and applications|length > 0 %}
+
+        {% for app in applications %}
+
+        {% set status = (app.status or 'pending') | lower %}
+
+        <div class="card">
+
+            <!-- NAME + WORK -->
+            <h3>
+                👤 {{ app.name }} → Work ID #{{ app.work_id }}
+            </h3>
+
+            <!-- DETAILS GRID -->
+            <div class="row small">
+
+                <div>📞 {{ app.phone or 'N/A' }}</div>
+
+                <div>📍 {{ app.address or 'N/A' }}</div>
+
+                <div>💰 {{ app.expected_salary or 'Not set' }}</div>
+
+                <div>⭐ Experience: {{ app.experience_years or 0 }} years</div>
+
+                <div>
+                    📌 Status:
+                    <span class="status status-{{ status }}">
+                        {{ status }}
+                    </span>
+                </div>
+
+            </div>
+
+            <!-- MESSAGE -->
+            <p class="small" style="margin-top:10px;">
+                📝 {{ app.message or 'No message provided' }}
+            </p>
+
+            <!-- ACTION BUTTONS -->
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+
+                <a class="btn view"
+                   href="{{ url_for('application.application_details', id=app.id) }}">
+                   View
+                </a>
+
+                {% if status == "pending" %}
+
+                    <a class="btn approve"
+                       href="{{ url_for('application.approve_application', id=app.id) }}">
+                       Approve
+                    </a>
+
+                    <a class="btn reject"
+                       href="{{ url_for('application.reject_application', id=app.id) }}">
+                       Reject
+                    </a>
+
+                {% endif %}
+
+                <a class="btn delete"
+                   href="{{ url_for('application.delete_application', id=app.id) }}">
+                   Delete
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No applications found.</p>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
