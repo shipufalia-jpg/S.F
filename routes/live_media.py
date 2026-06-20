@@ -94,10 +94,7 @@ def cleanup_old_media(limit=200):
 
                 resource_type = (
                     "video"
-                    if media.media_type in [
-                        "video",
-                        "live_tv"
-                    ]
+                    if media.file_url and "/video/upload/" in media.file_url
                     else "image"
                 )
 
@@ -129,6 +126,7 @@ def dashboard():
 
     medias = (
         LiveMedia.query
+        .filter_by(is_deleted=False)
         .order_by(LiveMedia.id.desc())
         .limit(200)
         .all()
@@ -353,11 +351,7 @@ def delete_media(id):
 
             resource_type = (
                 "video"
-                if media.media_type in [
-                    "video",
-                    "live_tv"
-                ]
-                else "image"
+                if media.file_url and "/video/upload/" in media.file_url
             )
 
             cloudinary.uploader.destroy(
