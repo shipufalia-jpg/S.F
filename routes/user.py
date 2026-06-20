@@ -147,22 +147,7 @@ def user_live_tv():
         now=now
     )
 
-@live_media_bp.route("/view/<int:id>", methods=["POST"])
-def update_view(id):
 
-    db.session.execute(
-        update(LiveMedia)
-        .where(LiveMedia.id == id)
-        .values(
-            total_views=LiveMedia.total_views + 1
-        )
-    )
-
-    db.session.commit()
-
-    return jsonify({
-        "success": True
-    })
 # =================================================
 # 👤 USER DASHBOARD
 # =================================================
