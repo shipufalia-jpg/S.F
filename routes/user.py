@@ -25,6 +25,21 @@ from models.site_setting import SiteSetting
 
 user = Blueprint("user", __name__, url_prefix="/user")
 
+# =====================================================
+# LOGIN REQUIRED DECORATOR
+# =====================================================
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        if "user_id" not in session:
+            return redirect("/auth/login")
+
+        return f(*args, **kwargs)
+
+    return wrapper
+
 
 # =========================================================
 # USER LIVE TV
@@ -38,35 +53,6 @@ def user_live_tv():
     language = session.get("language")
 
     now = datetime.utcnow()
-
-    medias = LiveMedia.query.filter(
-
-        # ACTIVE
-        LiveMedia.is_active.is_(True),
-
-        # NOT DELETED
-        LiveMedia.is_deleted.is_(False),
-
-        # APPROVED
-        LiveMedia.is_approved.is_(True),
-
-        # ROLE FILTER
-        (
-            (LiveMedia.target_role == "all") |
-            (LiveMedia.target_role == role)
-        ),
-
-        # SCHEDULE START
-        (
-            (LiveMedia.start_time == None) |
-            (LiveMedia.start_time <= now)
-        ),
-
-        # SCHEDULE END
-        (
-            (LiveMedia.end_time == None) |
-            (LiveMedia.end_time >= now)
-        )
 
     
     # =====================================================
@@ -318,41 +304,32 @@ def dashboard():
 @login_required
 def chat(user_id):
 
-    current_user_id = session.get("user_id")
+    current_user_id = session["user_id"]
 
     receiver = User.query.get_or_404(user_id)
-
-    page = request.args.get(
-        "page",
-        1,
-        type=int
-    )
 
     messages = (
         Chat.query
         .filter(
-            (
-                (Chat.sender_id == current_user_id) &
-                (Chat.receiver_id == user_id)
-            ) |
-            (
-                (Chat.sender_id == user_id) &
-                (Chat.receiver_id == current_user_id)
+            db.or_(
+                db.and_(
+                    Chat.sender_id == current_user_id,
+                    Chat.receiver_id == user_id
+                ),
+                db.and_(
+                    Chat.sender_id == user_id,
+                    Chat.receiver_id == current_user_id
+                )
             )
         )
-        .order_by(Chat.created_at.desc())
-        .paginate(
-            page=page,
-            per_page=50,
-            error_out=False
-        )
+        .order_by(Chat.id.asc())
+        .all()
     )
 
     return render_template(
         "chat.html",
         receiver=receiver,
-        messages=list(reversed(messages.items)),
-        pagination=messages,
+        messages=messages,
         current_user_id=current_user_id
     )
 
@@ -361,7 +338,7 @@ def chat(user_id):
 @login_required
 def inbox():
 
-    user_id = session.get("user_id")
+    user_id = session["user_id"]
 
     chats = (
         Chat.query
@@ -369,49 +346,34 @@ def inbox():
             (Chat.sender_id == user_id) |
             (Chat.receiver_id == user_id)
         )
-        .order_by(Chat.created_at.desc())
-        .limit(500)
+        .order_by(Chat.id.desc())
         .all()
     )
 
     inbox_data = {}
 
-    for chat in chats:
+    for c in chats:
 
-        other_user = (
-            chat.receiver_id
-            if chat.sender_id == user_id
-            else chat.sender_id
+        other_id = (
+            c.receiver_id
+            if c.sender_id == user_id
+            else c.sender_id
         )
 
-        if other_user not in inbox_data:
+        if other_id not in inbox_data:
 
-            inbox_data[other_user] = {
-                "user_id": other_user,
-                "last_message": chat.message,
-                "created_at": chat.created_at
+            other_user = User.query.get(other_id)
+
+            inbox_data[other_id] = {
+                "user_id": other_id,
+                "name": other_user.name if other_user else "Unknown",
+                "last_message": c.message
             }
 
     return render_template(
         "inbox.html",
         inbox=list(inbox_data.values())
     )
-
-# =====================================================
-# LOGIN REQUIRED DECORATOR
-# =====================================================
-
-def login_required(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-
-        if "user_id" not in session:
-            return redirect("/auth/login")
-
-        return f(*args, **kwargs)
-
-    return wrapper
-
 
 # =====================================================
 # WALLET DASHBOARD (UPGRADED)
