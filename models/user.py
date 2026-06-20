@@ -32,6 +32,7 @@ class User(UserMixin, db.Model):
         db.String(120),
         unique=True,
         nullable=True
+        index=True
     )
 
     password = db.Column(
@@ -166,6 +167,7 @@ class User(UserMixin, db.Model):
 
     verification_expiry = db.Column(
         db.DateTime
+        index=True
     )
 
     # ======================
@@ -175,25 +177,31 @@ class User(UserMixin, db.Model):
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
+        index=True
     )
 
     updated_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
+        index=True
+    )
+
+    wallet_balance = db.Column(
+        db.Numeric(12,2),
+        default=0
+    )
+
+    total_earnings = db.Column(
+        db.Numeric(12,2),
+        default=0
     )
 
     works = db.relationship(
-    "Work",
-    back_populates="user",
-    lazy=True
+        "Work",
+        back_populates="user",
+        lazy="dynamic"
     )
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-
-    wallet_balance = db.Column(db.Float, default=0.0)
-    total_earnings = db.Column(db.Float, default=0.0)
     # ======================
     # STRING
     # ======================
