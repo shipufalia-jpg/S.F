@@ -523,32 +523,71 @@ def payment_method():
         payment=payment
             )
 
+# =====================================================
+# REFERRAL
+# =====================================================
+
 @user.route("/referral")
 @login_required
 def referral():
 
-    current_user = User.query.get(
-        session["user_id"]
+    user_id = session.get("user_id")
+
+    current_user = User.query.get_or_404(user_id)
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
     )
 
-    referred_users = User.query.filter_by(
-        referred_by=current_user.id
-    ).order_by(
-        User.id.desc()
-    ).all()
+    per_page = 20
+
+    referrals = (
+        User.query
+        .filter(
+            User.referred_by == current_user.id
+        )
+        .order_by(
+            User.id.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
+    )
+
+    referral_count = (
+        User.query
+        .filter(
+            User.referred_by == current_user.id
+        )
+        .count()
+    )
 
     return render_template(
-    "user/referral.html",
-    referred_users=referred_users,
-    referral_count=len(referred_users),
-    referral_earnings=0
+        "user/referral.html",
+
+        referred_users=referrals.items,
+        pagination=referrals,
+
+        referral_count=referral_count,
+        referral_earnings=0
     )
+
+
+# =====================================================
+# SETTINGS
+# =====================================================
 
 @user.route("/settings")
 @login_required
 def settings():
-    return render_template("user/settings.html")
 
+    return render_template(
+        "user/settings.html"
+)
 
 @user.route("/my-appointments")
 def my_appointments():
