@@ -68,22 +68,7 @@ def user_live_tv():
             (LiveMedia.end_time >= now)
         )
 
-    ).order_by(
-
-        # FORCE SHOW FIRST
-        LiveMedia.force_show.desc(),
-
-        # FEATURED FIRST
-        LiveMedia.is_featured.desc(),
-
-        # DISPLAY ORDER
-        LiveMedia.display_order.asc(),
-
-        # LATEST
-        LiveMedia.id.desc()
-
-    ).all()
-
+    
     # =====================================================
     # AUTO VIEW UPDATE
     # =====================================================
@@ -355,7 +340,7 @@ def chat(user_id):
                 (Chat.receiver_id == current_user_id)
             )
         )
-        .order_by(Chat.id.desc())
+        .order_by(Chat.created_at.desc())
         .paginate(
             page=page,
             per_page=50,
@@ -366,10 +351,11 @@ def chat(user_id):
     return render_template(
         "chat.html",
         receiver=receiver,
-        messages=messages.items,
+        messages=list(reversed(messages.items)),
         pagination=messages,
         current_user_id=current_user_id
     )
+
 
 @user.route("/inbox")
 @login_required
@@ -377,47 +363,39 @@ def inbox():
 
     user_id = session.get("user_id")
 
-    page = request.args.get(
-        "page",
-        1,
-        type=int
-    )
-
     chats = (
         Chat.query
         .filter(
             (Chat.sender_id == user_id) |
             (Chat.receiver_id == user_id)
         )
-        .order_by(Chat.id.desc())
-        .paginate(
-            page=page,
-            per_page=20,
-            error_out=False
-        )
+        .order_by(Chat.created_at.desc())
+        .limit(500)
+        .all()
     )
 
     inbox_data = {}
 
-    for c in chats.items:
+    for chat in chats:
 
-        other = (
-            c.receiver_id
-            if c.sender_id == user_id
-            else c.sender_id
+        other_user = (
+            chat.receiver_id
+            if chat.sender_id == user_id
+            else chat.sender_id
         )
 
-        if other not in inbox_data:
-            inbox_data[other] = {
-                "user_id": other,
-                "last_message": c.message
+        if other_user not in inbox_data:
+
+            inbox_data[other_user] = {
+                "user_id": other_user,
+                "last_message": chat.message,
+                "created_at": chat.created_at
             }
 
     return render_template(
         "inbox.html",
-        inbox=inbox_data.values(),
-        pagination=chats
-            )
+        inbox=list(inbox_data.values())
+    )
 
 # =====================================================
 # LOGIN REQUIRED DECORATOR
