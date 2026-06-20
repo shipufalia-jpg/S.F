@@ -44,150 +44,125 @@ def login_required(f):
 # =========================================================
 # USER LIVE TV
 # =========================================================
-
 @user.route("/live-tv")
 def user_live_tv():
 
     role = session.get("role", "user")
-    country = session.get("country")
-    language = session.get("language")
-
     now = datetime.utcnow()
 
-    
-    # =====================================================
-    # AUTO VIEW UPDATE
-    # =====================================================
-    medias = LiveMedia.query.filter(
-        LiveMedia.is_active.is_(True),
-        LiveMedia.is_deleted.is_(False),
-        LiveMedia.is_approved.is_(True),
-        (
-            (LiveMedia.target_role == "all") |
-            (LiveMedia.target_role == role)
-        ),
-        (
-            (LiveMedia.start_time == None) |
-            (LiveMedia.start_time <= now)
-        ),
-        (
-            (LiveMedia.end_time == None) |
-            (LiveMedia.end_time >= now)
+    medias = (
+        LiveMedia.query
+        .filter(
+            LiveMedia.is_active.is_(True),
+            LiveMedia.is_deleted.is_(False),
+            LiveMedia.is_approved.is_(True),
+
+            (
+                (LiveMedia.target_role == "all") |
+                (LiveMedia.target_role == role)
+            ),
+
+            (
+                LiveMedia.start_time.is_(None) |
+                (LiveMedia.start_time <= now)
+            ),
+
+            (
+                LiveMedia.end_time.is_(None) |
+                (LiveMedia.end_time >= now)
+            )
         )
-    ).order_by(
-        LiveMedia.force_show.desc(),
-        LiveMedia.is_featured.desc(),
-        LiveMedia.display_order.asc(),
-        LiveMedia.id.desc()
-    ).limit(50).all()
-    # =====================================================
-    # FORCE POPUP
-    # =====================================================
-
-    force_popup = next(
-        (
-            m for m in medias
-            if m.force_show and m.show_popup
-        ),
-        None
+        .order_by(
+            LiveMedia.force_show.desc(),
+            LiveMedia.is_featured.desc(),
+            LiveMedia.display_order.asc(),
+            LiveMedia.id.desc()
+        )
+        .limit(200)
+        .all()
     )
 
-    # =====================================================
-    # LIVE MEDIA
-    # =====================================================
+    live_media = None
+    floating_player = None
+    force_popup = None
 
-    live_media = next(
-        (
-            m for m in medias
-            if m.is_live and m.live_status == "live"
-        ),
-        None
-    )
+    banners = []
+    videos = []
+    audios = []
+    popups = []
 
-    # =====================================================
-    # BANNERS
-    # =====================================================
+    for media in medias:
 
-    banners = [
-        m for m in medias
-        if m.media_type == "banner"
-    ]
+        if (
+            live_media is None
+            and media.is_live
+            and media.live_status == "live"
+        ):
+            live_media = media
 
-    # =====================================================
-    # VIDEOS
-    # =====================================================
+        if (
+            floating_player is None
+            and media.floating_mode
+        ):
+            floating_player = media
 
-    videos = [
-        m for m in medias
-        if m.media_type == "video"
-    ]
+        if (
+            force_popup is None
+            and media.force_show
+            and media.show_popup
+        ):
+            force_popup = media
 
-    # =====================================================
-    # AUDIOS
-    # =====================================================
+        if media.media_type == "banner":
+            banners.append(media)
 
-    audios = [
-        m for m in medias
-        if m.media_type == "audio"
-    ]
+        elif media.media_type == "video":
+            videos.append(media)
 
-    # =====================================================
-    # POPUPS
-    # =====================================================
+        elif media.media_type == "audio":
+            audios.append(media)
 
-    popups = [
-        m for m in medias
-        if m.show_popup
-    ]
-
-    # =====================================================
-    # FLOATING PLAYER
-    # =====================================================
-
-    floating_player = next(
-        (
-            m for m in medias
-            if m.floating_mode
-        ),
-        None
-    )
-
-    # =====================================================
-    # RENDER
-    # =====================================================
+        if media.show_popup:
+            popups.append(media)
 
     return render_template(
-
         "user/live_tv.html",
 
         medias=medias,
 
         live_media=live_media,
-
-        banners=banners,
-
-        videos=videos,
-
-        audios=audios,
-
-        popups=popups,
-
         floating_player=floating_player,
-
         force_popup=force_popup,
 
+        banners=banners,
+        videos=videos,
+        audios=audios,
+        popups=popups,
+
         total_medias=len(medias),
-
-        total_videos=len(videos),
-
-        total_audios=len(audios),
-
         total_banners=len(banners),
+        total_videos=len(videos),
+        total_audios=len(audios),
 
         now=now
     )
 
+@live_media_bp.route("/view/<int:id>", methods=["POST"])
+def update_view(id):
 
+    db.session.execute(
+        update(LiveMedia)
+        .where(LiveMedia.id == id)
+        .values(
+            total_views=LiveMedia.total_views + 1
+        )
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "success": True
+    })
 # =================================================
 # 👤 USER DASHBOARD
 # =================================================
