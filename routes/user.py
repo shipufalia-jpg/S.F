@@ -262,21 +262,21 @@ def dashboard():
 
     # ================= USERS =================
 
-profiles = (
-    Profile.query
-    .options(
+    profiles = (
+        Profile.query
+        .options(
         joinedload(Profile.user)
     )
-    .filter(
-        Profile.user_id != user_id
+        .filter(
+            Profile.user_id != user_id
     )
-    .order_by(Profile.id.desc())
-    .paginate(
-        page=page,
-        per_page=20,
-        error_out=False
+        .order_by(Profile.id.desc())
+        .paginate(
+            page=page,
+            per_page=20,
+            error_out=False
+        )
     )
-)
     # ================= STATS =================
 
     total_works = db.session.query(
@@ -599,25 +599,26 @@ def my_appointments():
         return redirect("/auth/login")
 
     page = request.args.get(
-    "page",
-    1,
-    type=int
-)
+        "page",
+        1,
+        type=int
+    )
 
-appointments = Appointment.query.options(
-    joinedload(Appointment.chamber),
-    joinedload(Appointment.doctor)
-).filter(
-    Appointment.user_id == user_id
-).order_by(
-    Appointment.id.desc()
-).paginate(
-    page=page,
-    per_page=20,
-    error_out=False
-)
-return render_template(
-    "user/my_appointments.html",
-    appointments=appointments.items,
-    pagination=appointments
-)
+    appointments = Appointment.query.options(
+        joinedload(Appointment.chamber),
+        joinedload(Appointment.doctor)
+    ).filter(
+        Appointment.user_id == user_id
+    ).order_by(
+        Appointment.id.desc()
+    ).paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
+
+    return render_template(
+        "user/my_appointments.html",
+        appointments=appointments.items,
+        pagination=appointments
+    )
