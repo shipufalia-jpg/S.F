@@ -260,45 +260,64 @@ def dashboard():
 # 💬 CHAT SYSTEM
 # =================================================
 
+from datetime import datetime, timedelta
+from sqlalchemy import or_, and_
+
 @user.route("/chat/<int:user_id>")
 @login_required
 def chat(user_id):
 
     current_user_id = session["user_id"]
 
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
     receiver = User.query.get_or_404(user_id)
 
     messages = (
         Chat.query
         .filter(
-            db.or_(
-                db.and_(
+            or_(
+                and_(
                     Chat.sender_id == current_user_id,
                     Chat.receiver_id == user_id
                 ),
-                db.and_(
+                and_(
                     Chat.sender_id == user_id,
                     Chat.receiver_id == current_user_id
                 )
             )
         )
-        .order_by(Chat.id.asc())
-        .all()
+        .order_by(Chat.id.desc())
+        .paginate(
+            page=page,
+            per_page=50,
+            error_out=False
+        )
     )
 
     return render_template(
         "chat.html",
         receiver=receiver,
-        messages=messages,
+        messages=reversed(messages.items),
+        pagination=messages,
         current_user_id=current_user_id
     )
-
 
 @user.route("/inbox")
 @login_required
 def inbox():
 
     user_id = session["user_id"]
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
 
     chats = (
         Chat.query
@@ -307,34 +326,50 @@ def inbox():
             (Chat.receiver_id == user_id)
         )
         .order_by(Chat.id.desc())
-        .all()
+        .paginate(
+            page=page,
+            per_page=50,
+            error_out=False
+        )
     )
 
     inbox_data = {}
+    user_cache = {}
 
-    for c in chats:
+    for chat in chats.items:
 
         other_id = (
-            c.receiver_id
-            if c.sender_id == user_id
-            else c.sender_id
+            chat.receiver_id
+            if chat.sender_id == user_id
+            else chat.sender_id
         )
 
         if other_id not in inbox_data:
 
-            other_user = User.query.get(other_id)
+            if other_id not in user_cache:
+
+                user_cache[other_id] = User.query.get(
+                    other_id
+                )
+
+            other_user = user_cache[other_id]
 
             inbox_data[other_id] = {
                 "user_id": other_id,
-                "name": other_user.name if other_user else "Unknown",
-                "last_message": c.message
+                "name": (
+                    other_user.name
+                    if other_user
+                    else "Unknown"
+                ),
+                "last_message": chat.message,
+                "created_at": chat.created_at
             }
 
     return render_template(
         "inbox.html",
-        inbox=list(inbox_data.values())
+        inbox=list(inbox_data.values()),
+        pagination=chats
     )
-
 # =====================================================
 # WALLET DASHBOARD (UPGRADED)
 # =====================================================
@@ -590,30 +625,32 @@ def settings():
 )
 
 @user.route("/my-appointments")
+@login_required
 def my_appointments():
-
-    user_id = session.get("user_id")
-
-    if not user_id:
-        return redirect("/auth/login")
 
     page = request.args.get(
         "page",
-        1,
+        default=1,
         type=int
     )
 
-    appointments = Appointment.query.options(
-        joinedload(Appointment.chamber),
-        joinedload(Appointment.doctor)
-    ).filter(
-        Appointment.user_id == user_id
-    ).order_by(
-        Appointment.id.desc()
-    ).paginate(
-        page=page,
-        per_page=20,
-        error_out=False
+    appointments = (
+        Appointment.query
+        .options(
+            joinedload(Appointment.chamber),
+            joinedload(Appointment.doctor)
+        )
+        .filter_by(
+            user_id=session["user_id"]
+        )
+        .order_by(
+            Appointment.id.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=20,
+            error_out=False
+        )
     )
 
     return render_template(
@@ -621,4 +658,3 @@ def my_appointments():
         appointments=appointments.items,
         pagination=appointments
     )
-
