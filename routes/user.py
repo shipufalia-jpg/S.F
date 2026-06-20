@@ -6,6 +6,7 @@ from flask import (
     flash
 )
 from sqlalchemy import or_, and_, func
+from sqlalchemy.orm import joinedload
 from datetime import datetime
 from models.user import User
 from models.profile import Profile
