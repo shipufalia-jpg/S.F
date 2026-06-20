@@ -330,38 +330,82 @@ def dashboard():
 # =================================================
 
 @user.route("/chat/<int:user_id>")
+@login_required
 def chat(user_id):
 
-    current_user_id = int(session.get("user_id"))
+    current_user_id = session.get("user_id")
 
     receiver = User.query.get_or_404(user_id)
 
-    messages = Chat.query.filter(
-        ((Chat.sender_id == current_user_id) & (Chat.receiver_id == user_id)) |
-        ((Chat.sender_id == user_id) & (Chat.receiver_id == current_user_id))
-    ).order_by(Chat.id.asc()).all()
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
+    messages = (
+        Chat.query
+        .filter(
+            (
+                (Chat.sender_id == current_user_id) &
+                (Chat.receiver_id == user_id)
+            ) |
+            (
+                (Chat.sender_id == user_id) &
+                (Chat.receiver_id == current_user_id)
+            )
+        )
+        .order_by(Chat.id.desc())
+        .paginate(
+            page=page,
+            per_page=50,
+            error_out=False
+        )
+    )
 
     return render_template(
         "chat.html",
         receiver=receiver,
-        messages=messages,
+        messages=messages.items,
+        pagination=messages,
         current_user_id=current_user_id
     )
 
 @user.route("/inbox")
+@login_required
 def inbox():
 
-    user_id = int(session.get("user_id"))
+    user_id = session.get("user_id")
 
-    chats = Chat.query.filter(
-        (Chat.sender_id == user_id) | (Chat.receiver_id == user_id)
-    ).order_by(Chat.id.desc()).all()
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
+    chats = (
+        Chat.query
+        .filter(
+            (Chat.sender_id == user_id) |
+            (Chat.receiver_id == user_id)
+        )
+        .order_by(Chat.id.desc())
+        .paginate(
+            page=page,
+            per_page=20,
+            error_out=False
+        )
+    )
 
     inbox_data = {}
 
-    for c in chats:
+    for c in chats.items:
 
-        other = c.receiver_id if c.sender_id == user_id else c.sender_id
+        other = (
+            c.receiver_id
+            if c.sender_id == user_id
+            else c.sender_id
+        )
 
         if other not in inbox_data:
             inbox_data[other] = {
@@ -369,8 +413,11 @@ def inbox():
                 "last_message": c.message
             }
 
-    return render_template("inbox.html", inbox=inbox_data.values())
-
+    return render_template(
+        "inbox.html",
+        inbox=inbox_data.values(),
+        pagination=chats
+            )
 
 # =====================================================
 # LOGIN REQUIRED DECORATOR
