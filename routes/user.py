@@ -15,7 +15,7 @@ from models.work_model import Work
 from extensions import db
 from decorators.auth import role_required
 from models.live_media import LiveMedia
-from extensions import db
+
 from functools import wraps
 from flask import request
 from models.transaction import Transaction
@@ -88,10 +88,7 @@ def user_live_tv():
     # AUTO VIEW UPDATE
     # =====================================================
 
-    for media in medias:
-        media.total_views += 1
-
-    db.session.commit()
+    medias = LiveMedia.query.filter(...).limit(50).all()
 
     # =====================================================
     # FORCE POPUP
