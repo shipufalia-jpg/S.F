@@ -46,7 +46,6 @@ ALLOWED_EXTENSIONS = {
 # =========================================================
 # HELPERS
 # =========================================================
-
 def allowed_file(filename):
 
     return (
@@ -62,6 +61,7 @@ def admin_required():
         "super_admin",
         "owner"
     ]
+
 
 def cleanup_old_media(limit=200):
 
@@ -88,33 +88,34 @@ def cleanup_old_media(limit=200):
 
     for media in old_medias:
 
-    try:
+        try:
 
-        if media.public_id:
+            if media.public_id:
 
-            resource_type = (
-                "video"
-                if media.media_type in [
-                    "video",
-                    "live_tv"
-                ]
-                else "image"
+                resource_type = (
+                    "video"
+                    if media.media_type in [
+                        "video",
+                        "live_tv"
+                    ]
+                    else "image"
+                )
+
+                cloudinary.uploader.destroy(
+                    media.public_id,
+                    resource_type=resource_type
+                )
+
+        except Exception as e:
+
+            print(
+                "Cloudinary delete error:",
+                e
             )
 
-            cloudinary.uploader.destroy(
-                media.public_id,
-                resource_type=resource_type
-            )
+        db.session.delete(media)
 
-    except Exception as e:
-
-        print(
-            "Cloudinary delete error:",
-            e
-        )
-
-    db.session.delete(media)
-
+    db.session.commit()
 # =========================================================
 # LIVE MEDIA PANEL
 # =========================================================
