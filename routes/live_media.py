@@ -120,11 +120,12 @@ def dashboard():
         flash("Unauthorized", "danger")
         return redirect("/auth/login")
 
-    medias = LiveMedia.query.filter_by(
-        is_deleted=False
-    ).order_by(
-        LiveMedia.id.desc()
-    ).all()
+    medias = (
+    LiveMedia.query
+    .order_by(LiveMedia.id.desc())
+    .limit(200)
+    .all()
+    )
 
     return render_template(
         "owner/live_media_list.html",
@@ -135,178 +136,172 @@ def dashboard():
 # =========================================================
 # CREATE MEDIA
 # =========================================================
-
 @live_media_bp.route("/create", methods=["GET", "POST"])
 def create_media():
 
-    if not admin_required():
-        flash("Unauthorized", "danger")
-        return redirect("/auth/login")
+if not admin_required():
+    flash("Unauthorized", "danger")
+    return redirect("/auth/login")
 
-    if request.method == "POST":
+if request.method == "POST":
 
-        title = request.form.get("title")
-        description = request.form.get("description")
+    title = request.form.get("title")
+    description = request.form.get("description")
 
-        media_type = request.form.get("media_type")
-        category = request.form.get("category")
+    media_type = request.form.get("media_type")
+    category = request.form.get("category")
 
-        is_live = bool(request.form.get("is_live"))
-        force_show = bool(request.form.get("force_show"))
+    is_live = bool(request.form.get("is_live"))
+    force_show = bool(request.form.get("force_show"))
 
-        floating_mode = bool(request.form.get("floating_mode"))
-        auto_play = bool(request.form.get("auto_play"))
+    floating_mode = bool(request.form.get("floating_mode"))
+    auto_play = bool(request.form.get("auto_play"))
 
-        allow_resize = bool(request.form.get("allow_resize"))
-        allow_drag = bool(request.form.get("allow_drag"))
+    allow_resize = bool(request.form.get("allow_resize"))
+    allow_drag = bool(request.form.get("allow_drag"))
 
-        allow_minimize = bool(request.form.get("allow_minimize"))
-        allow_fullscreen = bool(request.form.get("allow_fullscreen"))
+    allow_minimize = bool(request.form.get("allow_minimize"))
+    allow_fullscreen = bool(request.form.get("allow_fullscreen"))
 
-        default_width = request.form.get(
-            "default_width",
-            420,
-            type=int
-        )
-
-        default_height = request.form.get(
-            "default_height",
-            240,
-            type=int
-        )
-
-        popup_delay = request.form.get(
-            "popup_delay",
-            0,
-            type=int
-        )
-
-        stream_url = request.form.get("stream_url")
-
-        file = request.files.get("file")
-
-        # =================================================
-        # VALIDATION
-        # =================================================
-
-        if not file:
-            flash("File required", "danger")
-            return redirect(request.url)
-
-        if not allowed_file(file.filename):
-            flash("Invalid file type", "danger")
-            return redirect(request.url)
-
-        # =================================================
-        # CLOUDINARY UPLOAD
-        # =================================================
-        filename = secure_filename(file.filename)
-
-ext = filename.rsplit(".", 1)[1].lower()
-
-video_extensions = {
-    "mp4",
-    "mov",
-    "avi",
-    "mkv",
-    "webm"
-}
-
-try:
-
-    if ext in video_extensions:
-
-        upload_result = cloudinary.uploader.upload_large(
-            file,
-            resource_type="video",
-            folder="live_media",
-            chunk_size=6000000
-        )
-
-    else:
-
-        upload_result = cloudinary.uploader.upload(
-            file,
-            resource_type="image",
-            folder="live_media"
-        )
-
-except Exception as e:
-
-    flash(
-        f"Upload failed: {e}",
-        "danger"
+    default_width = request.form.get(
+        "default_width",
+        420,
+        type=int
     )
 
-    return redirect(request.url)
+    default_height = request.form.get(
+        "default_height",
+        240,
+        type=int
+    )
 
-file_url = upload_result["secure_url"]
+    popup_delay = request.form.get(
+        "popup_delay",
+        0,
+        type=int
+    )
 
-public_id = upload_result.get(
-    "public_id"
-        )
-        # ================= FILE URL =================
+    stream_url = request.form.get("stream_url")
 
-        file_url = upload_result["secure_url"]
+    file = request.files.get("file")
 
-        # =================================================
-        # SAVE DATABASE
-        # =================================================
+    # ================= VALIDATION =================
 
-        media = LiveMedia(
+    if not file:
+        flash("File required", "danger")
+        return redirect(request.url)
 
-    title=title,
-    description=description,
+    if not allowed_file(file.filename):
+        flash("Invalid file type", "danger")
+        return redirect(request.url)
 
-    media_type=media_type,
-    category=category,
+    # ================= CLOUDINARY UPLOAD =================
 
-    file_url=file_url,
-    public_id=public_id,
+    filename = secure_filename(file.filename)
 
-    original_filename=filename,
+    ext = filename.rsplit(".", 1)[1].lower()
 
-    file_size=upload_result.get(
-        "bytes",
-        0
-    ),
+    video_extensions = {
+        "mp4",
+        "mov",
+        "avi",
+        "mkv",
+        "webm"
+    }
 
-    is_live=is_live,
-    force_show=force_show,
+    try:
 
-    floating_mode=floating_mode,
-    auto_play=auto_play,
+        if ext in video_extensions:
 
-    allow_resize=allow_resize,
-    allow_drag=allow_drag,
+            upload_result = cloudinary.uploader.upload_large(
+                file,
+                resource_type="video",
+                folder="live_media",
+                chunk_size=6000000
+            )
 
-    allow_minimize=allow_minimize,
-    allow_fullscreen=allow_fullscreen,
+        else:
 
-    default_width=default_width,
-    default_height=default_height,
+            upload_result = cloudinary.uploader.upload(
+                file,
+                resource_type="image",
+                folder="live_media"
+            )
 
-    popup_delay=popup_delay,
-
-    stream_url=stream_url,
-
-    owner_id=session.get("user_id")
-)
-        db.session.add(media)
-        db.session.commit()
-        cleanup_old_media(200)
-
+    except Exception as e:
 
         flash(
-            "Live media uploaded successfully",
-            "success"
+            f"Upload failed: {e}",
+            "danger"
         )
 
-        return redirect("/live")
+        return redirect(request.url)
 
-    return render_template(
-        "owner/create.html"
-        )
+    file_url = upload_result["secure_url"]
+
+    public_id = upload_result.get(
+        "public_id"
+    )
+
+    # ================= SAVE DATABASE =================
+
+    media = LiveMedia(
+
+        title=title,
+        description=description,
+
+        media_type=media_type,
+        category=category,
+
+        file_url=file_url,
+        public_id=public_id,
+
+        original_filename=filename,
+
+        file_size=upload_result.get(
+            "bytes",
+            0
+        ),
+
+        is_live=is_live,
+        force_show=force_show,
+
+        floating_mode=floating_mode,
+        auto_play=auto_play,
+
+        allow_resize=allow_resize,
+        allow_drag=allow_drag,
+
+        allow_minimize=allow_minimize,
+        allow_fullscreen=allow_fullscreen,
+
+        default_width=default_width,
+        default_height=default_height,
+
+        popup_delay=popup_delay,
+
+        stream_url=stream_url,
+
+        owner_id=session.get("user_id")
+    )
+
+    db.session.add(media)
+    db.session.commit()
+
+    # ================= AUTO CLEANUP =================
+
+    cleanup_old_media(200)
+
+    flash(
+        "Live media uploaded successfully",
+        "success"
+    )
+
+    return redirect("/live")
+
+return render_template(
+    "owner/create.html"
+)
 # =========================================================
 # UPDATE VIEW
 # =========================================================
