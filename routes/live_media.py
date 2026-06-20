@@ -31,6 +31,10 @@ live_media_bp = Blueprint(
 
 ALLOWED_EXTENSIONS = {
     "mp4",
+    "mov",
+    "avi",
+    "mkv",
+    "webm",
     "mp3",
     "jpg",
     "jpeg",
@@ -58,6 +62,51 @@ def admin_required():
         "super_admin",
         "owner"
     ]
+
+def cleanup_old_media(limit=200):
+
+    total = (
+        LiveMedia.query
+        .filter_by(is_deleted=False)
+        .count()
+    )
+
+    if total <= limit:
+        return
+
+    delete_count = total - limit
+
+    old_medias = (
+        LiveMedia.query
+        .filter_by(is_deleted=False)
+        .order_by(
+            LiveMedia.created_at.asc()
+        )
+        .limit(delete_count)
+        .all()
+    )
+
+    for media in old_medias:
+
+        try:
+
+            if media.public_id:
+
+                cloudinary.uploader.destroy(
+                    media.public_id,
+                    resource_type="video"
+                )
+
+        except Exception as e:
+
+            print(
+                "Cloudinary delete error:",
+                e
+            )
+
+        db.session.delete(media)
+
+    db.session.commit()
 
 
 # =========================================================
@@ -151,42 +200,51 @@ def create_media():
         # =================================================
         # CLOUDINARY UPLOAD
         # =================================================
-
         filename = secure_filename(file.filename)
 
-        # ================= EXTENSION =================
+ext = filename.rsplit(".", 1)[1].lower()
 
-        ext = filename.rsplit(".", 1)[1].lower()
+video_extensions = {
+    "mp4",
+    "mov",
+    "avi",
+    "mkv",
+    "webm"
+}
 
-        video_extensions = [
-            "mp4",
-            "mov",
-            "avi",
-            "mkv",
-            "webm"
-        ]
+try:
 
-        # ================= VIDEO UPLOAD =================
+    if ext in video_extensions:
 
-        if ext in video_extensions:
+        upload_result = cloudinary.uploader.upload_large(
+            file,
+            resource_type="video",
+            folder="live_media",
+            chunk_size=6000000
+        )
 
-            upload_result = cloudinary.uploader.upload_large(
-                file,
-                resource_type="video",
-                folder="live_media",
-                chunk_size=6000000
-            )
+    else:
 
-        # ================= IMAGE UPLOAD =================
+        upload_result = cloudinary.uploader.upload(
+            file,
+            resource_type="image",
+            folder="live_media"
+        )
 
-        else:
+except Exception as e:
 
-            upload_result = cloudinary.uploader.upload(
-                file,
-                resource_type="image",
-                folder="live_media"
-            )
+    flash(
+        f"Upload failed: {e}",
+        "danger"
+    )
 
+    return redirect(request.url)
+
+file_url = upload_result["secure_url"]
+
+public_id = upload_result.get(
+    "public_id"
+        )
         # ================= FILE URL =================
 
         file_url = upload_result["secure_url"]
@@ -197,47 +255,47 @@ def create_media():
 
         media = LiveMedia(
 
-            title=title,
-            description=description,
+    title=title,
+    description=description,
 
-            media_type=media_type,
-            category=category,
+    media_type=media_type,
+    category=category,
 
-            file_url=file_url,
+    file_url=file_url,
+    public_id=public_id,
 
-            original_filename=filename,
+    original_filename=filename,
 
-            file_size=upload_result.get("bytes", 0),
+    file_size=upload_result.get(
+        "bytes",
+        0
+    ),
 
-            is_live=is_live,
+    is_live=is_live,
+    force_show=force_show,
 
-            force_show=force_show,
+    floating_mode=floating_mode,
+    auto_play=auto_play,
 
-            floating_mode=floating_mode,
+    allow_resize=allow_resize,
+    allow_drag=allow_drag,
 
-            auto_play=auto_play,
+    allow_minimize=allow_minimize,
+    allow_fullscreen=allow_fullscreen,
 
-            allow_resize=allow_resize,
+    default_width=default_width,
+    default_height=default_height,
 
-            allow_drag=allow_drag,
+    popup_delay=popup_delay,
 
-            allow_minimize=allow_minimize,
+    stream_url=stream_url,
 
-            allow_fullscreen=allow_fullscreen,
-
-            default_width=default_width,
-
-            default_height=default_height,
-
-            popup_delay=popup_delay,
-
-            stream_url=stream_url,
-
-            owner_id=session.get("user_id")
-        )
-
+    owner_id=session.get("user_id")
+)
         db.session.add(media)
         db.session.commit()
+        cleanup_old_media(200)
+
 
         flash(
             "Live media uploaded successfully",
@@ -253,21 +311,32 @@ def create_media():
 # UPDATE VIEW
 # =========================================================
 
-@live_media_bp.route("/view/<int:id>")
+@live_media_bp.route(
+    "/view/<int:id>",
+    methods=["POST"]
+)
 def update_view(id):
 
-    media = LiveMedia.query.get_or_404(id)
+    db.session.execute(
 
-    media.total_views += 1
+        update(LiveMedia)
+
+        .where(
+            LiveMedia.id == id
+        )
+
+        .values(
+            total_views=
+            LiveMedia.total_views + 1
+        )
+
+    )
 
     db.session.commit()
 
     return jsonify({
-        "success": True,
-        "views": media.total_views
+        "success": True
     })
-
-
 # =========================================================
 # DELETE
 # =========================================================
