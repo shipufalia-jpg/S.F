@@ -139,9 +139,9 @@ def dashboard():
 @live_media_bp.route("/create", methods=["GET", "POST"])
 def create_media():
 
-if not admin_required():
-    flash("Unauthorized", "danger")
-    return redirect("/auth/login")
+    if not admin_required():
+        flash("Unauthorized", "danger")
+        return redirect("/auth/login")
 
 if request.method == "POST":
 
@@ -350,18 +350,15 @@ def delete_media(id):
         if media.public_id:
 
             resource_type = (
-                "video"
-                if media.media_type in [
-                    "video",
-                    "live_tv"
-                ]
-                else "image"
-            )
+    "video"
+    if media.media_type in ["video", "live_tv"]
+    else "image"
+)
 
-            cloudinary.uploader.destroy(
-                media.public_id,
-                resource_type=resource_type
-            )
+cloudinary.uploader.destroy(
+    media.public_id,
+    resource_type=resource_type
+)
 
     except Exception as e:
 
