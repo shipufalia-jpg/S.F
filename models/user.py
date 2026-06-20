@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
     email = db.Column(
         db.String(120),
         unique=True,
-        nullable=True
+        nullable=True,
         index=True
     )
 
@@ -166,7 +166,7 @@ class User(UserMixin, db.Model):
     )
 
     verification_expiry = db.Column(
-        db.DateTime
+        db.DateTime,
         index=True
     )
 
@@ -176,14 +176,14 @@ class User(UserMixin, db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=datetime.utcnow,
         index=True
     )
 
     updated_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
-        onupdate=datetime.utcnow
+        onupdate=datetime.utcnow,
         index=True
     )
 
