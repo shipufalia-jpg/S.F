@@ -405,8 +405,13 @@ def wallet():
 
     # ================= PAGINATION =================
 
-    transactions = query.order_by(Transaction.id.desc()).limit(50).all()
-
+    transactions = query.order_by(
+        Transaction.id.desc()
+    ).paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
     # ================= CALCULATIONS =================
 
     wallet_balance = float(user.wallet_balance or 0)
@@ -592,16 +597,26 @@ def my_appointments():
     if not user_id:
         return redirect("/auth/login")
 
-    appointments = Appointment.query.options(
-        joinedload(Appointment.chamber),
-        joinedload(Appointment.doctor)
-    ).filter(
-        Appointment.user_id == user_id
-    ).order_by(
-        Appointment.id.desc()
-    ).all()
+    page = request.args.get(
+    "page",
+    1,
+    type=int
+)
 
-    return render_template(
-        "user/my_appointments.html",
-        appointments=appointments
-    )
+appointments = Appointment.query.options(
+    joinedload(Appointment.chamber),
+    joinedload(Appointment.doctor)
+).filter(
+    Appointment.user_id == user_id
+).order_by(
+    Appointment.id.desc()
+).paginate(
+    page=page,
+    per_page=20,
+    error_out=False
+)
+return render_template(
+    "user/my_appointments.html",
+    appointments=appointments.items,
+    pagination=appointments
+)
