@@ -352,15 +352,18 @@ def delete_media(id):
         if media.public_id:
 
             resource_type = (
-    "video"
-    if media.media_type in ["video", "live_tv"]
-    else "image"
-)
+                "video"
+                if media.media_type in [
+                    "video",
+                    "live_tv"
+                ]
+                else "image"
+            )
 
-cloudinary.uploader.destroy(
-    media.public_id,
-    resource_type=resource_type
-)
+            cloudinary.uploader.destroy(
+                media.public_id,
+                resource_type=resource_type
+            )
 
     except Exception as e:
 
@@ -377,7 +380,6 @@ cloudinary.uploader.destroy(
     )
 
     return redirect("/live")
-
 
 # =========================================================
 # TOGGLE ACTIVE
