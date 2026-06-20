@@ -15,7 +15,7 @@ from models.work_model import Work
 from extensions import db
 from decorators.auth import role_required
 from models.live_media import LiveMedia
-from sqlalchemy import update
+
 from functools import wraps
 from flask import request
 from models.transaction import Transaction
