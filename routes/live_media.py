@@ -145,7 +145,6 @@ def dashboard():
 # =========================================================
 # CREATE MEDIA
 # =========================================================
-
 @live_media_bp.route("/create", methods=["GET", "POST"])
 def create_media():
 
@@ -195,8 +194,6 @@ def create_media():
 
         file = request.files.get("file")
 
-        # ================= VALIDATION =================
-
         if not file:
             flash("File required", "danger")
             return redirect(request.url)
@@ -204,8 +201,6 @@ def create_media():
         if not allowed_file(file.filename):
             flash("Invalid file type", "danger")
             return redirect(request.url)
-
-        # ================= CLOUDINARY UPLOAD =================
 
         filename = secure_filename(file.filename)
 
@@ -253,8 +248,6 @@ def create_media():
             "public_id"
         )
 
-        # ================= SAVE DATABASE =================
-
         media = LiveMedia(
 
             title=title,
@@ -297,8 +290,6 @@ def create_media():
 
         db.session.add(media)
         db.session.commit()
-
-        # ================= AUTO CLEANUP =================
 
         cleanup_old_media(200)
 
