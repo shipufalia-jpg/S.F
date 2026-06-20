@@ -222,9 +222,7 @@ def dashboard():
         session.clear()
         return redirect('/auth/login')
 
-    setting = db.session.query(
-    SiteSetting.running_headline
-).first()
+    setting = SiteSetting.query.first()
 
     # ================= PAGINATION =================
 
@@ -260,16 +258,17 @@ def dashboard():
         )
     )
 
+    
     # ================= USERS =================
 
     profiles = (
         Profile.query
         .options(
-        joinedload(Profile.user)
-    )
+            joinedload(Profile.user)
+        )
         .filter(
             Profile.user_id != user_id
-    )
+        )
         .order_by(Profile.id.desc())
         .paginate(
             page=page,
@@ -588,8 +587,6 @@ def settings():
     return render_template("user/settings.html")
 
 
-from sqlalchemy.orm import joinedload
-
 @user.route("/my-appointments")
 def my_appointments():
 
@@ -622,3 +619,4 @@ def my_appointments():
         appointments=appointments.items,
         pagination=appointments
     )
+
