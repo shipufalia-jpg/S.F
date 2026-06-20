@@ -88,26 +88,32 @@ def cleanup_old_media(limit=200):
 
     for media in old_medias:
 
-        try:
+    try:
 
-            if media.public_id:
+        if media.public_id:
 
-                cloudinary.uploader.destroy(
-                    media.public_id,
-                    resource_type="video"
-                )
-
-        except Exception as e:
-
-            print(
-                "Cloudinary delete error:",
-                e
+            resource_type = (
+                "video"
+                if media.media_type in [
+                    "video",
+                    "live_tv"
+                ]
+                else "image"
             )
 
-        db.session.delete(media)
+            cloudinary.uploader.destroy(
+                media.public_id,
+                resource_type=resource_type
+            )
 
-    db.session.commit()
+    except Exception as e:
 
+        print(
+            "Cloudinary delete error:",
+            e
+        )
+
+    db.session.delete(media)
 
 # =========================================================
 # LIVE MEDIA PANEL
@@ -121,10 +127,10 @@ def dashboard():
         return redirect("/auth/login")
 
     medias = (
-    LiveMedia.query
-    .order_by(LiveMedia.id.desc())
-    .limit(200)
-    .all()
+        LiveMedia.query
+        .order_by(LiveMedia.id.desc())
+        .limit(200)
+        .all()
     )
 
     return render_template(
