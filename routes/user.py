@@ -87,9 +87,28 @@ def user_live_tv():
     # =====================================================
     # AUTO VIEW UPDATE
     # =====================================================
-
-    medias = LiveMedia.query.filter(...).limit(50).all()
-
+    medias = LiveMedia.query.filter(
+        LiveMedia.is_active.is_(True),
+        LiveMedia.is_deleted.is_(False),
+        LiveMedia.is_approved.is_(True),
+        (
+            (LiveMedia.target_role == "all") |
+            (LiveMedia.target_role == role)
+        ),
+        (
+            (LiveMedia.start_time == None) |
+            (LiveMedia.start_time <= now)
+        ),
+        (
+            (LiveMedia.end_time == None) |
+            (LiveMedia.end_time >= now)
+        )
+    ).order_by(
+        LiveMedia.force_show.desc(),
+        LiveMedia.is_featured.desc(),
+        LiveMedia.display_order.asc(),
+        LiveMedia.id.desc()
+    ).limit(50).all()
     # =====================================================
     # FORCE POPUP
     # =====================================================
