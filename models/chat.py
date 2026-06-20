@@ -5,6 +5,17 @@ from sqlalchemy.sql import func
 
 class Chat(db.Model):
     __tablename__ = "chat"
+    __table_args__ = (
+    db.Index(
+        "idx_chat_users",
+        "sender_id",
+        "receiver_id"
+    ),
+    db.Index(
+        "idx_chat_created",
+        "created_at"
+    ),
+ )
 
     # 🆔 PRIMARY KEY
     id = db.Column(db.Integer, primary_key=True)
@@ -64,15 +75,15 @@ class Chat(db.Model):
 
     # 🔁 RELATIONSHIP
     sender = db.relationship(
-        'User',
+        "User",
         foreign_keys=[sender_id],
-        lazy=True
+        lazy="select"
     )
 
     receiver = db.relationship(
-        'User',
+        "User",
         foreign_keys=[receiver_id],
-        lazy=True
+        lazy="select"
     )
 
     # 📌 HELPERS
