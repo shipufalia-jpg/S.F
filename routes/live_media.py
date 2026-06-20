@@ -350,12 +350,35 @@ def delete_media(id):
 
     media = LiveMedia.query.get_or_404(id)
 
-    media.is_deleted = True
+    try:
 
+        if media.public_id:
+
+            resource_type = (
+                "video"
+                if media.media_type in [
+                    "video",
+                    "live_tv"
+                ]
+                else "image"
+            )
+
+            cloudinary.uploader.destroy(
+                media.public_id,
+                resource_type=resource_type
+            )
+
+    except Exception as e:
+
+        print(
+            f"Cloudinary delete error: {e}"
+        )
+
+    db.session.delete(media)
     db.session.commit()
 
     flash(
-        "Media deleted",
+        "Media permanently deleted",
         "success"
     )
 
