@@ -352,6 +352,7 @@ def delete_media(id):
             resource_type = (
                 "video"
                 if media.file_url and "/video/upload/" in media.file_url
+                else "image"
             )
 
             cloudinary.uploader.destroy(
