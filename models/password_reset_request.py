@@ -99,4 +99,4 @@ def __repr__(self):
         f"id={self.id} "
         f"user_id={self.user_id} "
         f"status={self.status}>"
-    )
+)
