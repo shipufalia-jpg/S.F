@@ -67,68 +67,115 @@ def create_work_route():
 # =====================================================
 # ALL WORK LIST
 # =====================================================
-
-
 @work.route("/works")
 def work_list():
 
-page = request.args.get(
-    "page",
-    1,
-    type=int
-)
-
-per_page = 20
-
-works = (
-    Work.query
-    .options(
-        joinedload(Work.user)
+    page = request.args.get(
+        "page",
+        1,
+        type=int
     )
-    .filter(
-        Work.status == "approved",
-        Work.is_deleted.is_(False)
-    )
-    .order_by(
-        Work.created_at.desc()
-    )
-    .paginate(
-        page=page,
-        per_page=per_page,
-        error_out=False
-    )
-)
 
-return render_template(
-    "work_list.html",
-    works=works.items,
-    pagination=works
-)
+    per_page = 20
 
-
-
-@work.route("/work/"int:id" (int:id)")
-def work_details(id):
-
-try:
-
-    work_item = (
+    works = (
         Work.query
         .options(
             joinedload(Work.user)
         )
         .filter(
-            Work.id == id,
             Work.status == "approved",
             Work.is_deleted.is_(False)
         )
-        .first()
+        .order_by(
+            Work.created_at.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
     )
 
-    if not work_item:
+    return render_template(
+        "work_list.html",
+        works=works.items,
+        pagination=works
+    )
+
+
+
+@work.route("/work/<int:id>")
+def work_details(id):
+
+    try:
+
+        work_item = (
+            Work.query
+            .options(
+                joinedload(Work.user)
+            )
+            .filter(
+                Work.id == id,
+                Work.status == "approved",
+                Work.is_deleted.is_(False)
+            )
+            .first()
+        )
+
+        if not work_item:
+
+            flash(
+                "Work not found",
+                "danger"
+            )
+
+            return redirect(
+                url_for("work.work_list")
+            )
+
+        total_applications = (
+            WorkApplication.query
+            .filter_by(
+                work_id=work_item.id
+            )
+            .count()
+        )
+
+        already_applied = False
+
+        current_user_id = session.get(
+            "user_id"
+        )
+
+        if current_user_id:
+
+            already_applied = (
+                WorkApplication.query
+                .filter_by(
+                    user_id=current_user_id,
+                    work_id=work_item.id
+                )
+                .first()
+                is not None
+            )
+
+        return render_template(
+            "work_details.html",
+            work=work_item,
+            owner=work_item.user,
+            total_applications=total_applications,
+            already_applied=already_applied
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"WORK DETAILS ERROR: {str(e)}"
+        )
 
         flash(
-            "Work not found",
+            "Something went wrong",
             "danger"
         )
 
@@ -136,51 +183,3 @@ try:
             url_for("work.work_list")
         )
 
-    total_applications = (
-        WorkApplication.query
-        .filter_by(
-            work_id=work_item.id
-        )
-        .count()
-    )
-
-    already_applied = False
-
-    current_user_id = session.get(
-        "user_id"
-    )
-
-    if current_user_id:
-
-        already_applied = (
-            WorkApplication.query
-            .filter_by(
-                user_id=current_user_id,
-                work_id=work_item.id
-            )
-            .first()
-            is not None
-        )
-
-    return render_template(
-        "work_details.html",
-        work=work_item,
-        owner=work_item.user,
-        total_applications=total_applications,
-        already_applied=already_applied
-    )
-
-except Exception as e:
-
-    current_app.logger.error(
-        f"WORK DETAILS ERROR: {str(e)}"
-    )
-
-    flash(
-        "Something went wrong",
-        "danger"
-    )
-
-    return redirect(
-        url_for("work.work_list")
-)
