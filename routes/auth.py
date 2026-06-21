@@ -145,7 +145,7 @@ def signup():
     referrer = None
 
     if ref_id and str(ref_id).isdigit():
-        referrer = User.query.get(int(ref_id))
+        referrer = db.session.get(User, int(ref_id))
 
     # =====================
     # STATUS
@@ -298,7 +298,7 @@ def logout():
 
         if user_id:
 
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
 
             if user:
                 user.is_online = False
