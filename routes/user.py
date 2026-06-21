@@ -359,7 +359,8 @@ def inbox():
 
             if other_id not in user_cache:
 
-                user_cache[other_id] = User.query.get(
+                user_cache[other_id] = db.session.get(
+                    User,
                     other_id
                 )
 
@@ -418,7 +419,7 @@ def wallet():
         Transaction.id.desc()
     ).paginate(
         page=page,
-        per_page=20,
+        per_page=per_page,
         error_out=False
     )
     # ================= CALCULATIONS =================
