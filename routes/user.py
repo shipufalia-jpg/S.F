@@ -275,19 +275,15 @@ def dashboard():
 # =================================================
 # 💬 CHAT SYSTEM
 # =================================================
-
-from datetime import datetime, timedelta
-from sqlalchemy import or_, and_
-
 @user.route("/chat/<int:user_id>")
 @login_required
 def chat(user_id):
 
-    current_user_id = session["user_id"]
+    current_user_id = session.get("user_id")
 
     page = request.args.get(
         "page",
-        1,
+        default=1,
         type=int
     )
 
@@ -318,11 +314,10 @@ def chat(user_id):
     return render_template(
         "chat.html",
         receiver=receiver,
-        messages=reversed(messages.items),
+        messages=list(reversed(messages.items)),
         pagination=messages,
         current_user_id=current_user_id
     )
-
 @user.route("/inbox")
 @login_required
 def inbox():
