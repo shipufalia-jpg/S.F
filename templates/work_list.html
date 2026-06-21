@@ -261,23 +261,23 @@ body{
     </div>
 
     <!-- FIXED FORM ✔️ -->
-    <div class="actions">
+<div class="actions">
 
-        <form method="POST"
-              action="{{ url_for('application.apply_work', work_id=w.id) }}">
+    <form method="POST"
+          action="{{ url_for('application.apply_work', work_id=w.id) }}">
 
-            <button type="submit" class="btn apply-btn">
-                Apply Now
-            </button>
+        <button type="submit" class="btn apply-btn">
+            Apply Now
+        </button>
 
-        </form>
+    </form>
 
-        <a href="{{ url_for('work.work_details', id=w.id) }}"
-           class="btn details-btn">
-            View Details
-        </a>
+    <a href="{{ url_for('work.work_details', id=w.id) }}"
+       class="btn details-btn">
+        View Details
+    </a>
 
-    </div>
+</div>
 
 </div>
 
@@ -292,7 +292,10 @@ body{
 </div>
 
 {% endif %}
-    {% if pagination.pages > 1 %}
+
+<!-- PAGINATION -->
+{% if pagination.pages > 1 %}
+
 <div class="pagination">
 
     {% if pagination.has_prev %}
@@ -302,14 +305,17 @@ body{
     {% endif %}
 
     {% for p in pagination.iter_pages() %}
+
         {% if p %}
             <a href="{{ url_for('work.work_list', page=p) }}">
                 {{ p }}
             </a>
+        {% else %}
+            <span style="padding:10px;">
+                ...
+            </span>
         {% endif %}
-    {% else %}
-        <span style="padding:10px;">...</span>
-    {% endif %}
+
     {% endfor %}
 
     {% if pagination.has_next %}
@@ -319,6 +325,7 @@ body{
     {% endif %}
 
 </div>
+
 {% endif %}
 
 </div>
