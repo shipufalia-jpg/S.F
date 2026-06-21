@@ -1,4 +1,12 @@
-from flask import Blueprint, request, redirect, session, render_template, url_for
+from flask import (
+    Blueprint,
+    request,
+    redirect,
+    session,
+    render_template,
+    url_for,
+    flash
+)
 from functools import wraps
 
 from models.user import User
@@ -17,7 +25,7 @@ from utils.control import assign_control
 from models.password_reset_request import PasswordResetRequest
 import re
 
-import re
+
 
 
 auth = Blueprint(
@@ -287,69 +295,103 @@ def login():
     return redirect("/user/dashboard")
 
 
-
 @auth.route(
-"/forgot-password",
-methods=["GET", "POST"]
+    "/forgot-password",
+    methods=["GET", "POST"]
 )
 def forgot_password():
 
-if request.method == "GET":
-    return render_template(
-        "forgot_password.html"
-    )
-
-phone = request.form.get(
-    "phone",
-    ""
-).strip()
-
-# ==========================
-# VALIDATION
-# ==========================
-
-if not phone:
-    flash(
-        "Phone number is required.",
-        "danger"
-    )
-    return redirect(
-        url_for(
-            "auth.forgot_password"
+    if request.method == "GET":
+        return render_template(
+            "forgot_password.html"
         )
-    )
 
-if not re.fullmatch(
-    r"\d{10,15}",
-    phone
-):
-    flash(
-        "Invalid phone number.",
-        "danger"
-    )
-    return redirect(
-        url_for(
-            "auth.forgot_password"
+    phone = request.form.get(
+        "phone",
+        ""
+    ).strip()
+
+    # ==========================
+    # VALIDATION
+    # ==========================
+
+    if not phone:
+        flash(
+            "Phone number is required.",
+            "danger"
         )
-    )
+        return redirect(
+            url_for(
+                "auth.forgot_password"
+            )
+        )
 
-try:
+    if not re.fullmatch(
+        r"\d{10,15}",
+        phone
+    ):
+        flash(
+            "Invalid phone number.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "auth.forgot_password"
+            )
+        )
 
-    user = User.query.filter_by(
-        phone=phone
-    ).first()
+    try:
 
-    # ==========================
-    # SECURITY
-    # ==========================
-    # User exists or not
-    # do not reveal
-    # ==========================
+        user = User.query.filter_by(
+            phone=phone
+        ).first()
 
-    if not user:
+        if not user:
+
+            flash(
+                "If the account exists, a reset request has been submitted.",
+                "success"
+            )
+
+            return redirect(
+                url_for(
+                    "auth.login"
+                )
+            )
+
+        pending = (
+            PasswordResetRequest.query
+            .filter_by(
+                user_id=user.id,
+                status="pending"
+            )
+            .first()
+        )
+
+        if pending:
+
+            flash(
+                "A password reset request is already pending.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "auth.login"
+                )
+            )
+
+        req = PasswordResetRequest(
+            user_id=user.id,
+            phone=user.phone,
+            status="pending"
+        )
+
+        db.session.add(req)
+        db.session.commit()
 
         flash(
-            "If the account exists, a reset request has been submitted.",
+            "Password reset request submitted successfully.",
             "success"
         )
 
@@ -359,78 +401,25 @@ try:
             )
         )
 
-    # ==========================
-    # PENDING CHECK
-    # ==========================
+    except Exception as e:
 
-    pending = (
-        PasswordResetRequest.query
-        .filter_by(
-            user_id=user.id,
-            status="pending"
+        db.session.rollback()
+
+        print(
+            "Forgot Password Error:",
+            e
         )
-        .first()
-    )
-
-    if pending:
 
         flash(
-            "A password reset request is already pending.",
-            "warning"
+            "Something went wrong. Please try again.",
+            "danger"
         )
 
         return redirect(
             url_for(
-                "auth.login"
+                "auth.forgot_password"
             )
         )
-
-    # ==========================
-    # CREATE REQUEST
-    # ==========================
-
-    req = PasswordResetRequest(
-        user_id=user.id,
-        phone=user.phone,
-        status="pending"
-    )
-
-    db.session.add(req)
-
-    db.session.commit()
-
-    flash(
-        "Password reset request submitted successfully.",
-        "success"
-    )
-
-    return redirect(
-        url_for(
-            "auth.login"
-        )
-    )
-
-except Exception as e:
-
-    db.session.rollback()
-
-    print(
-        "Forgot Password Error:",
-        e
-    )
-
-    flash(
-        "Something went wrong. Please try again.",
-        "danger"
-    )
-
-    return redirect(
-        url_for(
-            "auth.forgot_password"
-        )
-    )
-
-
 # =====================================================
 # LOGOUT
 # =====================================================
