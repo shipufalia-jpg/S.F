@@ -34,6 +34,14 @@ class Doctor(db.Model):
     # ANALYTICS
     # =========================
     views = db.Column(db.Integer, default=0)
+    # =========================
+    # FEES
+    # =========================
+    consultation_fee = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
 
     # =========================
     # TIMESTAMP
