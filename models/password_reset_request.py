@@ -14,7 +14,7 @@ class PasswordResetRequest(db.Model):
     # Request User
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("user.id"),
         nullable=False,
         index=True
     )
@@ -43,7 +43,7 @@ class PasswordResetRequest(db.Model):
     # Who approved/rejected
     handled_by = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("user.id"),
         nullable=True
     )
 
