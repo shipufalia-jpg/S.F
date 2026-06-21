@@ -49,11 +49,11 @@ def user_live_tv():
 
     role = session.get("role", "user")
     now = datetime.utcnow()
-page = request.args.get(
-    "page",
-    1,
-    type=int
-)
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
 
 medias = (
     LiveMedia.query
