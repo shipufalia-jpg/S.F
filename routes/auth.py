@@ -258,14 +258,14 @@ def login():
 
     if user.must_change_password:
 
-    session.clear()
+        session.clear()
 
-    session["user_id"] = user.id
-    session["role"] = user.role
+        session["user_id"] = user.id
+        session["role"] = user.role
 
-    return redirect(
-        url_for(
-            "auth.change_password"
+        return redirect(
+            url_for(
+                "auth.change_password"
         )
     )
 
