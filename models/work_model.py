@@ -1,126 +1,138 @@
 from datetime import datetime
 from extensions import db
 
-
 class Work(db.Model):
 
-    __tablename__ = "work"
+__tablename__ = "work"
 
-    # ================= PRIMARY KEY =================
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+__table_args__ = (
+    db.Index("idx_work_status", "status"),
+    db.Index("idx_work_created", "created_at"),
+    db.Index("idx_work_user", "user_id"),
+)
 
-    # ================= WORK INFO =================
-    title = db.Column(
-        db.String(200),
-        nullable=False
-    )
+# ================= PRIMARY KEY =================
 
-    description = db.Column(
-        db.Text,
-        nullable=False
-    )
+id = db.Column(
+    db.Integer,
+    primary_key=True
+)
 
-    mobile = db.Column(
+# ================= WORK INFO =================
+
+title = db.Column(
+    db.String(200),
+    nullable=False
+)
+
+description = db.Column(
+    db.Text,
+    nullable=False
+)
+
+mobile = db.Column(
     db.String(15),
     nullable=True
-    )
+)
 
-    # ================= EXTRA WORK INFO =================
-    workers = db.Column(
-        db.String(100)
-    )
+workers = db.Column(
+    db.String(100),
+    nullable=True
+)
 
-    salary = db.Column(
-        db.String(100)
-    )
+salary = db.Column(
+    db.String(100),
+    nullable=True
+)
 
-    date = db.Column(
-        db.String(100)
-    )
+date = db.Column(
+    db.String(100),
+    nullable=True
+)
 
-    time = db.Column(
-        db.String(100)
-    )
+time = db.Column(
+    db.String(100),
+    nullable=True
+)
 
-    phone = db.Column(
-        db.String(20)
-    )
+phone = db.Column(
+    db.String(20),
+    nullable=True
+)
 
-    # ================= USER =================
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('user.id'),
-        nullable=False,
-        index=True
-    )
+# ================= USER =================
 
-    # ================= RELATIONSHIP =================
-    user = db.relationship(
-        'User',
-        back_populates='works'
-    )
+user_id = db.Column(
+    db.Integer,
+    db.ForeignKey("user.id"),
+    nullable=False,
+    index=True
+)
 
-    # ================= STATUS =================
-    status = db.Column(
-        db.String(20),
-        nullable=False,
-        default="pending"
-    )
+user = db.relationship(
+    "User",
+    back_populates="works",
+    lazy="joined"
+)
 
-    is_active = db.Column(
-        db.Boolean,
-        default=False
-    )
+# ================= STATUS =================
 
-    is_deleted = db.Column(
-        db.Boolean,
-        default=False
-    )
+status = db.Column(
+    db.String(20),
+    nullable=False,
+    default="pending",
+    index=True
+)
 
-    edit_count = db.Column(
-        db.Integer,
-        default=0
-    )
+is_active = db.Column(
+    db.Boolean,
+    nullable=False,
+    default=False
+)
 
-    # ================= OWNER ACTION =================
-    approved_by = db.Column(
-        db.Integer,
-        nullable=True
-    )
+is_deleted = db.Column(
+    db.Boolean,
+    nullable=False,
+    default=False
+)
 
-    rejected_by = db.Column(
-        db.Integer,
-        nullable=True
-    )
+edit_count = db.Column(
+    db.Integer,
+    nullable=False,
+    default=0
+)
 
-    edited_by = db.Column(
-        db.Integer,
-        nullable=True
-    )
+# ================= ADMIN ACTION =================
 
-    # ================= TIMESTAMP =================
-    created_at = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=datetime.utcnow
-    )
+approved_by = db.Column(
+    db.Integer
+)
 
-    updated_at = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
-    )
+rejected_by = db.Column(
+    db.Integer
+)
 
-    # ================= STRING =================
-    def __repr__(self):
+edited_by = db.Column(
+    db.Integer
+)
 
-        return (
-            f"<Work "
-            f"{self.id} | "
-            f"{self.title} | "
-            f"{self.status}>"
-    )
+# ================= TIMESTAMP =================
+
+created_at = db.Column(
+    db.DateTime,
+    nullable=False,
+    default=datetime.utcnow,
+    index=True
+)
+
+updated_at = db.Column(
+    db.DateTime,
+    nullable=False,
+    default=datetime.utcnow,
+    onupdate=datetime.utcnow
+)
+
+# ================= STRING =================
+
+def __repr__(self):
+    return f"<Work {self.id} | {self.title} | {self.status}>"
