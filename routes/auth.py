@@ -256,6 +256,19 @@ def login():
     ):
         return "Invalid phone or password"
 
+    if user.must_change_password:
+
+    session.clear()
+
+    session["user_id"] = user.id
+    session["role"] = user.role
+
+    return redirect(
+        url_for(
+            "auth.change_password"
+        )
+    )
+
     try:
 
         user.is_online = True
@@ -422,93 +435,94 @@ def forgot_password():
         )
 
 @auth.route(
-"/change-password",
-methods=["GET", "POST"]
+    "/change-password",
+    methods=["GET", "POST"]
 )
 @login_required
 def change_password():
 
-user = db.session.get(
-    User,
-    session["user_id"]
-)
-
-if not user:
-    session.clear()
-    return redirect(
-        url_for("auth.login")
+    user = db.session.get(
+        User,
+        session["user_id"]
     )
 
-if request.method == "GET":
+    if not user:
+        session.clear()
 
-    return render_template(
-        "change_password.html"
-    )
-
-password = (
-    request.form.get(
-        "password",
-        ""
-    ).strip()
-)
-
-error = validate_password(
-    password
-)
-
-if error:
-
-    flash(
-        error,
-        "danger"
-    )
-
-    return redirect(
-        url_for(
-            "auth.change_password"
+        return redirect(
+            url_for("auth.login")
         )
-    )
 
-try:
+    if request.method == "GET":
 
-    user.password = generate_password_hash(
-        password,
-        method="pbkdf2:sha256",
-        salt_length=16
-    )
-
-    user.must_change_password = False
-
-    db.session.commit()
-
-    flash(
-        "Password changed successfully.",
-        "success"
-    )
-
-    return redirect(
-        "/user/dashboard"
-    )
-
-except Exception as e:
-
-    db.session.rollback()
-
-    print(
-        "Change Password Error:",
-        e
-    )
-
-    flash(
-        "Something went wrong.",
-        "danger"
-    )
-
-    return redirect(
-        url_for(
-            "auth.change_password"
+        return render_template(
+            "change_password.html"
         )
+
+    password = (
+        request.form.get(
+            "password",
+            ""
+        ).strip()
     )
+
+    error = validate_password(
+        password
+    )
+
+    if error:
+
+        flash(
+            error,
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "auth.change_password"
+            )
+        )
+
+    try:
+
+        user.password = generate_password_hash(
+            password,
+            method="pbkdf2:sha256",
+            salt_length=16
+        )
+
+        user.must_change_password = False
+
+        db.session.commit()
+
+        flash(
+            "Password changed successfully.",
+            "success"
+        )
+
+        return redirect(
+            "/user/dashboard"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Change Password Error:",
+            e
+        )
+
+        flash(
+            "Something went wrong.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "auth.change_password"
+            )
+        )
 # =====================================================
 # LOGOUT
 # =====================================================
