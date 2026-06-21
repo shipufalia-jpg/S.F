@@ -1,138 +1,142 @@
 from datetime import datetime
 from extensions import db
 
+
 class Work(db.Model):
 
-__tablename__ = "work"
+    __tablename__ = "work"
 
-__table_args__ = (
-    db.Index("idx_work_status", "status"),
-    db.Index("idx_work_created", "created_at"),
-    db.Index("idx_work_user", "user_id"),
-)
+    __table_args__ = (
+        db.Index("idx_work_status", "status"),
+        db.Index("idx_work_created", "created_at"),
+        db.Index("idx_work_user", "user_id"),
+    )
 
-# ================= PRIMARY KEY =================
+    # ================= PRIMARY KEY =================
 
-id = db.Column(
-    db.Integer,
-    primary_key=True
-)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-# ================= WORK INFO =================
+    # ================= WORK INFO =================
 
-title = db.Column(
-    db.String(200),
-    nullable=False
-)
+    title = db.Column(
+        db.String(200),
+        nullable=False
+    )
 
-description = db.Column(
-    db.Text,
-    nullable=False
-)
+    description = db.Column(
+        db.Text,
+        nullable=False
+    )
 
-mobile = db.Column(
-    db.String(15),
-    nullable=True
-)
+    mobile = db.Column(
+        db.String(15),
+        nullable=True
+    )
 
-workers = db.Column(
-    db.String(100),
-    nullable=True
-)
+    workers = db.Column(
+        db.String(100),
+        nullable=True
+    )
 
-salary = db.Column(
-    db.String(100),
-    nullable=True
-)
+    salary = db.Column(
+        db.String(100),
+        nullable=True
+    )
 
-date = db.Column(
-    db.String(100),
-    nullable=True
-)
+    date = db.Column(
+        db.String(100),
+        nullable=True
+    )
 
-time = db.Column(
-    db.String(100),
-    nullable=True
-)
+    time = db.Column(
+        db.String(100),
+        nullable=True
+    )
 
-phone = db.Column(
-    db.String(20),
-    nullable=True
-)
+    phone = db.Column(
+        db.String(20),
+        nullable=True
+    )
 
-# ================= USER =================
+    # ================= USER =================
 
-user_id = db.Column(
-    db.Integer,
-    db.ForeignKey("user.id"),
-    nullable=False,
-    index=True
-)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False,
+        index=True
+    )
 
-user = db.relationship(
-    "User",
-    back_populates="works",
-    lazy="joined"
-)
+    user = db.relationship(
+        "User",
+        back_populates="works",
+        lazy="joined"
+    )
 
-# ================= STATUS =================
+    # ================= STATUS =================
 
-status = db.Column(
-    db.String(20),
-    nullable=False,
-    default="pending",
-    index=True
-)
+    status = db.Column(
+        db.String(20),
+        nullable=False,
+        default="pending",
+        index=True
+    )
 
-is_active = db.Column(
-    db.Boolean,
-    nullable=False,
-    default=False
-)
+    is_active = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False
+    )
 
-is_deleted = db.Column(
-    db.Boolean,
-    nullable=False,
-    default=False
-)
+    is_deleted = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False
+    )
 
-edit_count = db.Column(
-    db.Integer,
-    nullable=False,
-    default=0
-)
+    edit_count = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
 
-# ================= ADMIN ACTION =================
+    # ================= ADMIN ACTION =================
 
-approved_by = db.Column(
-    db.Integer
-)
+    approved_by = db.Column(
+        db.Integer,
+        nullable=True
+    )
 
-rejected_by = db.Column(
-    db.Integer
-)
+    rejected_by = db.Column(
+        db.Integer,
+        nullable=True
+    )
 
-edited_by = db.Column(
-    db.Integer
-)
+    edited_by = db.Column(
+        db.Integer,
+        nullable=True
+    )
 
-# ================= TIMESTAMP =================
+    # ================= TIMESTAMP =================
 
-created_at = db.Column(
-    db.DateTime,
-    nullable=False,
-    default=datetime.utcnow,
-    index=True
-)
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        index=True
+    )
 
-updated_at = db.Column(
-    db.DateTime,
-    nullable=False,
-    default=datetime.utcnow,
-    onupdate=datetime.utcnow
-)
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
 
-# ================= STRING =================
+    # ================= STRING =================
 
-def __repr__(self):
-    return f"<Work {self.id} | {self.title} | {self.status}>"
+    def __repr__(self):
+        return f"<Work {self.id} | {self.title} | {self.status}>"
