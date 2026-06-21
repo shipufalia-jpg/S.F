@@ -307,6 +307,9 @@ body{
                 {{ p }}
             </a>
         {% endif %}
+    {% else %}
+        <span style="padding:10px;">...</span>
+    {% endif %}
     {% endfor %}
 
     {% if pagination.has_next %}
