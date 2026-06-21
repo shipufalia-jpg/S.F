@@ -202,6 +202,12 @@ class User(UserMixin, db.Model):
         back_populates="user",
         lazy="dynamic"
     )
+
+    password_reset_requests = db.relationship(
+        "PasswordResetRequest",
+        back_populates="user",
+        lazy=True
+    )
     # ======================
     # STRING
     # ======================
