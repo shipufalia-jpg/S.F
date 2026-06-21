@@ -11,6 +11,14 @@ from models.profile import Profile
 from models.chat import Chat
 import json
 from utils.decorators import admin_required
+from datetime import datetime
+from werkzeug.security import (
+    generate_password_hash
+)
+
+from utils.password_reset import (
+    can_manage_reset_request
+)
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -278,3 +286,199 @@ def chambers_control():
     return render_template(
         "admin/chambers_control.html"
     )
+
+
+
+
+@admin.route("/password-resets")
+@role_required(
+    "admin",
+    "owner",
+    "super_admin"
+)
+def password_resets():
+
+    try:
+
+        requests = (
+            get_password_reset_requests()
+        )
+
+        return render_template(
+            "password_resets.html",
+            requests=requests
+        )
+
+    except Exception as e:
+
+        print(
+            "Password Reset List Error:",
+            e
+        )
+
+        flash(
+            "Unable to load requests.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "admin.dashboard"
+            )
+        )
+
+
+
+
+@admin.route(
+    "/password-resets/<int:req_id>",
+    methods=["GET", "POST"]
+)
+@role_required(
+    "admin",
+    "owner",
+    "super_admin"
+)
+def reset_user_password(req_id):
+
+    req = db.session.get(
+        PasswordResetRequest,
+        req_id
+    )
+
+    if not req:
+
+        flash(
+            "Request not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "admin.password_resets"
+            )
+        )
+
+    if not can_manage_reset_request(req):
+
+        flash(
+            "Permission denied.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "admin.password_resets"
+            )
+        )
+
+    if req.status != "pending":
+
+        flash(
+            "Request already processed.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "admin.password_resets"
+            )
+        )
+
+    user = db.session.get(
+        User,
+        req.user_id
+    )
+
+    if not user:
+
+        flash(
+            "User not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "admin.password_resets"
+            )
+        )
+
+    if request.method == "GET":
+
+        return render_template(
+            "admin_reset_password.html",
+            req=req,
+            user=user
+        )
+
+    new_password = (
+        request.form.get(
+            "password",
+            ""
+        ).strip()
+    )
+
+    error = validate_password(
+        new_password
+    )
+
+    if error:
+
+        flash(
+            error,
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "admin.reset_user_password",
+                req_id=req.id
+            )
+        )
+
+    try:
+
+        user.password = generate_password_hash(
+            new_password,
+            method="pbkdf2:sha256",
+            salt_length=16
+        )
+
+        user.must_change_password = True
+
+        req.status = "completed"
+
+        req.handled_by = (
+            session["user_id"]
+        )
+
+        req.processed_at = (
+            datetime.utcnow()
+        )
+
+        db.session.commit()
+
+        flash(
+            "Temporary password set successfully.",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Reset Password Error:",
+            e
+        )
+
+        flash(
+            "Something went wrong.",
+            "danger"
+        )
+
+    return redirect(
+        url_for(
+            "admin.password_resets"
+        )
+)
