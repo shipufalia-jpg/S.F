@@ -263,15 +263,6 @@ body{
     <!-- FIXED FORM ✔️ -->
 <div class="actions">
 
-    <form method="POST"
-          action="{{ url_for('application.apply_work', work_id=w.id) }}">
-
-        <button type="submit" class="btn apply-btn">
-            Apply Now
-        </button>
-
-    </form>
-
     <a href="{{ url_for('work.work_details', id=w.id) }}"
        class="btn details-btn">
         View Details
