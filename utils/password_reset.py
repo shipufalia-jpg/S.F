@@ -22,17 +22,12 @@ def get_password_reset_requests():
         type=int
     )
 
-    per_page = 20
-
     query = (
         PasswordResetRequest.query
         .join(
             User,
             User.id ==
             PasswordResetRequest.user_id
-        )
-        .filter(
-            PasswordResetRequest.status == "pending"
         )
         .order_by(
             PasswordResetRequest.created_at.desc()
@@ -42,11 +37,32 @@ def get_password_reset_requests():
     if role != "owner":
 
         query = query.filter(
-            User.controller_id == user_id
+            User.controller_id == user_id,
+            PasswordResetRequest.status == "pending"
         )
 
     return query.paginate(
         page=page,
-        per_page=per_page,
+        per_page=20,
         error_out=False
+    )
+
+
+def can_manage_reset_request(req):
+
+    role = (
+        session.get("role", "")
+        .lower()
+        .strip()
+    )
+
+    user_id = session.get("user_id")
+
+    if role == "owner":
+        return True
+
+    return (
+        req.user
+        and
+        req.user.controller_id == user_id
     )
