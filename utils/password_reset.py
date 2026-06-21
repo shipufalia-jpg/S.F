@@ -31,6 +31,9 @@ def get_password_reset_requests():
             User.id ==
             PasswordResetRequest.user_id
         )
+        .filter(
+            PasswordResetRequest.status == "pending"
+        )
         .order_by(
             PasswordResetRequest.created_at.desc()
         )
@@ -39,8 +42,7 @@ def get_password_reset_requests():
     if role != "owner":
 
         query = query.filter(
-            User.controller_id == user_id,
-            PasswordResetRequest.status == "pending"
+            User.controller_id == user_id
         )
 
     return query.paginate(
