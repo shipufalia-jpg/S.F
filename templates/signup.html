@@ -181,30 +181,35 @@ button:hover{
             id="password"
             name="password"
             placeholder="🔒 Password"
+            minlength="8"
             required
         >
 
-    <div class="password-rules">
+     <div class="password-rules">
 
-        <div id="rule-length">❌ Minimum 8 characters</div>
+    <strong>Password Requirements:</strong>
 
-        <div id="rule-upper">
-            ❌ At least 1 Uppercase Letter (A-Z)
-        </div>
-
-        <div id="rule-lower">
-            ❌ At least 1 Lowercase Letter (a-z)
-        </div>
-
-        <div id="rule-number">
-            ❌ At least 1 Number (0-9)
-        </div>
-
-        <div id="rule-symbol">
-            ❌ At least 1 Symbol (@ # & !)
-        </div>
-
+    <div id="rule-length">
+        ❌ Minimum 8 characters
     </div>
+
+    <div id="rule-upper">
+        ❌ At least 1 Uppercase Letter (A-Z)
+    </div>
+
+    <div id="rule-lower">
+        ❌ At least 1 Lowercase Letter (a-z)
+    </div>
+
+    <div id="rule-number">
+        ❌ At least 1 Number (0-9)
+    </div>
+
+    <div id="rule-symbol">
+        ❌ At least 1 Symbol (@ # & !)
+    </div>
+
+     </div>
 
         </div>
         <!-- Role -->
@@ -272,7 +277,7 @@ passwordInput.addEventListener(
 
         updateRule(
             "rule-symbol",
-            /[@#&!$%^*()_+=\-{}\[\]:;,.?/]/.test(password)
+            /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?&]/.test(password)
         );
     }
 );
