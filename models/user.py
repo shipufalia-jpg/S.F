@@ -203,6 +203,11 @@ class User(UserMixin, db.Model):
         lazy="dynamic"
     )
 
+    must_change_password = db.Column(
+        db.Boolean,
+        default=False
+    )
+
     password_reset_requests = db.relationship(
         "PasswordResetRequest",
         back_populates="user",
