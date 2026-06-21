@@ -3,12 +3,20 @@ from functools import wraps
 
 from models.user import User
 from models.profile import Profile
+
 from extensions import db
+
 from datetime import datetime
 
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 
-from utils.control import assign_control   # ✅ single import only
+from utils.control import assign_control
+
+import re
+
 
 auth = Blueprint(
     "auth",
@@ -17,184 +25,290 @@ auth = Blueprint(
 )
 
 
-# =========================================================
+# =====================================================
+# PASSWORD VALIDATION
+# =====================================================
+
+def validate_password(password):
+
+    if len(password) < 8:
+        return "Password must be at least 8 characters."
+
+    if not re.search(r"[A-Z]", password):
+        return "Password must contain at least one uppercase letter."
+
+    if not re.search(r"[a-z]", password):
+        return "Password must contain at least one lowercase letter."
+
+    if not re.search(r"\d", password):
+        return "Password must contain at least one number."
+
+    if not re.search(r"[@#&!$%^*()_+=\-{}\[\]:;,.?/]", password):
+        return "Password must contain at least one special symbol."
+
+    return None
+
+
+# =====================================================
 # LOGIN REQUIRED
-# =========================================================
+# =====================================================
+
 def login_required(f):
+
     @wraps(f)
     def wrapper(*args, **kwargs):
 
-        if 'user_id' not in session:
-            return redirect(url_for('auth.login'))
+        if "user_id" not in session:
+            return redirect(url_for("auth.login"))
 
         return f(*args, **kwargs)
 
     return wrapper
 
 
-# =========================================================
+# =====================================================
 # SIGNUP
-# =========================================================
-@auth.route('/signup', methods=['GET', 'POST'])
+# =====================================================
+
+@auth.route("/signup", methods=["GET", "POST"])
 def signup():
 
-    # ================= SHOW PAGE =================
-    if request.method == 'GET':
-        return render_template('signup.html')
+    if request.method == "GET":
+        return render_template("signup.html")
 
-    # ================= FORM DATA =================
-    name = request.form.get('name')
-    phone = request.form.get('phone')
-    password_raw = request.form.get('password')
-    role = request.form.get('role')
+    # =====================
+    # FORM DATA
+    # =====================
 
-    # ================= ROLE VALIDATION =================
-    if role not in ["user", "admin", "super_admin"]:
+    name = request.form.get("name", "").strip()
+    phone = request.form.get("phone", "").strip()
+    password_raw = request.form.get("password", "")
+    role = request.form.get("role", "user").strip().lower()
+
+    # =====================
+    # ROLE VALIDATION
+    # =====================
+
+    allowed_roles = ["user", "admin", "super_admin"]
+
+    if role not in allowed_roles:
         role = "user"
 
-    # ================= VALIDATION =================
-    if not all([name, phone, password_raw]):
+    # =====================
+    # REQUIRED CHECK
+    # =====================
+
+    if not name or not phone or not password_raw:
         return "All fields required"
 
-    # ================= DUPLICATE CHECK =================
+    # =====================
+    # PHONE VALIDATION
+    # =====================
+
+    if not re.fullmatch(r"\d{10,15}", phone):
+        return "Invalid phone number"
+
+    # =====================
+    # PASSWORD VALIDATION
+    # =====================
+
+    password_error = validate_password(password_raw)
+
+    if password_error:
+        return password_error
+
+    # =====================
+    # DUPLICATE PHONE
+    # =====================
+
     existing = User.query.filter_by(phone=phone).first()
+
     if existing:
         return "Phone already registered"
 
-    # ================= PASSWORD HASH =================
-    password = generate_password_hash(password_raw)
+    # =====================
+    # HASH PASSWORD
+    # =====================
 
-    # ================= REFERRAL =================
-    ref_id = request.form.get('ref_id')
-    referrer = User.query.get(ref_id) if ref_id else None
+    password_hash = generate_password_hash(
+        password_raw,
+        method="pbkdf2:sha256",
+        salt_length=16
+    )
 
-    # ================= STATUS LOGIC =================
-    # user → auto active
-    # admin / super_admin → owner approval
-    if role == "user":
-        status = "active"
-    else:
-        status = "pending"
+    # =====================
+    # REFERRAL
+    # =====================
 
-    # ================= CREATE USER =================
+    ref_id = request.form.get("ref_id")
+
+    referrer = None
+
+    if ref_id and str(ref_id).isdigit():
+        referrer = User.query.get(int(ref_id))
+
+    # =====================
+    # STATUS
+    # =====================
+
+    status = "active" if role == "user" else "pending"
+
+    # =====================
+    # CREATE USER
+    # =====================
+
     user = User(
         name=name,
         phone=phone,
-        password=password,
+        password=password_hash,
         role=role,
         status=status
     )
 
-    # ================= SAVE REFERRER =================
-
     if referrer:
         user.referred_by = referrer.id
 
-    # ================= CONTROL SYSTEM =================
-    # referral hierarchy logic
+    # =====================
+    # CONTROL SYSTEM
+    # =====================
+
     assign_control(user, referrer)
 
-    # ================= OWNER DEFAULT CONTROL =================
-    # যদি referral না থাকে → owner control
+    # =====================
+    # OWNER CONTROL
+    # =====================
+
     if not referrer:
-        owner = User.query.filter_by(role="owner").first()
+
+        owner = User.query.filter_by(
+            role="owner"
+        ).first()
+
         if owner:
             user.controller_id = owner.id
 
     try:
-        # ================= SAVE USER =================
+
         db.session.add(user)
         db.session.flush()
 
-        # ================= PROFILE CREATE =================
         profile = Profile(
             user_id=user.id,
             name=name
         )
 
         db.session.add(profile)
+
         db.session.commit()
 
     except Exception as e:
-        db.session.rollback()
-        return f"Signup error: {e}"
 
-    # ================= RESPONSE =================
+        db.session.rollback()
+
+        return f"Signup error: {str(e)}"
+
     if role == "user":
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     return "Signup submitted. Waiting for owner approval."
 
 
-# =========================================================
+# =====================================================
 # LOGIN
-# =========================================================
-@auth.route('/login', methods=['GET', 'POST'])
+# =====================================================
+
+@auth.route("/login", methods=["GET", "POST"])
 def login():
 
-    if request.method == 'GET':
-        return render_template('login.html')
+    if request.method == "GET":
+        return render_template("login.html")
 
-    phone = request.form.get('phone')
-    password = request.form.get('password')
+    phone = request.form.get("phone", "").strip()
+    password = request.form.get("password", "")
 
-    # ================= VALIDATION =================
     if not phone or not password:
         return "All fields required"
 
-    # ================= FIND USER =================
     user = User.query.filter_by(phone=phone).first()
 
     if not user:
-        return "User not found"
+        return "Invalid phone or password"
 
-    # ================= STATUS CHECK =================
     if user.status == "blocked":
         return "Account blocked"
 
     if user.status != "active":
         return "Account not approved yet"
 
-    # ================= PASSWORD CHECK =================
-    if not check_password_hash(user.password, password):
-        return "Wrong password"
+    if not check_password_hash(
+        user.password,
+        password
+    ):
+        return "Invalid phone or password"
 
-    # ================= UPDATE ONLINE STATUS =================
-    user.is_online = True
-    user.last_seen = datetime.utcnow()
+    try:
 
-    db.session.commit()
+        user.is_online = True
+        user.last_seen = datetime.utcnow()
 
-    # ================= SESSION =================
+        db.session.commit()
+
+    except Exception:
+        db.session.rollback()
+
+    # =====================
+    # SESSION SECURITY
+    # =====================
+
     session.clear()
+
+    session.permanent = True
 
     session["user_id"] = user.id
     session["role"] = (user.role or "").lower().strip()
 
     role = session["role"]
 
-    # ================= ROLE REDIRECT =================
+    # =====================
+    # ROLE REDIRECT
+    # =====================
 
-    # OWNER
     if role == "owner":
         return redirect("/owner/dashboard")
 
-    # SUPER ADMIN
     elif role == "super_admin":
         return redirect("/super/")
 
-    # ADMIN
     elif role == "admin":
         return redirect("/admin/")
 
-    # USER
     return redirect("/user/dashboard")
-    
-# =========================================================
+
+
+# =====================================================
 # LOGOUT
-# =========================================================
-@auth.route('/logout')
+# =====================================================
+
+@auth.route("/logout")
 def logout():
+
+    try:
+
+        user_id = session.get("user_id")
+
+        if user_id:
+
+            user = User.query.get(user_id)
+
+            if user:
+                user.is_online = False
+                user.last_seen = datetime.utcnow()
+
+                db.session.commit()
+
+    except Exception:
+        db.session.rollback()
+
     session.clear()
-    return redirect(url_for('auth.login'))
-    
+
+    return redirect(url_for("auth.login"))
