@@ -43,8 +43,7 @@ class Config:
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024
 
     # ================= SESSION =================
-    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
-
-    # optional
+    SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_PERMANENT = False
