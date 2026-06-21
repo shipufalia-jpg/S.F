@@ -166,7 +166,7 @@ def dashboard():
     user_id = session.get("user_id")
 
     if not user_id:
-        return redirect('/auth/login')
+        return redirect("/auth/login")
 
     current_user_data = db.session.get(
         User,
@@ -175,80 +175,88 @@ def dashboard():
 
     if not current_user_data:
         session.clear()
-        return redirect('/auth/login')
+        return redirect("/auth/login")
 
     setting = SiteSetting.query.first()
 
     # ================= PAGINATION =================
+
     work_page = request.args.get(
-    "work_page",
-    1,
-    type=int
-)
+        "work_page",
+        1,
+        type=int
+    )
 
-profile_page = request.args.get(
-    "profile_page",
-    1,
-    type=int
-)
+    profile_page = request.args.get(
+        "profile_page",
+        1,
+        type=int
+    )
 
-# ================= WORKS =================
+    # ================= WORKS =================
 
-works = (
-    db.session.query(
-        Work,
-        User
+    works = (
+        db.session.query(
+            Work,
+            User
+        )
+        .join(
+            User,
+            Work.user_id == User.id
+        )
+        .filter(
+            Work.status == "approved"
+        )
+        .order_by(
+            Work.created_at.desc()
+        )
+        .paginate(
+            page=work_page,
+            per_page=20,
+            error_out=False
+        )
     )
-    .join(
-        User,
-        Work.user_id == User.id
-    )
-    .filter(
-        Work.status == "approved"
-    )
-    .order_by(
-        Work.created_at.desc()
-    )
-    .paginate(
-        page=work_page,
-        per_page=20,
-        error_out=False
-    )
-)
 
-# ================= PROFILES =================
+    # ================= PROFILES =================
 
-profiles = (
-    Profile.query
-    .options(
-        joinedload(Profile.user)
+    profiles = (
+        Profile.query
+        .options(
+            joinedload(Profile.user)
+        )
+        .filter(
+            Profile.user_id != user_id
+        )
+        .order_by(
+            Profile.id.desc()
+        )
+        .paginate(
+            page=profile_page,
+            per_page=20,
+            error_out=False
+        )
     )
-    .filter(
-        Profile.user_id != user_id
-    )
-    .order_by(
-        Profile.id.desc()
-    )
-    .paginate(
-        page=profile_page,
-        per_page=20,
-        error_out=False
-    )
-)
+
     # ================= STATS =================
 
-    total_works = db.session.query(
-        db.func.count(Work.id)
-    ).filter(
-        Work.status == "approved"
-    ).scalar()
+    total_works = (
+        db.session.query(
+            func.count(Work.id)
+        )
+        .filter(
+            Work.status == "approved"
+        )
+        .scalar()
+    )
 
-    total_profiles = db.session.query(
-        db.func.count(Profile.id)
-    ).scalar()
+    total_profiles = (
+        db.session.query(
+            func.count(Profile.id)
+        )
+        .scalar()
+    )
 
     return render_template(
-
         "user/dashboard.html",
 
         current_user=current_user_data,
@@ -264,10 +272,6 @@ profiles = (
 
         setting=setting
     )
-
-# =================================================
-# 👤 PUBLIC PROFILE VIEW
-# =================================================
 # =================================================
 # 💬 CHAT SYSTEM
 # =================================================
