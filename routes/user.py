@@ -182,13 +182,28 @@ def dashboard():
 
     # ================= PAGINATION =================
 
-    page = request.args.get(
-        "page",
+    work_page = request.args.get(
+        "work_page",
         1,
         type=int
     )
 
-    per_page = 20
+    profile_page = request.args.get(
+        "profile_page",
+        1,
+        type=int
+    )
+    works.paginate(
+        page=work_page,
+        per_page=20,
+        error_out=False
+    )
+
+    profiles.paginate(
+        page=profile_page,
+        per_page=20,
+        error_out=False
+    )
 
     # ================= WORKS =================
 
