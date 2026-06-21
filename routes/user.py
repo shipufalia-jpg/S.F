@@ -49,47 +49,47 @@ def user_live_tv():
 
     role = session.get("role", "user")
     now = datetime.utcnow()
+
     page = request.args.get(
         "page",
         1,
         type=int
     )
 
-medias = (
-    LiveMedia.query
-    .filter(
-        LiveMedia.is_active.is_(True),
-        LiveMedia.is_deleted.is_(False),
-        LiveMedia.is_approved.is_(True),
+    medias = (
+        LiveMedia.query
+        .filter(
+            LiveMedia.is_active.is_(True),
+            LiveMedia.is_deleted.is_(False),
+            LiveMedia.is_approved.is_(True),
 
-        (
-            (LiveMedia.target_role == "all") |
-            (LiveMedia.target_role == role)
-        ),
+            (
+                (LiveMedia.target_role == "all") |
+                (LiveMedia.target_role == role)
+            ),
 
-        (
-            LiveMedia.start_time.is_(None) |
-            (LiveMedia.start_time <= now)
-        ),
+            (
+                LiveMedia.start_time.is_(None) |
+                (LiveMedia.start_time <= now)
+            ),
 
-        (
-            LiveMedia.end_time.is_(None) |
-            (LiveMedia.end_time >= now)
+            (
+                LiveMedia.end_time.is_(None) |
+                (LiveMedia.end_time >= now)
+            )
+        )
+        .order_by(
+            LiveMedia.force_show.desc(),
+            LiveMedia.is_featured.desc(),
+            LiveMedia.display_order.asc(),
+            LiveMedia.id.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=20,
+            error_out=False
         )
     )
-    .order_by(
-        LiveMedia.force_show.desc(),
-        LiveMedia.is_featured.desc(),
-        LiveMedia.display_order.asc(),
-        LiveMedia.id.desc()
-    )
-    .paginate(
-        page=page,
-        per_page=20,
-        error_out=False
-    )
-)
-    
 
     live_media = None
     floating_player = None
@@ -100,7 +100,7 @@ medias = (
     audios = []
     popups = []
 
-    for media in medias:
+    for media in medias.items:
 
         if (
             live_media is None
@@ -137,7 +137,8 @@ medias = (
     return render_template(
         "user/live_tv.html",
 
-        medias=medias,
+        medias=medias.items,
+        pagination=medias,
 
         live_media=live_media,
         floating_player=floating_player,
@@ -148,15 +149,13 @@ medias = (
         audios=audios,
         popups=popups,
 
-        total_medias=len(medias),
+        total_medias=medias.total,
         total_banners=len(banners),
         total_videos=len(videos),
         total_audios=len(audios),
 
         now=now
     )
-
-
 # =================================================
 # 👤 USER DASHBOARD
 # =================================================
@@ -181,72 +180,61 @@ def dashboard():
     setting = SiteSetting.query.first()
 
     # ================= PAGINATION =================
-
     work_page = request.args.get(
-        "work_page",
-        1,
-        type=int
-    )
+    "work_page",
+    1,
+    type=int
+)
 
-    profile_page = request.args.get(
-        "profile_page",
-        1,
-        type=int
+profile_page = request.args.get(
+    "profile_page",
+    1,
+    type=int
+)
+
+# ================= WORKS =================
+
+works = (
+    db.session.query(
+        Work,
+        User
     )
-    works.paginate(
+    .join(
+        User,
+        Work.user_id == User.id
+    )
+    .filter(
+        Work.status == "approved"
+    )
+    .order_by(
+        Work.created_at.desc()
+    )
+    .paginate(
         page=work_page,
         per_page=20,
         error_out=False
     )
+)
 
-    profiles.paginate(
+# ================= PROFILES =================
+
+profiles = (
+    Profile.query
+    .options(
+        joinedload(Profile.user)
+    )
+    .filter(
+        Profile.user_id != user_id
+    )
+    .order_by(
+        Profile.id.desc()
+    )
+    .paginate(
         page=profile_page,
         per_page=20,
         error_out=False
     )
-
-    # ================= WORKS =================
-
-    works = (
-        db.session.query(
-            Work,
-            User
-        )
-        .join(
-            User,
-            Work.user_id == User.id
-        )
-        .filter(
-            Work.status == "approved"
-        )
-        .order_by(
-            Work.created_at.desc()
-        )
-        .paginate(
-            page=page,
-            per_page=per_page,
-            error_out=False
-        )
-    )
-
-    
-    # ================= USERS =================
-
-    profiles = (
-        Profile.query
-        .options(
-            joinedload(Profile.user)
-        )
-        .filter(
-            Profile.user_id != user_id
-        )
-        .order_by(Profile.id.desc())
-        .paginate(
-            page=page,
-            per_page=20,
-            error_out=False
-        )
-    )
+)
     # ================= STATS =================
 
     total_works = db.session.query(
