@@ -420,6 +420,95 @@ def forgot_password():
                 "auth.forgot_password"
             )
         )
+
+@auth.route(
+"/change-password",
+methods=["GET", "POST"]
+)
+@login_required
+def change_password():
+
+user = db.session.get(
+    User,
+    session["user_id"]
+)
+
+if not user:
+    session.clear()
+    return redirect(
+        url_for("auth.login")
+    )
+
+if request.method == "GET":
+
+    return render_template(
+        "change_password.html"
+    )
+
+password = (
+    request.form.get(
+        "password",
+        ""
+    ).strip()
+)
+
+error = validate_password(
+    password
+)
+
+if error:
+
+    flash(
+        error,
+        "danger"
+    )
+
+    return redirect(
+        url_for(
+            "auth.change_password"
+        )
+    )
+
+try:
+
+    user.password = generate_password_hash(
+        password,
+        method="pbkdf2:sha256",
+        salt_length=16
+    )
+
+    user.must_change_password = False
+
+    db.session.commit()
+
+    flash(
+        "Password changed successfully.",
+        "success"
+    )
+
+    return redirect(
+        "/user/dashboard"
+    )
+
+except Exception as e:
+
+    db.session.rollback()
+
+    print(
+        "Change Password Error:",
+        e
+    )
+
+    flash(
+        "Something went wrong.",
+        "danger"
+    )
+
+    return redirect(
+        url_for(
+            "auth.change_password"
+        )
+    )
 # =====================================================
 # LOGOUT
 # =====================================================
