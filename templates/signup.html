@@ -124,6 +124,27 @@ button:hover{
     margin-top:10px;
     color:#555;
 }
+.password-rules{
+    margin-top:8px;
+    text-align:left;
+    font-size:12px;
+    color:#666;
+    line-height:1.8;
+}
+
+.password-rules div{
+    transition:.3s;
+}
+
+.valid{
+    color:#16a34a;
+    font-weight:600;
+}
+
+.invalid{
+    color:#dc2626;
+}
+    
 
 </style>
 </head>
@@ -153,13 +174,39 @@ button:hover{
             required
         >
 
-        <input 
-            type="password" 
-            name="password" 
+        <div class="password-group">
+
+        <input
+            type="password"
+            id="password"
+            name="password"
             placeholder="🔒 Password"
             required
         >
 
+    <div class="password-rules">
+
+        <div id="rule-length">❌ Minimum 8 characters</div>
+
+        <div id="rule-upper">
+            ❌ At least 1 Uppercase Letter (A-Z)
+        </div>
+
+        <div id="rule-lower">
+            ❌ At least 1 Lowercase Letter (a-z)
+        </div>
+
+        <div id="rule-number">
+            ❌ At least 1 Number (0-9)
+        </div>
+
+        <div id="rule-symbol">
+            ❌ At least 1 Symbol (@ # & !)
+        </div>
+
+    </div>
+
+        </div>
         <!-- Role -->
         <div class="role-title">Select Account Type</div>
 
@@ -191,6 +238,69 @@ button:hover{
     </div>
 
 </div>
+
+    <script>
+
+const passwordInput =
+    document.getElementById("password");
+
+passwordInput.addEventListener(
+    "input",
+    function(){
+
+        const password = this.value;
+
+        updateRule(
+            "rule-length",
+            password.length >= 8
+        );
+
+        updateRule(
+            "rule-upper",
+            /[A-Z]/.test(password)
+        );
+
+        updateRule(
+            "rule-lower",
+            /[a-z]/.test(password)
+        );
+
+        updateRule(
+            "rule-number",
+            /\d/.test(password)
+        );
+
+        updateRule(
+            "rule-symbol",
+            /[@#&!$%^*()_+=\-{}\[\]:;,.?/]/.test(password)
+        );
+    }
+);
+
+function updateRule(id, valid){
+
+    const el =
+        document.getElementById(id);
+
+    if(valid){
+
+        el.classList.add("valid");
+        el.classList.remove("invalid");
+
+        el.innerHTML =
+            el.innerHTML.replace("❌","✅");
+
+    }else{
+
+        el.classList.add("invalid");
+        el.classList.remove("valid");
+
+        el.innerHTML =
+            el.innerHTML.replace("✅","❌");
+    }
+}
+
+    </script>
 
 </body>
 </html>
