@@ -49,38 +49,47 @@ def user_live_tv():
 
     role = session.get("role", "user")
     now = datetime.utcnow()
+page = request.args.get(
+    "page",
+    1,
+    type=int
+)
 
-    medias = (
-        LiveMedia.query
-        .filter(
-            LiveMedia.is_active.is_(True),
-            LiveMedia.is_deleted.is_(False),
-            LiveMedia.is_approved.is_(True),
+medias = (
+    LiveMedia.query
+    .filter(
+        LiveMedia.is_active.is_(True),
+        LiveMedia.is_deleted.is_(False),
+        LiveMedia.is_approved.is_(True),
 
-            (
-                (LiveMedia.target_role == "all") |
-                (LiveMedia.target_role == role)
-            ),
+        (
+            (LiveMedia.target_role == "all") |
+            (LiveMedia.target_role == role)
+        ),
 
-            (
-                LiveMedia.start_time.is_(None) |
-                (LiveMedia.start_time <= now)
-            ),
+        (
+            LiveMedia.start_time.is_(None) |
+            (LiveMedia.start_time <= now)
+        ),
 
-            (
-                LiveMedia.end_time.is_(None) |
-                (LiveMedia.end_time >= now)
-            )
+        (
+            LiveMedia.end_time.is_(None) |
+            (LiveMedia.end_time >= now)
         )
-        .order_by(
-            LiveMedia.force_show.desc(),
-            LiveMedia.is_featured.desc(),
-            LiveMedia.display_order.asc(),
-            LiveMedia.id.desc()
-        )
-        .limit(200)
-        .all()
     )
+    .order_by(
+        LiveMedia.force_show.desc(),
+        LiveMedia.is_featured.desc(),
+        LiveMedia.display_order.asc(),
+        LiveMedia.id.desc()
+    )
+    .paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
+)
+    
 
     live_media = None
     floating_player = None
