@@ -27,9 +27,9 @@ import tempfile
 # ================= CLOUDINARY =================
 
 cloudinary.config(
-    cloud_name="dion15zps",
-    api_key="136556886157942",
-    api_secret="MBvKiT2EFaCzm9BGB9K1itfmiDU",
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
     secure=True
 )
 
