@@ -28,136 +28,150 @@ def apply_form(work_id):
 # 🟢 APPLY SUBMIT (POST)
 # =================================================
 @application_bp.route(
-    '/apply_work/"int:work_id" (int:work_id)',
-    methods=['POST']
+    "/apply_work/<int:work_id>",
+    methods=["POST"]
 )
 def apply_work(work_id):
 
     user_id = session.get("user_id")
 
     if not user_id:
+        flash(
+            "Please login first",
+            "danger"
+        )
+        return redirect(
+            "/auth/login"
+        )
 
-    flash(
-        "Please login first",
-        "danger"
+    work = Work.query.get_or_404(
+        work_id
     )
 
-    return redirect(
-        '/auth/login'
-    )
-
-work = Work.query.get_or_404(
-    work_id
-)
-
-existing = WorkApplication.query.filter_by(
-    work_id=work_id,
-    user_id=user_id
-).first()
-
-if existing:
-
-    flash(
-        "Already applied for this work",
-        "info"
-    )
-
-    return redirect(
-        '/works'
-    )
-
-try:
-
-    application = WorkApplication(
-
+    existing = WorkApplication.query.filter_by(
         work_id=work_id,
+        user_id=user_id
+    ).first()
 
-        user_id=user_id,
+    if existing:
+        flash(
+            "Already applied for this work",
+            "info"
+        )
+        return redirect(
+            "/works"
+        )
 
-        name=session.get(
-            "name"
-        ) or "Unknown",
+    try:
 
-        phone=session.get(
-            "phone"
-        ) or "N/A",
-
-        address=session.get(
-            "address"
-        ) or "N/A",
-
-        message=request.form.get(
-            "message",
-            ""
-        ),
-
-        experience_years=int(
+        experience_years = int(
             request.form.get(
-                "experience_years"
+                "experience_years",
+                0
             ) or 0
-        ),
+        )
 
-        expected_salary=int(
+        expected_salary = int(
             request.form.get(
-                "expected_salary"
+                "expected_salary",
+                0
             ) or 0
-        ),
+        )
 
-        applied_ip=request.remote_addr
-    )
+        application = WorkApplication(
 
-    db.session.add(
-        application
-    )
+            work_id=work_id,
 
-    db.session.commit()
+            user_id=user_id,
 
-    send_notification(
+            name=session.get(
+                "name"
+            ) or "Unknown",
 
-        user_id=user_id,
+            phone=session.get(
+                "phone"
+            ) or "N/A",
 
-        title="Application Submitted",
+            address=session.get(
+                "address"
+            ) or "N/A",
 
-        message=(
-            "Your application "
-            "submitted successfully."
-        ),
+            message=request.form.get(
+                "message",
+                ""
+            ).strip(),
 
-        type="application",
+            experience_years=experience_years,
 
-        icon="send",
+            expected_salary=expected_salary,
 
-        priority="normal",
+            applied_ip=request.remote_addr
+        )
 
-        action_url="/my_applications"
-    )
+        db.session.add(
+            application
+        )
 
-    flash(
-        "Application submitted successfully",
-        "success"
-    )
+        db.session.commit()
 
-except Exception as e:
+        send_notification(
 
-    db.session.rollback()
+            user_id=user_id,
 
-    flash(
-        "Application submit failed",
-        "danger"
-    )
+            title="Application Submitted",
 
-    print(
-        "APPLICATION ERROR:",
-        str(e)
-    )
+            message=(
+                "Your application has been "
+                "submitted successfully."
+            ),
 
-    return redirect(
-        f"/apply_work/{work_id}"
-    )
+            type="application",
 
-return redirect(
-    "/works"
-)
+            icon="send",
+
+            priority="normal",
+
+            action_url="/my_applications"
+        )
+
+        flash(
+            "Application submitted successfully",
+            "success"
+        )
+
+        return redirect(
+            "/works"
+        )
+
+    except ValueError:
+
+        db.session.rollback()
+
+        flash(
+            "Invalid salary or experience value",
+            "danger"
+        )
+
+        return redirect(
+            f"/apply_work/{work_id}"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"APPLICATION ERROR: {e}"
+        )
+
+        flash(
+            "Application submit failed",
+            "danger"
+        )
+
+        return redirect(
+            f"/apply_work/{work_id}"
+        )
 # =================================================
 # 📋 OWNER - ALL APPLICATIONS
 # =================================================
