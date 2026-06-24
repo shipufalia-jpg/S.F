@@ -150,6 +150,10 @@ body{
     {% set status = (a.status or 'applied') | lower %}
 
     <div class="card">
+        <div class="label">Applied Date</div>
+        <div class="value">
+        {{ a.created_at.strftime('%d %b %Y, %I:%M %p') if a.created_at else 'N/A' }}
+        </div>
 
         <div class="title">💼 Work ID: {{ a.work_id }}</div>
 
@@ -157,7 +161,9 @@ body{
         <div class="value">{{ a.message or "No message" }}</div>
 
         <div class="label">Expected Salary</div>
-        <div class="value">{{ a.expected_salary or "Not given" }}</div>
+        <div class="value">
+         ₹ {{ "{:,}".format(a.expected_salary) if a.expected_salary else "Not given" }}
+        </div>
 
         <div class="label">Applied IP</div>
         <div class="value">{{ a.applied_ip or "N/A" }}</div>
