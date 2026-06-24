@@ -40,8 +40,7 @@ profile_bp = Blueprint(
 )
 
 
-# ================= IMAGE RESIZE =================
-
+# ================= IMAGE SETTINGS =================
 
 ALLOWED_EXTENSIONS = {
     "jpg",
@@ -50,8 +49,39 @@ ALLOWED_EXTENSIONS = {
     "webp"
 }
 
-MAX_FILE_SIZE = 5 * 1024 * 1024   # 5 MB
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
+
+# ================= IMAGE RESIZE =================
+
+def resize_image(
+    input_path,
+    output_path,
+    size
+):
+
+    with Image.open(
+        input_path
+    ) as img:
+
+        img = img.convert(
+            "RGB"
+        )
+
+        img.thumbnail(
+            size,
+            Image.LANCZOS
+        )
+
+        img.save(
+            output_path,
+            format="JPEG",
+            quality=85,
+            optimize=True
+        )
+
+
+# ================= CLOUDINARY UPLOAD =================
 
 def save_image_cloudinary(
     file,
@@ -120,33 +150,13 @@ def save_image_cloudinary(
             suffix=".jpg"
         )
 
-        def resize_image(
-            input_path,
-            output_path,
+        resize_image(
+            temp_input.name,
+            temp_output.name,
             size
-        ):
-
-        with Image.open(
-            input_path
-        ) as img:
-
-        img = img.convert(
-            "RGB"
         )
 
-        img.thumbnail(
-            size,
-            Image.LANCZOS
-        )
-
-        img.save(
-            output_path,
-            format="JPEG",
-            quality=85,
-            optimize=True
-        )
-
-        # ================= CLOUDINARY UPLOAD =================
+        # ================= CLOUDINARY =================
 
         result = cloudinary.uploader.upload(
             temp_output.name,
@@ -156,9 +166,7 @@ def save_image_cloudinary(
             resource_type="image"
         )
 
-        return result.get(
-            "secure_url"
-        )
+        return result["secure_url"]
 
     except Exception as e:
 
@@ -180,7 +188,7 @@ def save_image_cloudinary(
                 os.remove(
                     temp_input.name
                 )
-            except:
+            except Exception:
                 pass
 
         if (
@@ -193,7 +201,7 @@ def save_image_cloudinary(
                 os.remove(
                     temp_output.name
                 )
-            except:
+            except Exception:
                 pass
 
 # ================= MY PROFILE =================
