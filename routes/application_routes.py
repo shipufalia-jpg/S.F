@@ -426,28 +426,42 @@ def admin_applications():
         flash("Please login first", "danger")
         return redirect('/auth/login')
 
-    status = request.args.get("status")
+    status = request.args.get(
+    "status"
+)
 
-    query = WorkApplication.query.join(User).filter(
-        User.controller_id == admin_id,
-        WorkApplication.is_deleted == False
+page = request.args.get(
+    "page",
+    1,
+    type=int
+)
+
+query = WorkApplication.query.join(
+    User
+).filter(
+    User.controller_id == admin_id,
+    WorkApplication.is_deleted == False
+)
+
+if status and status != "all":
+
+    query = query.filter(
+        WorkApplication.status == status
     )
 
-    # STATUS FILTER
-    if status and status != "all":
-        query = query.filter(
-            WorkApplication.status == status
-        )
+applications = query.order_by(
+    WorkApplication.id.desc()
+).paginate(
+    page=page,
+    per_page=20,
+    error_out=False
+)
 
-    applications = query.order_by(
-        WorkApplication.id.desc()
-    ).all()
-
-    return render_template(
-        "owner_applications.html",
-        applications=applications,
-        status=status
-    )
+return render_template(
+    "owner_applications.html",
+    applications=applications,
+    status=status
+)
 
 
 # =================================================
