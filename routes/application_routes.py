@@ -178,9 +178,7 @@ def apply_work(work_id):
 @application_bp.route('/owner/applications')
 def owner_applications():
 
-    owner_id = session.get(
-        "user_id"
-    )
+    owner_id = session.get("user_id")
 
     if not owner_id:
 
@@ -197,6 +195,12 @@ def owner_applications():
         "status"
     )
 
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
     query = WorkApplication.query.filter(
         WorkApplication.is_deleted == False
     )
@@ -209,7 +213,11 @@ def owner_applications():
 
     applications = query.order_by(
         WorkApplication.id.desc()
-    ).all()
+    ).paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
 
     return render_template(
         "owner_applications.html",
@@ -325,7 +333,7 @@ def reject_application(id):
     "/owner/application/delete/<int:id>",
     methods=["POST"]
 )
-
+def delete_application(id):
     app = WorkApplication.query.get_or_404(
         id
     )
