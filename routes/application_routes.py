@@ -325,16 +325,6 @@ def reject_application(id):
     "/owner/application/delete/<int:id>",
     methods=["POST"]
 )
-def delete_application(id):
-    send_notification(
-        user_id=app.user_id,
-        title="Application Cancelled",
-        message="Your application has been cancelled.",
-        type="cancel",
-        icon="trash",
-        priority="normal",
-        action_url="/my_applications"
-    )
 
     app = WorkApplication.query.get_or_404(
         id
@@ -349,6 +339,15 @@ def delete_application(id):
     )
 
     db.session.commit()
+    send_notification(
+        user_id=app.user_id,
+        title="Application Cancelled",
+        message="Your application has been cancelled.",
+        type="cancel",
+        icon="trash",
+        priority="normal",
+        action_url="/my_applications"
+    )
 
     flash(
         "Deleted",
