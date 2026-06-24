@@ -248,6 +248,10 @@ Confirm Appointment
         <form method="POST"
               action="{{ url_for('chamber_panel.confirm_submit', id=a.id) }}">
 
+            <input type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}">
+
             <div class="row">
 
                 <div class="col-md-6 mb-3">
