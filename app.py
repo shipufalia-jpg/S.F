@@ -1,4 +1,4 @@
-print("🔥 APP.PY LOADED")
+
 from gevent import monkey
 monkey.patch_all()
 import shutil
@@ -43,7 +43,7 @@ from routes.chamber.auth import chamber
 from routes.doctor import doctor_bp
 
 import cloudinary
-print("🔥 CHAMBER PANEL IMPORTED")
+
 
 # ================= LOGIN MANAGER =================
 login_manager = LoginManager()
@@ -57,175 +57,7 @@ def fix_db(app):
 
     with app.app_context():
 
-        try:
-            # ================= WORKS TABLE =================
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS mobile VARCHAR(15);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending';
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT FALSE;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS workers VARCHAR(100);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS salary VARCHAR(100);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS date VARCHAR(100);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS time VARCHAR(100);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE works
-                ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
-            """))
-
-            # ================= BOOKINGS TABLE =================
-            db.session.execute(text("""
-                ALTER TABLE bookings
-                ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE bookings
-                ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
-            """))
-
-            # ================= USER TABLE =================
-            db.session.execute(text("""
-                ALTER TABLE "user"
-                ADD COLUMN IF NOT EXISTS wallet_balance FLOAT DEFAULT 0;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE "user"
-                ADD COLUMN IF NOT EXISTS total_earnings FLOAT DEFAULT 0;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE "user"
-                ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE "user"
-                ADD COLUMN IF NOT EXISTS verification_expiry TIMESTAMP;
-            """))
-
-            # ================= WITHDRAW REQUESTS =================
-            db.session.execute(text("""
-                ALTER TABLE withdraw_requests
-                ADD COLUMN IF NOT EXISTS payment_status VARCHAR(20) DEFAULT 'unpaid';
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE withdraw_requests
-                ADD COLUMN IF NOT EXISTS paid_by INTEGER;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE withdraw_requests
-                ADD COLUMN IF NOT EXISTS paid_at TIMESTAMP;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE withdraw_requests
-                ADD COLUMN IF NOT EXISTS utr_number VARCHAR(100);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE withdraw_requests
-                ADD COLUMN IF NOT EXISTS admin_note TEXT;
-            """))
-
-            # ================= DOCTORS TABLE =================
-            db.session.execute(text("""
-                ALTER TABLE doctors
-                ADD COLUMN IF NOT EXISTS chamber_id INTEGER;
-            """))
-
-            db.session.execute(text("""
-                DO $$
-                BEGIN
-                    IF NOT EXISTS (
-                        SELECT 1
-                        FROM information_schema.table_constraints
-                        WHERE constraint_name = 'fk_doctors_chamber'
-                    ) THEN
-                        ALTER TABLE doctors
-                        ADD CONSTRAINT fk_doctors_chamber
-                        FOREIGN KEY (chamber_id)
-                        REFERENCES chambers(id);
-                    END IF;
-                END $$;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS user_id INTEGER;
-            """))
-    
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS appointment_date DATE;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS appointment_time VARCHAR(20);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS notes TEXT;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS confirmed_date DATE;
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS confirmed_time VARCHAR(20);
-            """))
-
-            db.session.execute(text("""
-                ALTER TABLE appointments
-                ADD COLUMN IF NOT EXISTS confirmation_note TEXT;
-            """))
-            # ================= COMMIT =================
-            db.session.commit()
-            print("✅ DB FIXED SUCCESSFULLY")
-
-        except Exception as e:
-            db.session.rollback()
-            print("❌ DB FIX ERROR:", e)
-        
+            
 # ================= APP FACTORY =================
 def create_app():
 
@@ -290,7 +122,7 @@ def create_app():
     app.register_blueprint(
     doctor_bp
     )   
-    print("🔥 CHAMBER PANEL REGISTERED")
+    
 
     return app
 
