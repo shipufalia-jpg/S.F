@@ -42,15 +42,6 @@ profile_bp = Blueprint(
 
 # ================= IMAGE RESIZE =================
 
-from PIL import Image
-
-import os
-import uuid
-import tempfile
-
-import cloudinary
-import cloudinary.uploader
-
 
 ALLOWED_EXTENSIONS = {
     "jpg",
@@ -129,10 +120,30 @@ def save_image_cloudinary(
             suffix=".jpg"
         )
 
-        resize_image(
-            temp_input.name,
-            temp_output.name,
+        def resize_image(
+            input_path,
+            output_path,
             size
+        ):
+
+        with Image.open(
+            input_path
+        ) as img:
+
+        img = img.convert(
+            "RGB"
+        )
+
+        img.thumbnail(
+            size,
+            Image.LANCZOS
+        )
+
+        img.save(
+            output_path,
+            format="JPEG",
+            quality=85,
+            optimize=True
         )
 
         # ================= CLOUDINARY UPLOAD =================
