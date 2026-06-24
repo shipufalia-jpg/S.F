@@ -118,6 +118,9 @@ textarea.form-control{
             method="POST"
             action="{{ url_for('chamber_panel.save_appointment') }}"
         >
+            <input type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}">
 
             <input
                 type="hidden"
