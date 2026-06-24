@@ -7,10 +7,8 @@ from flask import (
 )
 
 from models.profile import Profile
-from models import Profile, Work
 from models.user import User
 from models.work_model import Work
-
 from extensions import db
 
 from PIL import Image
@@ -343,7 +341,7 @@ def profile_setup():
 
         db.session.add(profile)
 
-        db.session.commit()
+        
 
     # ================= GET REQUEST =================
 
