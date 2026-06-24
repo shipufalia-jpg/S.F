@@ -326,6 +326,15 @@ def reject_application(id):
     methods=["POST"]
 )
 def delete_application(id):
+    send_notification(
+        user_id=app.user_id,
+        title="Application Cancelled",
+        message="Your application has been cancelled.",
+        type="cancel",
+        icon="trash",
+        priority="normal",
+        action_url="/my_applications"
+    )
 
     app = WorkApplication.query.get_or_404(
         id
@@ -355,16 +364,7 @@ def delete_application(id):
 # =================================================
 @application_bp.route('/owner/application/<int:id>')
 def application_details(id):
-    send_notification(
-        user_id=app.user_id,
-        title="Application Cancelled",
-        message="Your application has been cancelled.",
-        type="cancel",
-        icon="trash",
-        priority="normal",
-        action_url="/my_applications"
-    )
-
+    
     app = WorkApplication.query.get_or_404(id)
 
     return render_template(
