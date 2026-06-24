@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, flash, session, render_template
-from datetime import datetime
+from datetime import datetime, UTC
 from models.user import User
 from models.work_model import Work
 from models.work_application import WorkApplication
@@ -94,12 +94,34 @@ def apply_work(work_id):
 @application_bp.route('/owner/applications')
 def owner_applications():
 
-    status = request.args.get("status")
+    owner_id = session.get(
+        "user_id"
+    )
 
-    query = WorkApplication.query
+    if not owner_id:
+
+        flash(
+            "Please login first",
+            "danger"
+        )
+
+        return redirect(
+            "/auth/login"
+        )
+
+    status = request.args.get(
+        "status"
+    )
+
+    query = WorkApplication.query.filter(
+        WorkApplication.is_deleted == False
+    )
 
     if status and status != "all":
-        query = query.filter_by(status=status)
+
+        query = query.filter(
+            WorkApplication.status == status
+        )
 
     applications = query.order_by(
         WorkApplication.id.desc()
@@ -110,83 +132,107 @@ def owner_applications():
         applications=applications,
         status=status
     )
-
 # =================================================
 # 👁 MARK SEEN
 # =================================================
-@application_bp.route('/owner/application/seen/<int:id>')
+@application_bp.route(
+    "/owner/application/seen/<int:id>",
+    methods=["POST"]
+)
 def mark_seen(id):
 
-    app = WorkApplication.query.get_or_404(id)
+    app = WorkApplication.query.get_or_404(
+        id
+    )
+
     app.is_seen = True
+
     db.session.commit()
 
-    return redirect('/owner/applications')
+    return redirect(
+        "/owner/applications"
+    )
 
 
 # =================================================
 # ✔ APPROVE
 # =================================================
-@application_bp.route('/owner/application/approve/<int:id>')
+@application_bp.route(
+    "/owner/application/approve/<int:id>",
+    methods=["POST"]
+)
 def approve_application(id):
 
-    app = WorkApplication.query.get_or_404(id)
+    app = WorkApplication.query.get_or_404(
+        id
+    )
 
     app.status = "approved"
+
     app.is_shortlisted = True
-    app.updated_at = datetime.utcnow()
+
+    app.updated_at = datetime.now(
+        UTC
+    )
 
     db.session.commit()
 
     send_notification(
-
         user_id=app.user_id,
-
         title="Application Approved",
-
         message="Your work application has been approved.",
-
         type="approve",
-
         icon="check-circle",
-
         priority="high"
     )
 
-    flash("Approved", "success")
+    flash(
+        "Approved",
+        "success"
+    )
 
-    return redirect('/owner/applications')
+    return redirect(
+        "/owner/applications"
+    )
 
 # =================================================
 # ❌ REJECT
 # =================================================
-@application_bp.route('/owner/application/reject/<int:id>')
+@application_bp.route(
+    "/owner/application/reject/<int:id>",
+    methods=["POST"]
+)
 def reject_application(id):
 
-    app = WorkApplication.query.get_or_404(id)
-
-    app.status = "rejected"
-    app.updated_at = datetime.utcnow()
-
-    db.session.commit()
-    send_notification(
-
-    user_id=app.user_id,
-
-    title="Application Rejected",
-
-    message="Sorry, your application was rejected.",
-
-    type="reject",
-
-    icon="x-circle",
-
-    priority="high"
+    app = WorkApplication.query.get_or_404(
+        id
     )
 
-    flash("Rejected", "warning")
-    return redirect('/owner/applications')
+    app.status = "rejected"
 
+    app.updated_at = datetime.now(
+        UTC
+    )
+
+    db.session.commit()
+
+    send_notification(
+        user_id=app.user_id,
+        title="Application Rejected",
+        message="Sorry, your application was rejected.",
+        type="reject",
+        icon="x-circle",
+        priority="high"
+    )
+
+    flash(
+        "Rejected",
+        "warning"
+    )
+
+    return redirect(
+        "/owner/applications"
+    )
 
 # =================================================
 # 🗑 DELETE (SOFT)
@@ -209,15 +255,34 @@ def delete_application(id):
 # =================================================
 # 📄 DETAILS
 # =================================================
-@application_bp.route('/owner/application/<int:id>')
-def application_details(id):
-
-    app = WorkApplication.query.get_or_404(id)
-
-    return render_template(
-        "application_details.html",
-        app=app
+@application_bp.route(
+    "/owner/application/delete/<int:id>",
+    methods=["POST"]
 )
+def delete_application(id):
+
+    app = WorkApplication.query.get_or_404(
+        id
+    )
+
+    app.is_deleted = True
+
+    app.status = "cancelled"
+
+    app.updated_at = datetime.now(
+        UTC
+    )
+
+    db.session.commit()
+
+    flash(
+        "Deleted",
+        "danger"
+    )
+
+    return redirect(
+        "/owner/applications"
+    )
 
 @application_bp.route('/my_applications')
 def my_applications():
