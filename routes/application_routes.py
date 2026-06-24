@@ -307,24 +307,6 @@ def reject_application(id):
 # =================================================
 # 🗑 DELETE (SOFT)
 # =================================================
-@application_bp.route('/owner/application/delete/<int:id>')
-def delete_application(id):
-
-    app = WorkApplication.query.get_or_404(id)
-
-    app.is_deleted = True
-    app.status = "cancelled"
-
-    db.session.commit()
-    
-
-    flash("Deleted", "danger")
-    return redirect('/owner/applications')
-
-
-# =================================================
-# 📄 DETAILS
-# =================================================
 @application_bp.route(
     "/owner/application/delete/<int:id>",
     methods=["POST"]
@@ -352,6 +334,19 @@ def delete_application(id):
 
     return redirect(
         "/owner/applications"
+    )
+
+# =================================================
+# 📄 DETAILS
+# =================================================
+@application_bp.route('/owner/application/<int:id>')
+def application_details(id):
+
+    app = WorkApplication.query.get_or_404(id)
+
+    return render_template(
+        "application_details.html",
+        app=app
     )
 
 @application_bp.route('/my_applications')
