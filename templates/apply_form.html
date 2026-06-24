@@ -86,6 +86,9 @@ button:hover{
     <div class="sub">{{ work.title if work.title else "Fill all details carefully" }}</div>
 
     <form method="POST" action="{{ url_for('application.apply_work', work_id=work.id) }}">
+        <input type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}">
 
         <!-- USER INFO -->
         <input type="text" name="name" placeholder="Your Name" required>
