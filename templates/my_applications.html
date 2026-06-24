@@ -103,9 +103,9 @@ body{
 
 <div class="container">
 
-{% if apps and apps|length > 0 %}
+{% if apps.items %}
 
-    {% for a in apps %}
+    {% for a in apps.items %}
 
     {% set status = (a.status or 'applied') | lower %}
 
