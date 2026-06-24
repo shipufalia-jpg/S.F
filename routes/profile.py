@@ -10,7 +10,7 @@ from models.profile import Profile
 from models.user import User
 from models.work_model import Work
 from extensions import db
-
+from flask import abort
 from PIL import Image
 
 import cloudinary
@@ -251,9 +251,13 @@ def view_profile(user_id):
 
     # ================= USER =================
 
-    viewed_user = User.query.get_or_404(
+    viewed_user = db.session.get(
+        User,
         user_id
     )
+
+    if not viewed_user:
+        abort(404)
 
     # ================= PROFILE =================
 
