@@ -28,12 +28,12 @@ def apply_form(work_id):
 # 🟢 APPLY SUBMIT (POST)
 # =================================================
 @application_bp.route(
-'/apply_work/"int:work_id" (int:work_id)',
-methods=['POST']
+    '/apply_work/"int:work_id" (int:work_id)',
+    methods=['POST']
 )
 def apply_work(work_id):
 
-user_id = session.get("user_id")
+    user_id = session.get("user_id")
 
 if not user_id:
 
@@ -121,7 +121,7 @@ try:
         message=(
             "Your application "
             "submitted successfully."
-        ),
+    ),
 
         type="application",
 
