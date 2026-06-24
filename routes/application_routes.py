@@ -422,9 +422,10 @@ def admin_applications():
 # =================================================
 # ✔ ADMIN APPROVE
 # =================================================
-@application_bp.route('/admin/application/approve/<int:id>')
-def admin_approve_application(id):
-
+@application_bp.route(
+    "/admin/application/approve/<int:id>",
+    methods=["POST"]
+)
     admin_id = session.get("user_id")
 
     app = WorkApplication.query.join(User).filter(
@@ -434,7 +435,7 @@ def admin_approve_application(id):
 
     app.status = "approved"
     app.is_shortlisted = True
-    app.updated_at = datetime.utcnow()
+    from datetime import datetime, UTC
 
     db.session.commit()
 
@@ -446,9 +447,10 @@ def admin_approve_application(id):
 # =================================================
 # ❌ ADMIN REJECT
 # =================================================
-@application_bp.route('/admin/application/reject/<int:id>')
-def admin_reject_application(id):
-
+@application_bp.route(
+    "/admin/application/reject/<int:id>",
+    methods=["POST"]
+)
     admin_id = session.get("user_id")
 
     app = WorkApplication.query.join(User).filter(
@@ -457,7 +459,7 @@ def admin_reject_application(id):
     ).first_or_404()
 
     app.status = "rejected"
-    app.updated_at = datetime.utcnow()
+    from datetime import datetime, UTC
 
     db.session.commit()
 
@@ -469,9 +471,10 @@ def admin_reject_application(id):
 # =================================================
 # 🗑 ADMIN DELETE
 # =================================================
-@application_bp.route('/admin/application/delete/<int:id>')
-def admin_delete_application(id):
-
+@application_bp.route(
+    "/admin/application/delete/<int:id>",
+    methods=["POST"]
+)
     admin_id = session.get("user_id")
 
     app = WorkApplication.query.join(User).filter(
