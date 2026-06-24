@@ -19,6 +19,9 @@
             <h3>Edit User</h3>
 
             <form method="POST">
+                <input type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}">
 
                 <input type="text"
                        name="name"
