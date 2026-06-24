@@ -42,27 +42,25 @@ profile_bp = Blueprint(
 
 # ================= IMAGE RESIZE =================
 
-def resize_image(
-    input_path,
-    output_path,
-    size
-):
+from PIL import Image
 
-    img = Image.open(input_path)
+import os
+import uuid
+import tempfile
 
-    img = img.convert("RGB")
-
-    img.thumbnail(size)
-
-    img.save(
-        output_path,
-        format="JPEG",
-        quality=85,
-        optimize=True
-    )
+import cloudinary
+import cloudinary.uploader
 
 
-# ================= SAVE IMAGE =================
+ALLOWED_EXTENSIONS = {
+    "jpg",
+    "jpeg",
+    "png",
+    "webp"
+}
+
+MAX_FILE_SIZE = 5 * 1024 * 1024   # 5 MB
+
 
 def save_image_cloudinary(
     file,
@@ -70,49 +68,122 @@ def save_image_cloudinary(
     size=(800, 800)
 ):
 
+    # ================= FILE CHECK =================
+
+    if not file:
+        raise ValueError(
+            "No file provided"
+        )
+
+    if "." not in file.filename:
+        raise ValueError(
+            "Invalid filename"
+        )
+
     ext = file.filename.rsplit(
-        '.',
+        ".",
         1
     )[1].lower()
 
-    temp_input = tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=f".{ext}"
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError(
+            "Only JPG, JPEG, PNG, WEBP allowed"
+        )
+
+    # ================= SIZE CHECK =================
+
+    file.seek(
+        0,
+        os.SEEK_END
     )
 
-    file.save(temp_input.name)
+    file_size = file.tell()
 
-    temp_output = tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".jpg"
-    )
+    file.seek(0)
 
-    resize_image(
-        temp_input.name,
-        temp_output.name,
-        size
-    )
+    if file_size > MAX_FILE_SIZE:
+        raise ValueError(
+            "Image size must be under 5MB"
+        )
 
-    result = cloudinary.uploader.upload(
-        temp_output.name,
-        folder=folder,
-        public_id=uuid.uuid4().hex
-    )
-
-    # DELETE TEMP FILES
+    temp_input = None
+    temp_output = None
 
     try:
-        os.remove(temp_input.name)
-    except:
-        pass
 
-    try:
-        os.remove(temp_output.name)
-    except:
-        pass
+        # ================= TEMP INPUT =================
 
-    return result["secure_url"]
+        temp_input = tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=f".{ext}"
+        )
 
+        file.save(
+            temp_input.name
+        )
+
+        # ================= TEMP OUTPUT =================
+
+        temp_output = tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".jpg"
+        )
+
+        resize_image(
+            temp_input.name,
+            temp_output.name,
+            size
+        )
+
+        # ================= CLOUDINARY UPLOAD =================
+
+        result = cloudinary.uploader.upload(
+            temp_output.name,
+            folder=folder,
+            public_id=uuid.uuid4().hex,
+            overwrite=False,
+            resource_type="image"
+        )
+
+        return result.get(
+            "secure_url"
+        )
+
+    except Exception as e:
+
+        raise Exception(
+            f"Upload Failed: {str(e)}"
+        )
+
+    finally:
+
+        # ================= CLEANUP =================
+
+        if (
+            temp_input and
+            os.path.exists(
+                temp_input.name
+            )
+        ):
+            try:
+                os.remove(
+                    temp_input.name
+                )
+            except:
+                pass
+
+        if (
+            temp_output and
+            os.path.exists(
+                temp_output.name
+            )
+        ):
+            try:
+                os.remove(
+                    temp_output.name
+                )
+            except:
+                pass
 
 # ================= MY PROFILE =================
 
