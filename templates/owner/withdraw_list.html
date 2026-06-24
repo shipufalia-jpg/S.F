@@ -277,6 +277,9 @@ body{
     {% if w.status == "approved" and w.payment_status != "paid" %}
 
     <form method="POST" action="/owner/withdraw/paid/{{ w.id }}" class="mt-3">
+        <input type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}">
 
         <div class="row">
 
