@@ -114,6 +114,38 @@ body{
     padding:10px 18px;
     border-radius:10px;
     font-weight:700;
+} 
+
+.card{
+    background:#111827;
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:15px;
+    border:1px solid #1f2937;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    border-color:#2563eb;
+    box-shadow:0 10px 25px rgba(37,99,235,.20);
+}
+
+.header h2{
+    font-size:28px;
+    font-weight:800;
+}
+
+.badge{
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+    color:white;
+    font-weight:700;
+    padding:8px 15px;
+    border-radius:12px;
 }    
 
 .status-pending{background:#2563eb;}
@@ -129,39 +161,50 @@ body{
 <div class="container">
 
     <!-- HEADER -->
-    <div class="header">
-        <h2>📋 Work Applications</h2>
-        <div class="badge">
-            Total: {{ applications|length if applications else 0 }}
-        </div>
+<div class="header">
+    <h2>📋 Work Applications</h2>
+
+    <div class="badge">
+        Total: {{ applications.total }}
     </div>
+</div>
+
+{% if applications.items %}
 
     {% for app in applications.items %}
-
-        {% if applications.items %}
 
         {% set status = (app.status or 'pending') | lower %}
 
         <div class="card">
 
-            <!-- NAME + WORK -->
             <h3>
-                👤 {{ app.name }} → Work ID #{{ app.work_id }}
+                👤 {{ app.name }}
+                → Work ID #{{ app.work_id }}
             </h3>
 
-            <!-- DETAILS GRID -->
             <div class="row small">
 
-                <div>📞 {{ app.phone or 'N/A' }}</div>
+                <div>
+                    📞 {{ app.phone or 'N/A' }}
+                </div>
 
-                <div>📍 {{ app.address or 'N/A' }}</div>
+                <div>
+                    📍 {{ app.address or 'N/A' }}
+                </div>
 
-                <div>💰 {{ app.expected_salary or 'Not set' }}</div>
+                <div>
+                    💰 ₹ {{ "{:,}".format(app.expected_salary) if app.expected_salary else 'Not set' }}
+                </div>
 
-                <div>⭐ Experience: {{ app.experience_years or 0 }} years</div>
+                <div>
+                    ⭐ Experience:
+                    {{ app.experience_years or 0 }}
+                    years
+                </div>
 
                 <div>
                     📌 Status:
+
                     <span class="status status-{{ status }}">
                         {{ status }}
                     </span>
@@ -169,58 +212,105 @@ body{
 
             </div>
 
-            <!-- MESSAGE -->
             <p class="small" style="margin-top:10px;">
                 📝 {{ app.message or 'No message provided' }}
             </p>
 
-            <!-- ACTION BUTTONS -->
-            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <div class="small" style="margin-top:8px;">
+                🕒 Applied:
+                {{ app.created_at.strftime('%d %b %Y %I:%M %p') if app.created_at else 'N/A' }}
+            </div>
 
-                <a class="btn view"
-                   href="{{ url_for('application.application_details', id=app.id) }}">
-                   View
+            <div style="
+                margin-top:15px;
+                display:flex;
+                gap:8px;
+                flex-wrap:wrap;
+            ">
+
+                <a
+                    class="btn view"
+                    href="{{ url_for(
+                        'application.application_details',
+                        id=app.id
+                    ) }}"
+                >
+                    👁 View
                 </a>
 
                 {% if status == "pending" %}
 
-                    <a class="btn approve"
-                       href="{{ url_for('application.approve_application', id=app.id) }}">
-                       Approve
-                    </a>
+                <a
+                    class="btn approve"
+                    href="{{ url_for(
+                        'application.approve_application',
+                        id=app.id
+                    ) }}"
+                >
+                    ✅ Approve
+                </a>
 
-                    <a class="btn reject"
-                       href="{{ url_for('application.reject_application', id=app.id) }}">
-                       Reject
-                    </a>
+                <a
+                    class="btn reject"
+                    href="{{ url_for(
+                        'application.reject_application',
+                        id=app.id
+                    ) }}"
+                >
+                    ❌ Reject
+                </a>
 
                 {% endif %}
 
-                <a class="btn delete"
-                   href="{{ url_for('application.delete_application', id=app.id) }}">
-                   Delete
+                <a
+                    class="btn delete"
+                    href="{{ url_for(
+                        'application.delete_application',
+                        id=app.id
+                    ) }}"
+                >
+                    🗑 Delete
                 </a>
 
             </div>
 
         </div>
 
-        {% endfor %}
+    {% endfor %}
 
-    {% else %}
+{% else %}
 
-        <p>No applications found.</p>
+    <div style="
+        text-align:center;
+        padding:80px 20px;
+        background:#111827;
+        border-radius:20px;
+        border:1px solid #1f2937;
+    ">
+        <h2>
+            📭 No Applications Found
+        </h2>
 
-    {% endif %}
+        <p style="
+            margin-top:10px;
+            color:#94a3b8;
+        ">
+            No user has applied yet.
+        </p>
+    </div>
 
-    {% if applications.pages > 1 %}
+{% endif %}
+
+{% if applications.pages > 1 %}
 
 <div class="pagination">
 
     {% if applications.has_prev %}
+
         <a href="?page={{ applications.prev_num }}">
             ← Previous
         </a>
+
     {% endif %}
 
     <div class="page-info">
@@ -229,16 +319,13 @@ body{
     </div>
 
     {% if applications.has_next %}
+
         <a href="?page={{ applications.next_num }}">
             Next →
         </a>
+
     {% endif %}
 
 </div>
 
 {% endif %}
-
-</div>
-
-</body>
-</html>
