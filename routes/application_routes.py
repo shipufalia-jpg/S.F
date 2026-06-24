@@ -423,46 +423,50 @@ def admin_applications():
     admin_id = session.get("user_id")
 
     if not admin_id:
-        flash("Please login first", "danger")
-        return redirect('/auth/login')
+        flash(
+            "Please login first",
+            "danger"
+        )
+        return redirect(
+            "/auth/login"
+        )
 
     status = request.args.get(
-    "status"
-)
-
-page = request.args.get(
-    "page",
-    1,
-    type=int
-)
-
-query = WorkApplication.query.join(
-    User
-).filter(
-    User.controller_id == admin_id,
-    WorkApplication.is_deleted == False
-)
-
-if status and status != "all":
-
-    query = query.filter(
-        WorkApplication.status == status
+        "status"
     )
 
-applications = query.order_by(
-    WorkApplication.id.desc()
-).paginate(
-    page=page,
-    per_page=20,
-    error_out=False
-)
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
 
-return render_template(
-    "owner_applications.html",
-    applications=applications,
-    status=status
-)
+    query = WorkApplication.query.join(
+        User
+    ).filter(
+        User.controller_id == admin_id,
+        WorkApplication.is_deleted == False
+    )
 
+    if status and status != "all":
+
+        query = query.filter(
+            WorkApplication.status == status
+        )
+
+    applications = query.order_by(
+        WorkApplication.id.desc()
+    ).paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
+
+    return render_template(
+        "owner_applications.html",
+        applications=applications,
+        status=status
+    )
 
 # =================================================
 # ✔ ADMIN APPROVE
