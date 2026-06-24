@@ -89,6 +89,9 @@ label{
     <h2>✏️ Edit Chamber</h2>
 
     <form method="POST" enctype="multipart/form-data">
+        <input type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}">
 
         <!-- BASIC -->
         <div class="form-grid">
