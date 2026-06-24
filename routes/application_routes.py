@@ -35,7 +35,7 @@ def apply_work(work_id):
 
     user_id = session.get("user_id")
 
-if not user_id:
+    if not user_id:
 
     flash(
         "Please login first",
@@ -121,7 +121,7 @@ try:
         message=(
             "Your application "
             "submitted successfully."
-    ),
+        ),
 
         type="application",
 
