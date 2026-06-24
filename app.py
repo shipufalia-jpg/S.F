@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from flask import Flask
+from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash
@@ -58,6 +59,7 @@ from routes.doctor import doctor_bp
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 
+csrf = CSRFProtect()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -99,6 +101,8 @@ def create_app():
     app.config["MAX_CONTENT_LENGTH"] = (
         5 * 1024 * 1024
     )  # 5MB
+
+    csrf.init_app(app)
 
     # ================= DATABASE =================
     db.init_app(app)
