@@ -426,7 +426,13 @@ def admin_applications():
     "/admin/application/approve/<int:id>",
     methods=["POST"]
 )
+def admin_approve_application(id):
+
     admin_id = session.get("user_id")
+
+    if not admin_id:
+        flash("Please login first", "danger")
+        return redirect("/auth/login")
 
     app = WorkApplication.query.join(User).filter(
         WorkApplication.id == id,
@@ -435,14 +441,29 @@ def admin_applications():
 
     app.status = "approved"
     app.is_shortlisted = True
-    from datetime import datetime, UTC
+    app.updated_at = datetime.now(UTC)
 
     db.session.commit()
 
-    flash("Application Approved", "success")
+    # 🔔 Notification
+    send_notification(
+        user_id=app.user_id,
+        title="Application Approved",
+        message="Congratulations! Your application has been approved.",
+        type="approve",
+        icon="check-circle",
+        priority="high",
+        action_url="/my_applications"
+    )
 
-    return redirect('/admin/applications')
+    flash(
+        "Application Approved",
+        "success"
+    )
 
+    return redirect(
+        "/admin/applications"
+    )
 
 # =================================================
 # ❌ ADMIN REJECT
@@ -451,21 +472,51 @@ def admin_applications():
     "/admin/application/reject/<int:id>",
     methods=["POST"]
 )
+def admin_reject_application(id):
+
     admin_id = session.get("user_id")
 
-    app = WorkApplication.query.join(User).filter(
+    if not admin_id:
+        flash(
+            "Please login first",
+            "danger"
+        )
+        return redirect(
+            "/auth/login"
+        )
+
+    app = WorkApplication.query.join(
+        User
+    ).filter(
         WorkApplication.id == id,
         User.controller_id == admin_id
     ).first_or_404()
 
     app.status = "rejected"
-    from datetime import datetime, UTC
+
+    app.updated_at = datetime.now(
+        UTC
+    )
 
     db.session.commit()
 
-    flash("Application Rejected", "warning")
+    send_notification(
+        user_id=app.user_id,
+        title="Application Rejected",
+        message="Sorry, your application was rejected.",
+        type="reject",
+        icon="x-circle",
+        priority="high"
+    )
 
-    return redirect('/admin/applications')
+    flash(
+        "Application Rejected",
+        "warning"
+    )
+
+    return redirect(
+        "/admin/applications"
+    )
 
 
 # =================================================
@@ -475,19 +526,49 @@ def admin_applications():
     "/admin/application/delete/<int:id>",
     methods=["POST"]
 )
+def admin_delete_application(id):
+
     admin_id = session.get("user_id")
 
-    app = WorkApplication.query.join(User).filter(
+    if not admin_id:
+        flash(
+            "Please login first",
+            "danger"
+        )
+        return redirect(
+            "/auth/login"
+        )
+
+    app = WorkApplication.query.join(
+        User
+    ).filter(
         WorkApplication.id == id,
         User.controller_id == admin_id
     ).first_or_404()
 
     app.is_deleted = True
+
     app.status = "cancelled"
 
+    app.updated_at = datetime.now(
+        UTC
+    )
+
     db.session.commit()
+    send_notification(
+        user_id=app.user_id,
+        title="Application Cancelled",
+        message="Your application has been cancelled.",
+        type="cancel",
+        icon="trash",
+        priority="normal"
+    )
 
-    flash("Application Deleted", "danger")
+    flash(
+        "Application Deleted",
+        "danger"
+    )
 
-    return redirect('/admin/applications')
-    
+    return redirect(
+        "/admin/applications"
+    )
