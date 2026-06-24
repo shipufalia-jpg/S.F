@@ -27,53 +27,101 @@ def apply_form(work_id):
 # =================================================
 # 🟢 APPLY SUBMIT (POST)
 # =================================================
-
-@application_bp.route('/apply_work/<int:work_id>', methods=['POST'])
+@application_bp.route(
+'/apply_work/"int:work_id" (int:work_id)',
+methods=['POST']
+)
 def apply_work(work_id):
 
-    user_id = session.get("user_id")
+user_id = session.get("user_id")
 
-    if not user_id:
-        flash("Please login first", "danger")
-        return redirect('/auth/login')
+if not user_id:
 
-    work = Work.query.get_or_404(work_id)
+    flash(
+        "Please login first",
+        "danger"
+    )
 
-    existing = WorkApplication.query.filter_by(
-        work_id=work_id,
-        user_id=user_id
-    ).first()
+    return redirect(
+        '/auth/login'
+    )
 
-    if existing:
-        flash("Already applied for this work", "info")
-        return redirect('/works')
+work = Work.query.get_or_404(
+    work_id
+)
+
+existing = WorkApplication.query.filter_by(
+    work_id=work_id,
+    user_id=user_id
+).first()
+
+if existing:
+
+    flash(
+        "Already applied for this work",
+        "info"
+    )
+
+    return redirect(
+        '/works'
+    )
+
+try:
 
     application = WorkApplication(
+
         work_id=work_id,
+
         user_id=user_id,
 
-        # 🔥 SAFE fallback (important fix)
-        name=session.get("name") or "Unknown",
-        phone=session.get("phone") or "N/A",
-        address=session.get("address") or "N/A",
+        name=session.get(
+            "name"
+        ) or "Unknown",
 
-        message=request.form.get("message"),
-        experience_years=int(request.form.get("experience_years") or 0),
-        expected_salary=request.form.get("expected_salary"),
+        phone=session.get(
+            "phone"
+        ) or "N/A",
+
+        address=session.get(
+            "address"
+        ) or "N/A",
+
+        message=request.form.get(
+            "message",
+            ""
+        ),
+
+        experience_years=int(
+            request.form.get(
+                "experience_years"
+            ) or 0
+        ),
+
+        expected_salary=int(
+            request.form.get(
+                "expected_salary"
+            ) or 0
+        ),
 
         applied_ip=request.remote_addr
     )
 
-    db.session.add(application)
+    db.session.add(
+        application
+    )
+
     db.session.commit()
 
     send_notification(
 
-        user_id=session.get("user_id"),
+        user_id=user_id,
 
         title="Application Submitted",
 
-        message="Your application submitted successfully.",
+        message=(
+            "Your application "
+            "submitted successfully."
+        ),
 
         type="application",
 
@@ -81,13 +129,35 @@ def apply_work(work_id):
 
         priority="normal",
 
-        action_url="/user/my_applications"
+        action_url="/my_applications"
     )
 
-    print("✅ SAVED APPLICATION ID:", application.id)
+    flash(
+        "Application submitted successfully",
+        "success"
+    )
 
-    flash("Application submitted successfully", "success")
-    return redirect('/works')
+except Exception as e:
+
+    db.session.rollback()
+
+    flash(
+        "Application submit failed",
+        "danger"
+    )
+
+    print(
+        "APPLICATION ERROR:",
+        str(e)
+    )
+
+    return redirect(
+        f"/apply_work/{work_id}"
+    )
+
+return redirect(
+    "/works"
+)
 # =================================================
 # 📋 OWNER - ALL APPLICATIONS
 # =================================================
