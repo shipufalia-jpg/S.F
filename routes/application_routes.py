@@ -385,16 +385,35 @@ def my_applications():
     user_id = session.get("user_id")
 
     if not user_id:
-        flash("Please login first", "danger")
-        return redirect('/auth/login')
+        flash(
+            "Please login first",
+            "danger"
+        )
+        return redirect(
+            "/auth/login"
+        )
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
 
     apps = WorkApplication.query.filter_by(
         user_id=user_id,
         is_deleted=False
-    ).order_by(WorkApplication.id.desc()).all()
+    ).order_by(
+        WorkApplication.id.desc()
+    ).paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
 
-    return render_template("my_applications.html", apps=apps)
-
+    return render_template(
+        "my_applications.html",
+        apps=apps
+    )
 # =================================================
 # 🛡 ADMIN - CONTROL USERS APPLICATIONS
 # =================================================
