@@ -355,6 +355,15 @@ def delete_application(id):
 # =================================================
 @application_bp.route('/owner/application/<int:id>')
 def application_details(id):
+    send_notification(
+        user_id=app.user_id,
+        title="Application Cancelled",
+        message="Your application has been cancelled.",
+        type="cancel",
+        icon="trash",
+        priority="normal",
+        action_url="/my_applications"
+    )
 
     app = WorkApplication.query.get_or_404(id)
 
@@ -376,10 +385,6 @@ def my_applications():
         user_id=user_id,
         is_deleted=False
     ).order_by(WorkApplication.id.desc()).all()
-
-    # 🔥 DEBUG (VERY IMPORTANT)
-    for a in apps:
-        print("APP:", a.id, a.status)
 
     return render_template("my_applications.html", apps=apps)
 
@@ -503,6 +508,7 @@ def admin_reject_application(id):
     send_notification(
         user_id=app.user_id,
         title="Application Rejected",
+        action_url="/my_applications",
         message="Sorry, your application was rejected.",
         type="reject",
         icon="x-circle",
@@ -558,6 +564,7 @@ def admin_delete_application(id):
     send_notification(
         user_id=app.user_id,
         title="Application Cancelled",
+        action_url="/my_applications",
         message="Your application has been cancelled.",
         type="cancel",
         icon="trash",
