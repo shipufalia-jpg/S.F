@@ -6,7 +6,7 @@ from flask import (
     url_for,
     flash
 )
-from flask import Blueprint, render_template, session, redirect, request, jsonify
+from utils.notification import send_notification
 from functools import wraps
 from sqlalchemy import func
 from datetime import datetime, timedelta
