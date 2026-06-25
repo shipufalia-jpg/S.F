@@ -77,7 +77,11 @@ def users():
 
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("limit", 20, type=int)
-    search = request.args.get("search", "")
+    search = request.args.get(
+        "search",
+        "",
+        type=str
+    ).strip()[:50]
 
     query = User.query.filter_by(controller_id=user_id)\
         .options(load_only(User.id, User.name, User.status))
@@ -296,11 +300,16 @@ def get_user(user_id):
             )
 
 @admin_bp.route("/chambers-control")
+@role_required(
+    "admin",
+    "owner",
+    "super_admin"
+)
 def chambers_control():
+
     return render_template(
         "admin/chambers_control.html"
-    )
-
+)
 
 
 
