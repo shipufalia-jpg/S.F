@@ -134,48 +134,89 @@ def all_works():
 # =================================================
 # ✅ APPROVE WORK
 # =================================================
-@owner.route('/owner/work/approve/<int:id>')
+@owner.route(
+'/owner/work/approve/"int:id" (int:id)',
+methods=['POST']
+)
 @owner_only
 def approve_work(id):
 
+try:
+
     work = Work.query.get_or_404(id)
 
-    # ================= ALREADY APPROVED =================
+    # Already Approved
     if work.status == "approved":
 
-        flash("Work already approved", "info")
+        flash(
+            "Work already approved",
+            "info"
+        )
 
-        return redirect('/owner/dashboard')
+        return redirect(
+            url_for(
+                'owner.owner_dashboard'
+            )
+        )
 
-    # ================= APPROVE =================
+    # Approve Work
     work.status = "approved"
-
     work.is_active = True
-
     work.is_deleted = False
 
-    work.approved_by = session.get("user_id")
+    work.approved_by = session.get(
+        "user_id"
+    )
 
     work.updated_at = datetime.utcnow()
 
     db.session.commit()
 
-    # ================= REALTIME SOCKET =================
-    socketio.emit("work_update", {
+    # User Notification
+    send_notification(
+        user_id=work.user_id,
+        title="Work Approved",
+        message=f"{work.title} has been approved.",
+        type="success",
+        icon="check-circle",
+        priority="high"
+    )
 
-        "type": "approved",
+    # Realtime Socket
+    socketio.emit(
+        "work_update",
+        {
+            "type": "approved",
+            "work_id": work.id,
+            "title": work.title,
+            "message": f"{work.title} approved successfully"
+        }
+    )
 
-        "work_id": work.id,
+    flash(
+        "Work approved successfully",
+        "success"
+    )
 
-        "title": work.title,
+except Exception as e:
 
-        "message": f"{work.title} approved successfully"
+    db.session.rollback()
 
-    })
+    print(
+        "Approve Work Error:",
+        str(e)
+    )
 
-    flash("Work approved successfully", "success")
+    flash(
+        "Something went wrong",
+        "danger"
+    )
 
-    return redirect('/owner/dashboard')
+return redirect(
+    url_for(
+        'owner.owner_dashboard'
+    )
+)
 
 
 # =================================================
