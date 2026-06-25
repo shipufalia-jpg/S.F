@@ -16,24 +16,22 @@ class WorkApplication(db.Model):
     # =====================================================
     # RELATIONS
     # =====================================================
-    work_id = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "work.id",
-            ondelete="CASCADE"
+    user = db.relationship(
+        "User",
+        backref=db.backref(
+            "applications",
+            lazy="dynamic"
         ),
-        nullable=False,
-        index=True
+        lazy="select"
     )
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "user.id",
-            ondelete="CASCADE"
+    work = db.relationship(
+        "Work",
+        backref=db.backref(
+            "applications",
+            lazy="dynamic"
         ),
-        nullable=False,
-        index=True
+        lazy="select"
     )
 
     # =====================================================
