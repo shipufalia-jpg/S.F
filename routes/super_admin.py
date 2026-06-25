@@ -10,20 +10,20 @@ from flask import (
 
 from functools import wraps
 from datetime import datetime, timedelta
-from sqlalchemy import func
+
 from sqlalchemy.orm import joinedload
 import json
 
 from extensions import db, socketio
 
 from models.user import User
-from models.profile import Profile
-from models.chat import Chat
+
+
 from models.work_application import WorkApplication
 from models.activity_log import ActivityLog
 from models.work_model import Work
 from flask import current_app
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, case
 from json import JSONDecodeError
 from services.logger import log_activity
 
@@ -43,15 +43,57 @@ super_admin = Blueprint(
 # AUTH MIDDLEWARE
 # =========================================================
 
+
 def super_admin_required(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
 
-        if session.get("role") != "super_admin":
+        user_id = session.get("user_id")
+        role = session.get("role")
 
-            flash("Unauthorized access", "danger")
-            return redirect("/auth/login")
+        if not user_id or role != "super_admin":
+
+            flash(
+                "Please login first.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+        user = User.query.filter(
+            User.id == user_id,
+            User.role == "super_admin",
+            User.is_deleted.is_(False)
+        ).first()
+
+        if not user:
+
+            session.clear()
+
+            flash(
+                "Account not found.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+        if getattr(user, "status", "active") != "active":
+
+            session.clear()
+
+            flash(
+                "Your account is not active.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
 
         return f(*args, **kwargs)
 
@@ -64,30 +106,30 @@ def super_admin_required(f):
 
 def get_controlled_admin_ids():
 
-    return [
-        admin[0]
-        for admin in db.session.query(User.id).filter(
+    return db.session.scalars(
+        db.select(User.id).filter(
             User.role == "admin",
-            User.controller_id == session.get("user_id")
-        ).all()
-    ]
+            User.controller_id == session.get("user_id"),
+            User.is_deleted.is_(False)
+        )
+    ).all()
 
 
-def get_controlled_user_ids():
+def get_controlled_user_ids(admin_ids=None):
 
-    admin_ids = get_controlled_admin_ids()
+    if admin_ids is None:
+        admin_ids = get_controlled_admin_ids()
 
     if not admin_ids:
         return []
 
-    return [
-        user[0]
-        for user in db.session.query(User.id).filter(
+    return db.session.scalars(
+        db.select(User.id).filter(
             User.role == "user",
-            User.controller_id.in_(admin_ids)
-        ).all()
-    ]
-
+            User.controller_id.in_(admin_ids),
+            User.is_deleted.is_(False)
+        )
+    ).all()
 
 # =========================================================
 # DASHBOARD
