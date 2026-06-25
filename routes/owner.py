@@ -458,44 +458,62 @@ return render_template(
 # =================================================
 # 🗑 DELETE WORK (SOFT DELETE)
 # =================================================
-@owner.route('/owner/work/delete/<int:id>')
+@owner.route(
+    '/owner/work/delete/<int:id>',
+    methods=['POST']
+)
 @owner_only
 def delete_work(id):
 
-    work = Work.query.get_or_404(id)
+    try:
 
-    # ================= ALREADY DELETED =================
-    if work.is_deleted:
+        work = Work.query.get_or_404(id)
 
-        flash("Work already deleted", "info")
+        # ================= ALREADY DELETED =================
+        if work.is_deleted:
 
-        return redirect('/owner/dashboard')
+            flash("Work already deleted", "info")
+            return redirect('/owner/dashboard')
 
-    # ================= DELETE =================
-    work.status = "deleted"
+        # ================= SOFT DELETE =================
+        work.status = "deleted"
+        work.is_deleted = True
+        work.is_active = False
 
-    work.is_deleted = True
+        if hasattr(work, "deleted_by"):
+            work.deleted_by = session.get("user_id")
 
-    work.is_active = False
+        work.updated_at = datetime.utcnow()
 
-    work.updated_at = datetime.utcnow()
+        db.session.commit()
 
-    db.session.commit()
+        # ================= NOTIFICATION =================
+        send_notification(
+            user_id=work.user_id,
+            title="Work Deleted",
+            message=f"Your work '{work.title}' has been deleted.",
+            type="delete",
+            icon="trash",
+            priority="high"
+        )
 
-    # ================= SOCKET =================
-    socketio.emit("work_update", {
+        # ================= SOCKET =================
+        socketio.emit("work_update", {
+            "type": "deleted",
+            "work_id": work.id,
+            "title": work.title,
+            "message": f"{work.title} deleted"
+        })
 
-        "type": "deleted",
+        flash("Work deleted successfully", "success")
 
-        "work_id": work.id,
+    except Exception as e:
 
-        "title": work.title,
+        db.session.rollback()
 
-        "message": f"{work.title} deleted"
+        print("Delete Work Error:", str(e))
 
-    })
-
-    flash("Work deleted successfully", "danger")
+        flash("Failed to delete work", "danger")
 
     return redirect('/owner/dashboard')
 
@@ -503,68 +521,159 @@ def delete_work(id):
 # =================================================
 # ♻️ RESTORE DELETED WORK
 # =================================================
-@owner.route('/owner/work/restore/<int:id>')
+@owner.route(
+    '/owner/work/restore/<int:id>',
+    methods=['POST']
+)
 @owner_only
 def restore_work(id):
 
-    work = Work.query.get_or_404(id)
+    try:
 
-    # ================= RESTORE =================
-    work.status = "pending"
+        work = Work.query.get_or_404(id)
 
-    work.is_deleted = False
+        # ================= ALREADY ACTIVE =================
+        if not work.is_deleted:
 
-    work.is_active = False
+            flash("Work is already active", "info")
+            return redirect('/owner/dashboard')
 
-    work.updated_at = datetime.utcnow()
+        # ================= RESTORE =================
+        work.status = "pending"
+        work.is_deleted = False
+        work.is_active = False
 
-    db.session.commit()
+        if hasattr(work, "restored_by"):
+            work.restored_by = session.get("user_id")
 
-    flash(
-        "Work restored and pending approval",
-        "success"
-    )
+        work.updated_at = datetime.utcnow()
+
+        db.session.commit()
+
+        # ================= NOTIFICATION =================
+        send_notification(
+            user_id=work.user_id,
+            title="Work Restored",
+            message=f"Your work '{work.title}' has been restored and is pending approval.",
+            type="restore",
+            icon="refresh-cw",
+            priority="medium"
+        )
+
+        # ================= SOCKET =================
+        socketio.emit("work_update", {
+            "type": "restored",
+            "work_id": work.id,
+            "title": work.title,
+            "message": f"{work.title} restored"
+        })
+
+        flash(
+            "Work restored and moved to pending review",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print("Restore Work Error:", str(e))
+
+        flash(
+            "Failed to restore work",
+            "danger"
+        )
 
     return redirect('/owner/dashboard')
-
 # =================================================
 # 👤 BLOCK USER
 # =================================================
-@owner.route('/owner/user/block/<int:id>')
+@owner.route(
+    '/owner/user/block/<int:id>',
+    methods=['POST']
+)
 @owner_only
 def block_user(id):
 
-    user = User.query.get_or_404(id)
+    try:
 
-    # OWNER নিজেকে block করতে পারবে না
-    if user.role == "owner":
-        flash("Owner account cannot be blocked", "danger")
-        return redirect('/owner/dashboard')
+        user = User.query.get_or_404(id)
 
-    user.status = "blocked"
+        # ================= OWNER SAFE =================
+        if user.role == "owner":
 
-    db.session.commit()
-    send_notification(
+            flash(
+                "Owner account cannot be blocked",
+                "danger"
+            )
 
-    user_id=user.id,
+            return redirect('/owner/dashboard')
 
-    title="Account Blocked",
+        # ================= SELF BLOCK SAFE =================
+        if user.id == session.get("user_id"):
 
-    message="Your account has been blocked by admin.",
+            flash(
+                "You cannot block yourself",
+                "danger"
+            )
 
-    type="block",
+            return redirect('/owner/dashboard')
 
-    icon="ban",
+        # ================= ALREADY BLOCKED =================
+        if user.status == "blocked":
 
-    priority="high"
+            flash(
+                "User already blocked",
+                "warning"
+            )
+
+            return redirect('/owner/dashboard')
+
+        # ================= BLOCK USER =================
+        user.status = "blocked"
+
+        if hasattr(user, "blocked_by"):
+            user.blocked_by = session.get("user_id")
+
+        if hasattr(user, "blocked_at"):
+            user.blocked_at = datetime.utcnow()
+
+        db.session.commit()
+
+        # ================= NOTIFICATION =================
+        send_notification(
+            user_id=user.id,
+            title="Account Blocked",
+            message="Your account has been blocked by owner.",
+            type="block",
+            icon="ban",
+            priority="high"
         )
 
-    socketio.emit("notify", {
-        "type": "warning",
-        "message": f"{user.name} has been blocked 🚫"
-    })
+        # ================= SOCKET =================
+        socketio.emit("notify", {
+            "type": "warning",
+            "message": f"{user.name} has been blocked 🚫"
+        })
 
-    flash("User blocked successfully", "success")
+        flash(
+            "User blocked successfully",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Block User Error:",
+            str(e)
+        )
+
+        flash(
+            "Failed to block user",
+            "danger"
+        )
 
     return redirect('/owner/dashboard')
 
@@ -572,55 +681,171 @@ def block_user(id):
 # =================================================
 # 👤 UNBLOCK USER
 # =================================================
-@owner.route('/owner/user/unblock/<int:id>')
+@owner.route(
+    '/owner/user/unblock/<int:id>',
+    methods=['POST']
+)
 @owner_only
 def unblock_user(id):
 
-    user = User.query.get_or_404(id)
+    try:
 
-    user.status = "active"
+        user = User.query.get_or_404(id)
 
-    db.session.commit()
+        # ================= ALREADY ACTIVE =================
+        if user.status == "active":
 
-    socketio.emit("notify", {
-        "type": "success",
-        "message": f"{user.name} has been unblocked ✅"
-    })
+            flash(
+                "User already active",
+                "info"
+            )
 
-    flash("User unblocked successfully", "success")
+            return redirect('/owner/dashboard')
+
+        # ================= UNBLOCK =================
+        user.status = "active"
+
+        if hasattr(user, "blocked_by"):
+            user.blocked_by = None
+
+        if hasattr(user, "blocked_at"):
+            user.blocked_at = None
+
+        user.updated_at = datetime.utcnow()
+
+        db.session.commit()
+
+        # ================= NOTIFICATION =================
+        send_notification(
+            user_id=user.id,
+            title="Account Unblocked",
+            message="Your account has been activated again.",
+            type="unblock",
+            icon="check-circle",
+            priority="high"
+        )
+
+        # ================= SOCKET =================
+        socketio.emit("notify", {
+            "type": "success",
+            "message": f"{user.name} has been unblocked ✅"
+        })
+
+        flash(
+            "User unblocked successfully",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Unblock User Error:",
+            str(e)
+        )
+
+        flash(
+            "Failed to unblock user",
+            "danger"
+        )
 
     return redirect('/owner/dashboard')
-
 
 # =================================================
 # 🗑 SOFT DELETE USER
 # =================================================
-@owner.route('/owner/user/delete/<int:id>')
+@owner.route(
+    '/owner/user/delete/<int:id>',
+    methods=['POST']
+)
 @owner_only
 def delete_user(id):
 
-    user = User.query.get_or_404(id)
+    try:
 
-    # OWNER SAFE
-    if user.role == "owner":
-        flash("Owner account cannot be deleted", "danger")
-        return redirect('/owner/dashboard')
+        user = User.query.get_or_404(id)
 
-    # SOFT DELETE
-    user.status = "deleted"
+        # ================= OWNER SAFE =================
+        if user.role == "owner":
 
-    # OPTIONAL
-    if hasattr(user, "is_deleted"):
-        user.is_deleted = True
+            flash(
+                "Owner account cannot be deleted",
+                "danger"
+            )
 
-    db.session.commit()
+            return redirect('/owner/dashboard')
 
-    socketio.emit("notify", {
-        "type": "danger",
-        "message": f"{user.name} deleted successfully 🗑"
-    })
+        # ================= SELF DELETE SAFE =================
+        if user.id == session.get("user_id"):
 
-    flash("User deleted successfully", "success")
+            flash(
+                "You cannot delete your own account",
+                "danger"
+            )
+
+            return redirect('/owner/dashboard')
+
+        # ================= ALREADY DELETED =================
+        if user.status == "deleted":
+
+            flash(
+                "User already deleted",
+                "warning"
+            )
+
+            return redirect('/owner/dashboard')
+
+        # ================= SOFT DELETE =================
+        user.status = "deleted"
+
+        if hasattr(user, "is_deleted"):
+            user.is_deleted = True
+
+        if hasattr(user, "deleted_by"):
+            user.deleted_by = session.get("user_id")
+
+        if hasattr(user, "deleted_at"):
+            user.deleted_at = datetime.utcnow()
+
+        user.updated_at = datetime.utcnow()
+
+        db.session.commit()
+
+        # ================= NOTIFICATION =================
+        send_notification(
+            user_id=user.id,
+            title="Account Deleted",
+            message="Your account has been deleted by owner.",
+            type="delete",
+            icon="trash",
+            priority="high"
+        )
+
+        # ================= SOCKET =================
+        socketio.emit("notify", {
+            "type": "danger",
+            "message": f"{user.name} deleted successfully 🗑"
+        })
+
+        flash(
+            "User deleted successfully",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Delete User Error:",
+            str(e)
+        )
+
+        flash(
+            "Failed to delete user",
+            "danger"
+        )
 
     return redirect('/owner/dashboard')
 
