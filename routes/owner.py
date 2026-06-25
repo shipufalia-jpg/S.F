@@ -1,10 +1,12 @@
 from flask import (
+    Blueprint,
     render_template,
     redirect,
     request,
     session,
     url_for,
-    flash
+    flash,
+    jsonify
 )
 from utils.notification import send_notification
 from functools import wraps
@@ -203,6 +205,13 @@ def reject_work(id):
 
     db.session.commit()
     send_notification(
+    user_id=work.user_id,
+    title="Work Rejected",
+    message="Your work has been rejected.",
+    type="reject",
+    icon="x-circle",
+    priority="high"
+    )
 
     user_id=user.id,
 
