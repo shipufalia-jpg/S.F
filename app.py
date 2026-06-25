@@ -63,25 +63,10 @@ csrf = CSRFProtect()
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
-# ==================================================
-# DATABASE FIX FUNCTION
-# ==================================================
-def fix_db(app):
-    """
-    Future database auto-fix operations.
-    """
-    with app.app_context():
-        try:
-            pass
-            # Example:
-            # db.session.execute(text("UPDATE users SET is_active=1"))
-            # db.session.commit()
-
-        except Exception as e:
-            print(f"DB Fix Error: {e}")
+    return db.session.get(
+        User,
+        int(user_id)
+    )
 
 
 # ==================================================
@@ -102,10 +87,14 @@ def create_app():
         5 * 1024 * 1024
     )  # 5MB
 
+    # ================= CSRF =================
     csrf.init_app(app)
 
     # ================= DATABASE =================
     db.init_app(app)
+
+    # ================= LIMITER =================
+    limiter.init_app(app)
 
     # ================= LOGIN =================
     login_manager.init_app(app)
@@ -161,24 +150,38 @@ def create_app():
 
     for bp in blueprints:
         app.register_blueprint(bp)
+
+    # ==================================================
+    # SECURITY HEADERS
+    # ==================================================
     @app.after_request
     def security_headers(response):
 
-        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers[
+            "X-Frame-Options"
+        ] = "SAMEORIGIN"
 
-        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers[
+            "X-Content-Type-Options"
+        ] = "nosniff"
 
-        response.headers["Referrer-Policy"] = (
-        "strict-origin-when-cross-origin"
-    )
+        response.headers[
+            "Referrer-Policy"
+        ] = "strict-origin-when-cross-origin"
 
-        response.headers["Permissions-Policy"] = (
-        "camera=(), microphone=(), geolocation=()"
-    )
+        response.headers[
+            "Permissions-Policy"
+        ] = (
+            "camera=(), "
+            "microphone=(), "
+            "geolocation=()"
+        )
 
-        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers[
+            "X-XSS-Protection"
+        ] = "1; mode=block"
 
-    return response  
+        return response
 
     return app
 
