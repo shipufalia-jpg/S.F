@@ -123,6 +123,12 @@ def update_user_status(id):
         return error("Invalid status")
 
     user.status = status
+    log_activity(
+        actor_id=session["user_id"],
+        target_id=user.id,
+        action=f"user_{status}",
+        role=session.get("role")
+    )
     db.session.commit()
 
     return success(message=f"User {status}")
