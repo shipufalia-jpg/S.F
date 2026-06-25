@@ -16,7 +16,11 @@ from sqlalchemy import text
 import cloudinary
 
 from config import Config
-from extensions import db, socketio
+from extensions import (
+    db,
+    socketio,
+    limiter
+)
 
 # ================= MODELS =================
 from models.user import User
@@ -67,7 +71,26 @@ def load_user(user_id):
         User,
         int(user_id)
     )
+    
+# ==================================================
+# DATABASE FIX FUNCTION
+# ==================================================
+def fix_db(app):
 
+    with app.app_context():
+        try:
+            pass
+
+            # Example:
+            # db.session.execute(
+            #     text("UPDATE users SET status='active'")
+            # )
+            # db.session.commit()
+
+        except Exception as e:
+            print(
+                f"DB Fix Error: {e}"
+)
 
 # ==================================================
 # APP FACTORY
