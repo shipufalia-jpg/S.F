@@ -91,75 +91,195 @@ def get_controlled_user_ids():
 # DASHBOARD
 # =========================================================
 
-@super_admin.route("/")
+
+@super_admin.route("/users")
 @super_admin_required
-def dashboard_page():
+def super_admin_users():
 
-    admin_ids = get_controlled_admin_ids()
-    user_ids = get_controlled_user_ids()
+    try:
 
-    total_admins = len(admin_ids)
+        page = max(
+            request.args.get(
+                "page",
+                1,
+                type=int
+            ),
+            1
+        )
 
-    total_users = User.query.filter(
-        User.id.in_(user_ids)
-    ).count()
+        search = request.args.get(
+            "search",
+            "",
+            type=str
+        ).strip()
 
-    active_users = User.query.filter(
-        User.id.in_(user_ids),
-        User.status == "active"
-    ).count()
+        admin_ids = get_controlled_admin_ids()
+        user_ids = get_controlled_user_ids()
 
-    blocked_users = User.query.filter(
-        User.id.in_(user_ids),
-        User.status == "blocked"
-    ).count()
+        allowed_ids = list(
+            set(admin_ids + user_ids)
+        )
 
-    total_applications = WorkApplication.query.filter(
-        WorkApplication.user_id.in_(user_ids)
-    ).count()
+        if not allowed_ids:
 
-    recent_users = User.query.filter(
-        User.id.in_(user_ids)
-    ).order_by(
-        User.id.desc()
-    ).limit(10).all()
+            return render_template(
+                "super_admin/users.html",
+                users=None,
+                total=0,
+                admin_count=0,
+                user_count=0,
+                search=search
+            )
 
-    return render_template(
-        "super_admin/dashboard.html",
-        total_admins=total_admins,
-        total_users=total_users,
-        active_users=active_users,
-        blocked_users=blocked_users,
-        total_applications=total_applications,
-        recent_users=recent_users,
-        now=datetime.utcnow()
-    )
+        query = (
+            User.query
+            .options(
+                joinedload(User.profile)
+            )
+            .filter(
+                User.id.in_(allowed_ids),
+                User.is_deleted.is_(False)
+            )
+        )
+
+        # Search
+        if search:
+
+            query = query.filter(
+                or_(
+                    User.name.ilike(
+                        f"%{search}%"
+                    ),
+                    User.phone.ilike(
+                        f"%{search}%"
+                    ),
+                    User.email.ilike(
+                        f"%{search}%"
+                    )
+                )
+            )
+
+        users = (
+            query
+            .order_by(
+                User.id.desc()
+            )
+            .paginate(
+                page=page,
+                per_page=20,
+                error_out=False
+            )
+        )
+
+        return render_template(
+            "super_admin/users.html",
+            users=users,
+            total=users.total,
+            admin_count=len(admin_ids),
+            user_count=len(user_ids),
+            search=search
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"Super Admin Users Error: {e}"
+        )
+
+        flash(
+            "Unable to load users.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "super_admin.dashboard_page"
+            )
+        )
 
 
 # =========================================================
 # ADMINS PAGE
 # =========================================================
 
+
 @super_admin.route("/admins")
 @super_admin_required
 def view_admins():
 
-    page = request.args.get("page", 1, type=int)
+    try:
 
-    admins = User.query.filter(
-        User.role == "admin",
-        User.controller_id == session.get("user_id")
-    ).order_by(
-        User.id.desc()
-    ).paginate(
-        page=page,
-        per_page=20
-    )
+        page = max(
+            request.args.get(
+                "page",
+                1,
+                type=int
+            ),
+            1
+        )
 
-    return render_template(
-        "super_admin/admins.html",
-        admins=admins
-    )
+        search = request.args.get(
+            "search",
+            "",
+            type=str
+        ).strip()
+
+        query = (
+            User.query
+            .options(
+                joinedload(User.profile)
+            )
+            .filter(
+                User.role == "admin",
+                User.controller_id ==
+                session.get("user_id"),
+                User.is_deleted.is_(False)
+            )
+        )
+
+        # Search
+        if search:
+
+            query = query.filter(
+                User.name.ilike(
+                    f"%{search}%"
+                )
+            )
+
+        admins = (
+            query
+            .order_by(
+                User.id.desc()
+            )
+            .paginate(
+                page=page,
+                per_page=20,
+                error_out=False
+            )
+        )
+
+        return render_template(
+            "super_admin/admins.html",
+            admins=admins,
+            search=search
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"Admins page error: {e}"
+        )
+
+        flash(
+            "Unable to load admins.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "super_admin.dashboard_page"
+            )
+        )
 
 
 # =========================================================
@@ -170,39 +290,106 @@ def view_admins():
 @super_admin_required
 def super_admin_users():
 
-    admin_ids = get_controlled_admin_ids() or []
-    user_ids = get_controlled_user_ids() or []
+    try:
 
-    admin_filter = User.id.in_(admin_ids) if admin_ids else False
-    user_filter = User.id.in_(user_ids) if user_ids else False
-
-    page = request.args.get("page", 1, type=int)
-
-    users = User.query.options(
-    joinedload(User.profile)
-    ).filter(
-        User.is_deleted.is_(False),
-        (
-            (User.role == "admin") & admin_filter
-        ) |
-        (
-            (User.role == "user") & user_filter
+        page = max(
+            request.args.get(
+                "page",
+                1,
+                type=int
+            ),
+            1
         )
-    ).order_by(
-        User.id.desc()
-    ).paginate(
-        page=page,
-        per_page=20
-    )
 
-    return render_template(
-        "super_admin/users.html",
-        users=users,
-        total=users.total,
-        admin_count=len(admin_ids),
-        user_count=len(user_ids)
-    )
+        search = request.args.get(
+            "search",
+            "",
+            type=str
+        ).strip()
 
+        admin_ids = get_controlled_admin_ids()
+        user_ids = get_controlled_user_ids()
+
+        allowed_ids = list(
+            set(admin_ids + user_ids)
+        )
+
+        if not allowed_ids:
+
+            return render_template(
+                "super_admin/users.html",
+                users=None,
+                total=0,
+                admin_count=0,
+                user_count=0,
+                search=search
+            )
+
+        query = (
+            User.query
+            .options(
+                joinedload(User.profile)
+            )
+            .filter(
+                User.id.in_(allowed_ids),
+                User.is_deleted.is_(False)
+            )
+        )
+
+        # Search
+        if search:
+
+            query = query.filter(
+                or_(
+                    User.name.ilike(
+                        f"%{search}%"
+                    ),
+                    User.phone.ilike(
+                        f"%{search}%"
+                    ),
+                    User.email.ilike(
+                        f"%{search}%"
+                    )
+                )
+            )
+
+        users = (
+            query
+            .order_by(
+                User.id.desc()
+            )
+            .paginate(
+                page=page,
+                per_page=20,
+                error_out=False
+            )
+        )
+
+        return render_template(
+            "super_admin/users.html",
+            users=users,
+            total=users.total,
+            admin_count=len(admin_ids),
+            user_count=len(user_ids),
+            search=search
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"Super Admin Users Error: {e}"
+        )
+
+        flash(
+            "Unable to load users.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "super_admin.dashboard_page"
+            )
+        )
 
 # =========================================================
 # APPLICATIONS PAGE
