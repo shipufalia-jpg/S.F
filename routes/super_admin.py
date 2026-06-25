@@ -22,7 +22,9 @@ from models.chat import Chat
 from models.work_application import WorkApplication
 from models.activity_log import ActivityLog
 from models.work_model import Work
-
+from flask import current_app
+from sqlalchemy import func, or_
+from json import JSONDecodeError
 from services.logger import log_activity
 
 
@@ -91,109 +93,141 @@ def get_controlled_user_ids():
 # DASHBOARD
 # =========================================================
 
-
-@super_admin.route("/users")
+@super_admin.route("/")
 @super_admin_required
-def super_admin_users():
+def dashboard_page():
 
     try:
-
-        page = max(
-            request.args.get(
-                "page",
-                1,
-                type=int
-            ),
-            1
-        )
-
-        search = request.args.get(
-            "search",
-            "",
-            type=str
-        ).strip()
 
         admin_ids = get_controlled_admin_ids()
         user_ids = get_controlled_user_ids()
 
-        allowed_ids = list(
-            set(admin_ids + user_ids)
-        )
-
-        if not allowed_ids:
+        if not user_ids:
 
             return render_template(
-                "super_admin/users.html",
-                users=None,
-                total=0,
-                admin_count=0,
-                user_count=0,
-                search=search
+                "super_admin/dashboard.html",
+                total_admins=len(admin_ids),
+                total_users=0,
+                active_users=0,
+                blocked_users=0,
+                total_applications=0,
+                recent_users=[],
+                now=datetime.utcnow()
             )
 
-        query = (
+        # ==================================
+        # USER STATS (Single Query)
+        # ==================================
+
+        stats = (
+            db.session.query(
+                func.count(User.id).label(
+                    "total_users"
+                ),
+
+                func.sum(
+                    case(
+                        (
+                            User.status == "active",
+                            1
+                        ),
+                        else_=0
+                    )
+                ).label(
+                    "active_users"
+                ),
+
+                func.sum(
+                    case(
+                        (
+                            User.status == "blocked",
+                            1
+                        ),
+                        else_=0
+                    )
+                ).label(
+                    "blocked_users"
+                )
+            )
+            .filter(
+                User.id.in_(user_ids),
+                User.is_deleted.is_(False)
+            )
+            .first()
+        )
+
+        # ==================================
+        # APPLICATION COUNT
+        # ==================================
+
+        total_applications = (
+            WorkApplication.query
+            .filter(
+                WorkApplication.user_id.in_(
+                    user_ids
+                ),
+                WorkApplication.is_deleted.is_(False)
+            )
+            .count()
+        )
+
+        # ==================================
+        # RECENT USERS
+        # ==================================
+
+        recent_users = (
             User.query
             .options(
                 joinedload(User.profile)
             )
             .filter(
-                User.id.in_(allowed_ids),
+                User.id.in_(user_ids),
                 User.is_deleted.is_(False)
             )
-        )
-
-        # Search
-        if search:
-
-            query = query.filter(
-                or_(
-                    User.name.ilike(
-                        f"%{search}%"
-                    ),
-                    User.phone.ilike(
-                        f"%{search}%"
-                    ),
-                    User.email.ilike(
-                        f"%{search}%"
-                    )
-                )
-            )
-
-        users = (
-            query
             .order_by(
                 User.id.desc()
             )
-            .paginate(
-                page=page,
-                per_page=20,
-                error_out=False
-            )
+            .limit(10)
+            .all()
         )
 
         return render_template(
-            "super_admin/users.html",
-            users=users,
-            total=users.total,
-            admin_count=len(admin_ids),
-            user_count=len(user_ids),
-            search=search
+            "super_admin/dashboard.html",
+
+            total_admins=len(admin_ids),
+
+            total_users=
+            stats.total_users or 0,
+
+            active_users=
+            stats.active_users or 0,
+
+            blocked_users=
+            stats.blocked_users or 0,
+
+            total_applications=
+            total_applications,
+
+            recent_users=
+            recent_users,
+
+            now=datetime.utcnow()
         )
 
     except Exception as e:
 
         current_app.logger.error(
-            f"Super Admin Users Error: {e}"
+            f"Dashboard Error: {e}"
         )
 
         flash(
-            "Unable to load users.",
+            "Unable to load dashboard.",
             "danger"
         )
 
         return redirect(
             url_for(
-                "super_admin.dashboard_page"
+                "auth.login"
             )
         )
 
