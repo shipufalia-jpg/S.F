@@ -25,6 +25,8 @@ from models.profile import Profile
 from models.chat import Chat
 import json
 from utils.decorators import admin_required
+from utils.activity_logger import log_activity
+from app import limiter
 from datetime import datetime
 from werkzeug.security import (
     generate_password_hash
@@ -75,90 +77,301 @@ def users():
 
     user_id = session.get("user_id")
 
-    page = request.args.get("page", 1, type=int)
-    per_page = request.args.get("limit", 20, type=int)
+    page = max(
+        request.args.get("page", 1, type=int),
+        1
+    )
+
+    per_page = min(
+        max(
+            request.args.get(
+                "limit",
+                20,
+                type=int
+            ),
+            1
+        ),
+        20
+    )
+
     search = request.args.get(
         "search",
         "",
         type=str
     ).strip()[:50]
 
-    query = User.query.filter_by(controller_id=user_id)\
-        .options(load_only(User.id, User.name, User.status))
+    query = (
+        User.query
+        .filter_by(
+            controller_id=user_id
+        )
+        .options(
+            load_only(
+                User.id,
+                User.name,
+                User.status
+            )
+        )
+    )
 
     if search:
-        query = query.filter(User.name.ilike(f"%{search}%"))
+        query = query.filter(
+            User.name.ilike(
+                f"%{search}%"
+            )
+        )
 
-    users = query.paginate(page=page, per_page=per_page)
+    users = query.order_by(
+        User.id.desc()
+    ).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
 
     return success({
-        "users": [{
-            "id": u.id,
-            "name": u.name,
-            "status": u.status
-        } for u in users.items],
+        "users": [
+            {
+                "id": u.id,
+                "name": u.name,
+                "status": u.status
+            }
+            for u in users.items
+        ],
+
         "pagination": {
             "total": users.total,
             "pages": users.pages,
-            "current": users.page
+            "current": users.page,
+            "per_page": users.per_page,
+            "has_next": users.has_next,
+            "has_prev": users.has_prev
         }
     })
 
 
 # ================= USER STATUS =================
 
-@admin_bp.route("/user/<int:id>/status", methods=["POST"])
+@admin_bp.route(
+    "/user/<int:id>/status",
+    methods=["POST"]
+)
 @admin_required
 def update_user_status(id):
 
     user = User.query.filter_by(
-    id=id,
-    controller_id=session.get("user_id")
-).first_or_404()
+        id=id,
+        controller_id=session.get(
+            "user_id"
+        )
+    ).first_or_404()
 
-    data = request.get_json(silent=True) or {}
-    status = data.get("status")
-
-    if status not in ["active", "blocked"]:
-        return error("Invalid status")
-
-    user.status = status
-    log_activity(
-        actor_id=session["user_id"],
-        target_id=user.id,
-        action=f"user_{status}",
-        role=session.get("role")
+    data = (
+        request.get_json(
+            silent=True
+        ) or {}
     )
-    db.session.commit()
 
-    return success(message=f"User {status}")
+    status = (
+        data.get(
+            "status",
+            ""
+        ).strip().lower()
+    )
+
+    allowed_status = {
+        "active",
+        "blocked"
+    }
+
+    if status not in allowed_status:
+        return error(
+            "Invalid status",
+            400
+        )
+
+    if user.status == status:
+        return success(
+            message=(
+                f"User already "
+                f"{status}"
+            )
+        )
+
+    try:
+
+        old_status = user.status
+
+        user.status = status
+
+        log_activity(
+            actor_id=session.get(
+                "user_id"
+            ),
+            target_id=user.id,
+            action=(
+                f"user_status_"
+                f"{status}"
+            ),
+            role=session.get(
+                "role"
+            ),
+            meta={
+                "old_status":
+                    old_status,
+                "new_status":
+                    status
+            }
+        )
+
+        db.session.commit()
+
+        return success(
+            message=(
+                f"User status "
+                f"updated to "
+                f"{status}"
+            )
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "User Status Error:",
+            e
+        )
+
+        return error(
+            "Unable to update status",
+            500
+        )
 
 
 # ================= BULK ACTION =================
 
-@admin_bp.route("/users/bulk", methods=["POST"])
+@admin_bp.route(
+    "/users/bulk",
+    methods=["POST"]
+)
 @admin_required
+@limiter.limit("5 per minute")
 def bulk_users():
 
-    data = request.get_json(silent=True) or {}
-    ids = data.get("ids", [])
-    action = data.get("action")
+    data = (
+        request.get_json(
+            silent=True
+        ) or {}
+    )
 
-    if action not in ["block", "unblock"]:
-        return error("Invalid action")
+    ids = data.get(
+        "ids",
+        []
+    )
 
-    users = User.query.filter(
-        User.id.in_(ids),
-        User.controller_id == session.get("user_id")
-    ).all()
+    action = (
+        data.get(
+            "action",
+            ""
+        ).strip().lower()
+    )
 
-    for u in users:
-        u.status = "blocked" if action == "block" else "active"
+    if action not in {
+        "block",
+        "unblock"
+    }:
+        return error(
+            "Invalid action",
+            400
+        )
 
-    db.session.commit()
+    if (
+        not isinstance(ids, list)
+        or not ids
+        or len(ids) > 100
+    ):
+        return error(
+            "Invalid user list",
+            400
+        )
 
-    return success(message="Bulk action completed")
+    try:
 
+        users = (
+            User.query
+            .filter(
+                User.id.in_(ids),
+                User.controller_id ==
+                session.get("user_id")
+            )
+            .all()
+        )
+
+        if not users:
+            return error(
+                "No users found",
+                404
+            )
+
+        new_status = (
+            "blocked"
+            if action == "block"
+            else "active"
+        )
+
+        updated_count = 0
+
+        for user in users:
+
+            if user.status == new_status:
+                continue
+
+            old_status = user.status
+
+            user.status = new_status
+
+            log_activity(
+                actor_id=session.get(
+                    "user_id"
+                ),
+                target_id=user.id,
+                action=f"bulk_{action}",
+                role=session.get(
+                    "role"
+                ),
+                meta={
+                    "old_status":
+                        old_status,
+                    "new_status":
+                        new_status
+                }
+            )
+
+            updated_count += 1
+
+        db.session.commit()
+
+        return success(
+            message=(
+                f"{updated_count} users "
+                f"updated successfully"
+            )
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Bulk User Error:",
+            e
+        )
+
+        return error(
+            "Bulk action failed",
+            500
+        )
 
 # ================= ANALYTICS =================
 
