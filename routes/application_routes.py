@@ -9,6 +9,27 @@ from utils.notification_helper import send_notification
 
 application_bp = Blueprint('application', __name__)
 
+from functools import wraps
+
+def owner_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+
+        user_id = session.get("user_id")
+
+        if not user_id:
+            return redirect("/auth/login")
+
+        user = User.query.get(user_id)
+
+        if not user or user.role != "owner":
+            flash("Unauthorized", "danger")
+            return redirect("/")
+
+        return f(*args, **kwargs)
+
+    return decorated
+
 # =================================================
 # 🟢 APPLY FORM PAGE (GET)
 # =================================================
