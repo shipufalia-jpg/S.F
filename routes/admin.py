@@ -9,37 +9,29 @@ from flask import (
     url_for
 )
 
-from utils.decorators import (
-    admin_required,
-    role_required
-)
-from functools import wraps
-from models.user import User
-from models.booking import Booking
-from models.work_model import Work
-from models.work_application import WorkApplication
-from extensions import db
-from sqlalchemy.orm import load_only
-from sqlalchemy.orm import joinedload
-from models.profile import Profile
-from models.chat import Chat
 import json
 
-from utils.activity_logger import log_activity
-from app import limiter
+from sqlalchemy.orm import (
+    load_only,
+    joinedload
+)
+
 from werkzeug.security import (
     generate_password_hash
 )
 
-from utils.password_reset import (
-    can_manage_reset_request
-)
-from models.password_reset_request import (
-    PasswordResetRequest
+from extensions import (
+    db,
+    limiter
 )
 
-from models.notification import (
-    Notification
+from utils.decorators import (
+    admin_required,
+    role_required
+)
+
+from utils.activity_logger import (
+    log_activity
 )
 
 from utils.password_validator import (
@@ -51,8 +43,21 @@ from utils.password_reset import (
     can_manage_reset_request
 )
 
-admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+from models.user import User
+from models.profile import Profile
+from models.chat import Chat
+from models.booking import Booking
+from models.work_model import Work
+from models.notification import Notification
+from models.work_application import WorkApplication
+from models.password_reset_request import PasswordResetRequest
 
+
+admin_bp = Blueprint(
+    "admin",
+    __name__,
+    url_prefix="/admin"
+)
 
 # ================= RESPONSE =================
 
