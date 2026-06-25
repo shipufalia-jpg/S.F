@@ -12,7 +12,7 @@ from utils.notification import send_notification
 from functools import wraps
 from sqlalchemy import func
 from datetime import datetime, timedelta
-
+from models.transaction import Transaction
 from extensions import db, socketio
 from models.withdraw import WithdrawRequest
 from models.user import User
@@ -1136,7 +1136,11 @@ def works_partial():
     )
 
 
-@owner.route("/withdraw/approve/<int:id>")
+@owner.route(
+    "/withdraw/approve/<int:id>",
+    methods=["POST"]
+)
+@owner_only
 def approve_withdraw(id):
     ...
     try:
@@ -1201,7 +1205,11 @@ def approve_withdraw(id):
         print("Approve Withdraw Error:", e)
         return "Error occurred"
 
-@owner.route("/withdraw/reject/<int:id>")
+@owner.route(
+    "/withdraw/reject/<int:id>",
+    methods=["POST"]
+)
+@owner_only
 def reject_withdraw(id):
     ...
     try:
