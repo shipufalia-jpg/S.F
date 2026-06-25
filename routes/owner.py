@@ -222,141 +222,237 @@ return redirect(
 # =================================================
 # ❌ REJECT WORK
 # =================================================
-@owner.route('/owner/work/reject/<int:id>')
+@owner.route(
+'/owner/work/reject/"int:id" (int:id)',
+methods=['POST']
+)
 @owner_only
 def reject_work(id):
 
+try:
+
     work = Work.query.get_or_404(id)
 
-    # ================= ALREADY REJECTED =================
+    # Already Rejected
     if work.status == "rejected":
 
-        flash("Work already rejected", "info")
+        flash(
+            "Work already rejected",
+            "info"
+        )
 
-        return redirect('/owner/dashboard')
+        return redirect(
+            url_for(
+                'owner.owner_dashboard'
+            )
+        )
 
-    # ================= REJECT =================
+    # Reject Work
     work.status = "rejected"
-
     work.is_active = False
 
-    work.rejected_by = session.get("user_id")
+    work.rejected_by = session.get(
+        "user_id"
+    )
 
     work.updated_at = datetime.utcnow()
 
     db.session.commit()
+
+    # User Notification
     send_notification(
-    user_id=work.user_id,
-    title="Work Rejected",
-    message="Your work has been rejected.",
-    type="reject",
-    icon="x-circle",
-    priority="high"
+        user_id=work.user_id,
+        title="Work Rejected",
+        message="Your work has been rejected by admin.",
+        type="reject",
+        icon="x-circle",
+        priority="high"
     )
 
-    user_id=user.id,
-
-    title="Account Rejected",
-
-    message="Sorry, your account has been rejected.",
-
-    type="reject",
-
-    icon="x-circle",
-
-    priority="high"
+    # Realtime Socket
+    socketio.emit(
+        "work_update",
+        {
+            "type": "rejected",
+            "work_id": work.id,
+            "title": work.title,
+            "message": f"{work.title} rejected"
+        }
     )
 
-    # ================= SOCKET =================
-    socketio.emit("work_update", {
+    flash(
+        "Work rejected successfully",
+        "warning"
+    )
 
-        "type": "rejected",
+except Exception as e:
 
-        "work_id": work.id,
+    db.session.rollback()
 
-        "title": work.title,
+    print(
+        "Reject Work Error:",
+        str(e)
+    )
 
-        "message": f"{work.title} rejected"
+    flash(
+        "Something went wrong",
+        "danger"
+    )
 
-    })
-
-    flash("Work rejected successfully", "warning")
-
-    return redirect('/owner/dashboard')
+return redirect(
+    url_for(
+        'owner.owner_dashboard'
+    )
+)
 
 
 # =================================================
 # ✏️ EDIT WORK
 # =================================================
-@owner.route('/owner/work/edit/<int:id>', methods=['GET', 'POST'])
+@owner.route(
+'/owner/work/edit/"int:id" (int:id)',
+methods=['GET', 'POST']
+)
 @owner_only
 def edit_work(id):
 
-    work = Work.query.get_or_404(id)
+work = Work.query.get_or_404(id)
 
-    # ================= UPDATE =================
-    if request.method == "POST":
+if request.method == "POST":
 
-        title = request.form.get('title')
-        description = request.form.get('description')
-        mobile = request.form.get('mobile')
+    try:
+
+        # ================= FORM DATA =================
+        title = request.form.get(
+            "title",
+            ""
+        ).strip()
+
+        description = request.form.get(
+            "description",
+            ""
+        ).strip()
+
+        mobile = request.form.get(
+            "mobile",
+            ""
+        ).strip()
 
         # ================= VALIDATION =================
-        if not title or not description or not mobile:
-
-            flash("All fields required", "danger")
-
+        if not title:
+            flash(
+                "Title is required",
+                "danger"
+            )
             return redirect(
                 url_for(
-                    'owner.edit_work',
+                    "owner.edit_work",
                     id=id
                 )
             )
 
-        # ================= SAVE =================
+        if not description:
+            flash(
+                "Description is required",
+                "danger"
+            )
+            return redirect(
+                url_for(
+                    "owner.edit_work",
+                    id=id
+                )
+            )
+
+        if not mobile:
+            flash(
+                "Mobile number is required",
+                "danger"
+            )
+            return redirect(
+                url_for(
+                    "owner.edit_work",
+                    id=id
+                )
+            )
+
+        # ================= UPDATE =================
         work.title = title
-
         work.description = description
-
         work.mobile = mobile
 
-        # RE-VERIFY AFTER EDIT
+        # Re-verify after edit
         work.status = "pending"
-
         work.is_active = False
 
-        work.edited_by = session.get("user_id")
+        work.edited_by = session.get(
+            "user_id"
+        )
 
-        work.edit_count += 1
+        work.edit_count = (
+            work.edit_count or 0
+        ) + 1
 
         work.updated_at = datetime.utcnow()
 
         db.session.commit()
 
+        # ================= NOTIFICATION =================
+        send_notification(
+            user_id=work.user_id,
+            title="Work Updated",
+            message="Your work has been updated and moved to pending review.",
+            type="info",
+            icon="edit",
+            priority="normal"
+        )
+
         # ================= SOCKET =================
-        socketio.emit("work_update", {
-
-            "type": "edited",
-
-            "work_id": work.id,
-
-            "title": work.title,
-
-            "message": f"{work.title} edited"
-
-        })
+        socketio.emit(
+            "work_update",
+            {
+                "type": "edited",
+                "work_id": work.id,
+                "title": work.title,
+                "message": f"{work.title} edited"
+            }
+        )
 
         flash(
-            "Work updated and moved to pending review",
+            "Work updated successfully and moved to pending review",
             "success"
         )
 
-        return redirect('/owner/dashboard')
+        return redirect(
+            url_for(
+                "owner.owner_dashboard"
+            )
+        )
 
-    return render_template(
-        "edit_work.html",
-        work=work
-    )
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "Edit Work Error:",
+            str(e)
+        )
+
+        flash(
+            "Something went wrong",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "owner.edit_work",
+                id=id
+            )
+        )
+
+return render_template(
+    "edit_work.html",
+    work=work
+     )
 
 
 # =================================================
