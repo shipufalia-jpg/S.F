@@ -208,33 +208,25 @@ def create_app():
     @app.after_request
     def security_headers(response):
 
-        response.headers[
-            "X-Frame-Options"
-        ] = "SAMEORIGIN"
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
-        response.headers[
-            "X-Content-Type-Options"
-        ] = "nosniff"
-
-        response.headers[
-            "Referrer-Policy"
-        ] = "strict-origin-when-cross-origin"
-
-        response.headers[
-            "Permissions-Policy"
-        ] = (
-            "camera=(), "
-            "microphone=(), "
-            "geolocation=()"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=()"
         )
 
-        response.headers[
-            "X-XSS-Protection"
-        ] = "1; mode=block"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "img-src 'self' https: data:; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.socket.io; "
+            "connect-src 'self' ws: wss:;"
+        )
 
         return response
-
-    return app
 
 
 # ==================================================
