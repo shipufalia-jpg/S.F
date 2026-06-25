@@ -5,11 +5,12 @@ from models.work_model import Work
 from models.work_application import WorkApplication
 from extensions import db
 from utils.notification_helper import send_notification
+from functools import wraps
 
 
 application_bp = Blueprint('application', __name__)
 
-from functools import wraps
+
 
 def owner_required(f):
     @wraps(f)
