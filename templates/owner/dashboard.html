@@ -481,58 +481,85 @@ body{
 
                         <div class="action-buttons text-end">
 
-                            <a href="/owner/user/{{ user.id }}"
-                               class="btn btn-dark btn-sm">
+    <a href="/owner/user/{{ user.id }}"
+       class="btn btn-dark btn-sm">
+       👁 View
+    </a>
 
-                               👁 View
+    <br><br>
 
-                            </a>
+    <a href="/owner/user/edit/{{ user.id }}"
+       class="btn btn-primary btn-sm">
+       ✏ Edit
+    </a>
 
-                            <br>
+    <br><br>
 
-                            <a href="/owner/user/edit/{{ user.id }}"
-                               class="btn btn-primary btn-sm">
+    {% if user.status != "blocked" %}
 
-                               ✏ Edit
+    <form method="POST"
+          action="{{ url_for('owner.block_user', id=user.id) }}"
+          style="display:inline;">
 
-                            </a>
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
 
-                            <br>
+        <button type="submit"
+                class="btn btn-warning btn-sm"
+                onclick="return confirm('Block this user?')">
 
-                            {% if user.status != "blocked" %}
+            🚫 Block
 
-                            <a href="/owner/user/block/{{ user.id }}"
-                               class="btn btn-warning btn-sm">
+        </button>
 
-                               🚫 Block
+    </form>
 
-                            </a>
+    {% else %}
 
-                            {% else %}
+    <form method="POST"
+          action="{{ url_for('owner.unblock_user', id=user.id) }}"
+          style="display:inline;">
 
-                            <a href="/owner/user/unblock/{{ user.id }}"
-                               class="btn btn-success btn-sm">
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
 
-                               ✅ Unblock
+        <button type="submit"
+                class="btn btn-success btn-sm"
+                onclick="return confirm('Unblock this user?')">
 
-                            </a>
+            ✅ Unblock
 
-                            {% endif %}
+        </button>
 
-                            <br>
+    </form>
 
-                            <a href="/owner/user/delete/{{ user.id }}"
-                               class="btn btn-danger btn-sm">
+    {% endif %}
 
-                               🗑 Delete
+    <br><br>
 
-                            </a>
+    <form method="POST"
+          action="{{ url_for('owner.delete_user', id=user.id) }}"
+          style="display:inline;">
 
-                        </div>
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
 
-                    </div>
+        <button type="submit"
+                class="btn btn-danger btn-sm"
+                onclick="return confirm('Delete this user permanently?')">
 
-                    <hr>
+            🗑 Delete
+
+        </button>
+
+    </form>
+
+</div>
+
+<hr>
 
                     <!-- ================= APPROVAL ================= -->
 
