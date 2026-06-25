@@ -213,6 +213,11 @@ class User(UserMixin, db.Model):
         back_populates="user",
         lazy=True
     )
+    profile = db.relationship(
+        "Profile",
+        uselist=False,
+        back_populates="user"
+    )
     # ======================
     # STRING
     # ======================
