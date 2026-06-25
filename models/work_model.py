@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from extensions import db
 
 
@@ -123,9 +123,9 @@ class Work(db.Model):
     # ================= TIMESTAMP =================
 
     created_at = db.Column(
-        db.DateTime,
+        db.DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(UTC),
         index=True
     )
 
