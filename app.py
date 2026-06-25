@@ -161,6 +161,24 @@ def create_app():
 
     for bp in blueprints:
         app.register_blueprint(bp)
+    @app.after_request
+    def security_headers(response):
+
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+
+        response.headers["X-Content-Type-Options"] = "nosniff"
+
+        response.headers["Referrer-Policy"] = (
+        "strict-origin-when-cross-origin"
+    )
+
+        response.headers["Permissions-Policy"] = (
+        "camera=(), microphone=(), geolocation=()"
+    )
+
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+
+    return response  
 
     return app
 
