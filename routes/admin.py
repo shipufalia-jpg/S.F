@@ -725,7 +725,9 @@ def password_resets():
 
 
 
-@admin.route(
+from datetime import datetime, UTC
+
+@admin_bp.route(
     "/password-resets/<int:req_id>",
     methods=["GET", "POST"]
 )
@@ -734,6 +736,7 @@ def password_resets():
     "owner",
     "super_admin"
 )
+@limiter.limit("5 per minute")
 def reset_user_password(req_id):
 
     req = db.session.get(
@@ -742,12 +745,10 @@ def reset_user_password(req_id):
     )
 
     if not req:
-
         flash(
             "Request not found.",
             "danger"
         )
-
         return redirect(
             url_for(
                 "admin.password_resets"
@@ -755,12 +756,10 @@ def reset_user_password(req_id):
         )
 
     if not can_manage_reset_request(req):
-
         flash(
             "Permission denied.",
             "danger"
         )
-
         return redirect(
             url_for(
                 "admin.password_resets"
@@ -768,12 +767,10 @@ def reset_user_password(req_id):
         )
 
     if req.status != "pending":
-
         flash(
             "Request already processed.",
             "warning"
         )
-
         return redirect(
             url_for(
                 "admin.password_resets"
@@ -786,12 +783,10 @@ def reset_user_password(req_id):
     )
 
     if not user:
-
         flash(
             "User not found.",
             "danger"
         )
-
         return redirect(
             url_for(
                 "admin.password_resets"
@@ -813,14 +808,16 @@ def reset_user_password(req_id):
         ).strip()
     )
 
-    error = validate_password(
-        new_password
+    validation_error = (
+        validate_password(
+            new_password
+        )
     )
 
-    if error:
+    if validation_error:
 
         flash(
-            error,
+            validation_error,
             "danger"
         )
 
@@ -833,10 +830,12 @@ def reset_user_password(req_id):
 
     try:
 
-        user.password = generate_password_hash(
-            new_password,
-            method="pbkdf2:sha256",
-            salt_length=16
+        user.password = (
+            generate_password_hash(
+                new_password,
+                method="pbkdf2:sha256",
+                salt_length=16
+            )
         )
 
         user.must_change_password = True
@@ -844,11 +843,42 @@ def reset_user_password(req_id):
         req.status = "completed"
 
         req.handled_by = (
-            session["user_id"]
+            session.get(
+                "user_id"
+            )
         )
 
         req.processed_at = (
-            datetime.utcnow()
+            datetime.now(UTC)
+        )
+
+        # Activity Log
+        log_activity(
+            actor_id=session.get(
+                "user_id"
+            ),
+            target_id=user.id,
+            action="password_reset",
+            role=session.get(
+                "role"
+            ),
+            meta={
+                "request_id": req.id
+            }
+        )
+
+        # Optional Notification
+        notification = Notification(
+            user_id=user.id,
+            title="Password Reset",
+            message=(
+                "Your password was "
+                "reset by admin."
+            )
+        )
+
+        db.session.add(
+            notification
         )
 
         db.session.commit()
@@ -864,7 +894,7 @@ def reset_user_password(req_id):
 
         print(
             "Reset Password Error:",
-            e
+            str(e)
         )
 
         flash(
@@ -876,4 +906,4 @@ def reset_user_password(req_id):
         url_for(
             "admin.password_resets"
         )
-)
+    )
