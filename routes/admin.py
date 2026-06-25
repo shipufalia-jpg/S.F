@@ -1,4 +1,18 @@
-from flask import Blueprint, render_template, session, jsonify, request
+from flask import (
+    Blueprint,
+    render_template,
+    session,
+    jsonify,
+    request,
+    flash,
+    redirect,
+    url_for
+)
+
+from utils.decorators import (
+    admin_required,
+    role_required
+)
 from functools import wraps
 from models.user import User
 from models.booking import Booking
@@ -291,8 +305,7 @@ def chambers_control():
 
 
 @admin_bp.route("/password-resets")
-def password_resets():
-    ...
+@role_required(
     "admin",
     "owner",
     "super_admin"
@@ -327,7 +340,6 @@ def password_resets():
                 "admin.dashboard"
             )
         )
-
 
 
 
