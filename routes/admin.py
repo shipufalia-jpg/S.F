@@ -407,18 +407,62 @@ def users_page():
 
     admin_id = session.get("user_id")
 
-    users = User.query.filter_by(
-        controller_id=admin_id,
-        is_deleted=False
-    ).order_by(
-        User.id.desc()
-    ).all()
+    page = max(
+        request.args.get(
+            "page",
+            1,
+            type=int
+        ),
+        1
+    )
+
+    search = request.args.get(
+        "search",
+        "",
+        type=str
+    ).strip()[:50]
+
+    query = (
+        User.query
+        .filter_by(
+            controller_id=admin_id,
+            is_deleted=False
+        )
+        .options(
+            load_only(
+                User.id,
+                User.name,
+                User.status,
+                User.created_at
+            )
+        )
+    )
+
+    if search:
+        query = query.filter(
+            User.name.ilike(
+                f"%{search}%"
+            )
+        )
+
+    users = (
+        query
+        .order_by(
+            User.id.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=20,
+            error_out=False
+        )
+    )
 
     return render_template(
         "admin/users.html",
-        users=users
+        users=users.items,
+        pagination=users,
+        search=search
     )
-
 # ================= USERS API (JSON) =================
 @admin_bp.route("/api/users")
 @admin_required
