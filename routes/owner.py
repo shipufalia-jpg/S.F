@@ -1264,31 +1264,13 @@ def reject_withdraw(id):
         print("Reject Withdraw Error:", e)
         return "Error occurred"
 
-# =====================================================
-# OWNER REQUIRED
-# =====================================================
-
-def owner_required(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-
-        if "user_id" not in session:
-            return redirect("/auth/login")
-
-        if session.get("role") != "owner":
-            return "Access denied"
-
-        return f(*args, **kwargs)
-
-    return wrapper
-
 
 # =====================================================
 # WITHDRAW LIST (UPGRADED)
 # =====================================================
 
 @owner.route("/withdraws")
-@owner_required
+@owner_only
 def withdraw_list():
 
     try:
@@ -1334,7 +1316,7 @@ def withdraw_list():
     "/withdraw/paid/<int:id>",
     methods=["POST"]
 )
-@owner_required
+@owner_only
 def mark_paid(id):
 
     try:
