@@ -212,20 +212,70 @@ def super_admin_users():
 @super_admin_required
 def applications():
 
-    user_ids = get_controlled_user_ids()
+    try:
 
-    apps = WorkApplication.query.filter(
-        WorkApplication.user_id.in_(user_ids),
-        WorkApplication.is_deleted.is_(False)
-    ).order_by(
-        WorkApplication.id.desc()
-    ).all()
+        page = max(
+            request.args.get(
+                "page",
+                1,
+                type=int
+            ),
+            1
+        )
 
-    return render_template(
-        "super_admin/applications.html",
-        applications=apps
-    )
+        user_ids = get_controlled_user_ids()
 
+        if not user_ids:
+
+            return render_template(
+                "super_admin/applications.html",
+                applications=None
+            )
+
+        applications = (
+            WorkApplication.query
+            .options(
+                joinedload(
+                    WorkApplication.user
+                )
+            )
+            .filter(
+                WorkApplication.user_id.in_(
+                    user_ids
+                ),
+                WorkApplication.is_deleted.is_(False)
+            )
+            .order_by(
+                WorkApplication.id.desc()
+            )
+            .paginate(
+                page=page,
+                per_page=20,
+                error_out=False
+            )
+        )
+
+        return render_template(
+            "super_admin/applications.html",
+            applications=applications
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"Applications page error: {e}"
+        )
+
+        flash(
+            "Unable to load applications.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "super_admin.dashboard_page"
+            )
+        )
 
 # =========================================================
 # USER PROFILE PAGE
@@ -235,35 +285,113 @@ def applications():
 @super_admin_required
 def super_admin_user_profile(user_id):
 
-    user = User.query.options(
-        joinedload(User.profile)
-    ).filter_by(
-        id=user_id,
-        is_deleted=False
-    ).first()
+    # ==========================================
+    # AUTHORIZATION CHECK
+    # ==========================================
+
+    allowed_ids = (
+        get_controlled_admin_ids() +
+        get_controlled_user_ids()
+    )
+
+    if user_id not in allowed_ids:
+
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("super_admin.super_admin_users"))
+
+    # ==========================================
+    # PAGINATION
+    # ==========================================
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
+    # ==========================================
+    # USER + PROFILE
+    # ==========================================
+
+    user = (
+        User.query
+        .options(
+            joinedload(User.profile)
+        )
+        .filter(
+            User.id == user_id,
+            User.is_deleted.is_(False)
+        )
+        .first()
+    )
 
     if not user:
 
         flash("User not found", "danger")
-        return redirect("/super/users")
+        return redirect(
+            url_for("super_admin.super_admin_users")
+        )
 
-    profile = Profile.query.filter_by(
-        user_id=user.id
-    ).first()
+    profile = user.profile
 
-    works = Work.query.filter_by(
-        user_id=user.id
-    ).all()
+    # ==========================================
+    # WORKS PAGINATION
+    # ==========================================
+
+    works = (
+        Work.query
+        .filter(
+            Work.user_id == user.id
+        )
+        .order_by(
+            Work.id.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=10,
+            error_out=False
+        )
+    )
+
+    # ==========================================
+    # GALLERY PARSE
+    # ==========================================
 
     gallery_images = []
 
     if profile and profile.gallery:
 
         try:
-            gallery_images = json.loads(profile.gallery)
+            gallery_images = json.loads(
+                profile.gallery
+            )
 
-        except Exception:
+            if not isinstance(
+                gallery_images,
+                list
+            ):
+                gallery_images = []
+
+        except (
+            JSONDecodeError,
+            TypeError
+        ):
             gallery_images = []
+
+    # ==========================================
+    # ACTIVITY LOG
+    # ==========================================
+
+    log_activity(
+        actor_id=session.get("user_id"),
+        target_id=user.id,
+        action="view_profile",
+        role="super_admin"
+    )
+
+    # ==========================================
+    # RESPONSE
+    # ==========================================
 
     return render_template(
         "super_admin/user_profile.html",
@@ -273,121 +401,303 @@ def super_admin_user_profile(user_id):
         gallery_images=gallery_images
     )
 
-
 # =========================================================
 # UPDATE ADMIN STATUS
 # =========================================================
 
-@super_admin.route("/admin/<int:id>/status/<string:action>")
+@super_admin.route(
+    "/admin/<int:admin_id>/status",
+    methods=["POST"]
+)
 @super_admin_required
-def update_admin_status(id, action):
+def update_admin_status(admin_id):
 
-    admin = User.query.filter(
-        User.id == id,
-        User.role == "admin",
-        User.controller_id == session.get("user_id")
-    ).first_or_404()
+    action = request.form.get(
+        "action",
+        ""
+    ).strip().lower()
 
-    allowed_actions = [
-        "approve",
-        "reject",
-        "block",
-        "unblock"
-    ]
+    allowed_actions = {
+        "approve": "active",
+        "unblock": "active",
+        "reject": "rejected",
+        "block": "blocked"
+    }
 
     if action not in allowed_actions:
 
-        flash("Invalid action", "danger")
-        return redirect("/super/admins")
+        flash(
+            "Invalid action",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
+        )
+
+    admin = (
+        User.query
+        .filter(
+            User.id == admin_id,
+            User.role == "admin",
+            User.controller_id ==
+            session.get("user_id"),
+            User.is_deleted.is_(False)
+        )
+        .first()
+    )
+
+    if not admin:
+
+        flash(
+            "Admin not found",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
+        )
 
     old_status = admin.status
+    new_status = allowed_actions[action]
 
-    if action in ["approve", "unblock"]:
-        admin.status = "active"
+    # No-op update protection
+    if old_status == new_status:
 
-    elif action == "reject":
-        admin.status = "rejected"
+        flash(
+            f"Admin is already {new_status}",
+            "info"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
+        )
 
-    elif action == "block":
-        admin.status = "blocked"
+    try:
 
-    db.session.commit()
+        admin.status = new_status
+        admin.updated_at = datetime.utcnow()
 
-    # SOCKET NOTIFICATION
-    socketio.emit(
-        "notify",
-        {
-            "message": f"Your account status changed to {admin.status}"
-        },
-        room=f"user_{admin.id}"
+        db.session.commit()
+
+        # Realtime notification
+        socketio.emit(
+            "notify",
+            {
+                "message":
+                f"Your account status changed to {new_status}"
+            },
+            room=f"user_{admin.id}"
+        )
+
+        # Audit Log
+        log_activity(
+            actor_id=session.get("user_id"),
+            target_id=admin.id,
+            action=action,
+            role="super_admin",
+            meta={
+                "old_status": old_status,
+                "new_status": new_status
+            }
+        )
+
+        flash(
+            f"Admin {action} successful",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        current_app.logger.error(
+            f"Admin status update failed: {e}"
+        )
+
+        flash(
+            "Database error occurred",
+            "danger"
+        )
+
+    return redirect(
+        url_for(
+            "super_admin.view_admins"
+        )
     )
-
-    # ACTIVITY LOG
-    log_activity(
-        actor_id=session.get("user_id"),
-        target_id=admin.id,
-        action=action,
-        role="super_admin",
-        meta={
-            "old_status": old_status,
-            "new_status": admin.status
-        }
-    )
-
-    flash(f"Admin {action} successful", "success")
-
-    return redirect("/super/admins")
-
 
 # =========================================================
 # BULK ACTION
 # =========================================================
 
-@super_admin.route("/admins/bulk", methods=["POST"])
+
+@super_admin.route(
+    "/admins/bulk",
+    methods=["POST"]
+)
 @super_admin_required
 def bulk_admin_action():
 
     ids = request.form.getlist("ids")
-    action = request.form.get("action")
+    action = request.form.get(
+        "action",
+        ""
+    ).strip().lower()
+
+    allowed_actions = {
+        "approve": "active",
+        "unblock": "active",
+        "block": "blocked"
+    }
+
+    # ===============================
+    # VALIDATION
+    # ===============================
 
     if not ids:
 
-        flash("No admin selected", "danger")
-        return redirect("/super/admins")
-
-    if action not in ["approve", "block", "unblock"]:
-
-        flash("Invalid action", "danger")
-        return redirect("/super/admins")
-
-    admins = User.query.filter(
-        User.id.in_(ids),
-        User.role == "admin",
-        User.controller_id == session.get("user_id")
-    ).all()
-
-    for admin in admins:
-
-        if action == "block":
-            admin.status = "blocked"
-
-        else:
-            admin.status = "active"
-
-        socketio.emit(
-            "notify",
-            {
-                "message": f"Admin status updated: {admin.status}"
-            },
-            room=f"user_{admin.id}"
+        flash(
+            "No admin selected",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
         )
 
-    db.session.commit()
+    if action not in allowed_actions:
 
-    flash(f"Bulk {action} successful", "success")
+        flash(
+            "Invalid action",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
+        )
 
-    return redirect("/super/admins")
+    try:
 
+        ids = [
+            int(i)
+            for i in ids
+        ]
+
+    except ValueError:
+
+        flash(
+            "Invalid admin IDs",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
+        )
+
+    # ===============================
+    # FETCH ADMINS
+    # ===============================
+
+    admins = (
+        User.query
+        .filter(
+            User.id.in_(ids),
+            User.role == "admin",
+            User.controller_id ==
+            session.get("user_id"),
+            User.is_deleted.is_(False)
+        )
+        .all()
+    )
+
+    if not admins:
+
+        flash(
+            "No valid admins found",
+            "warning"
+        )
+        return redirect(
+            url_for(
+                "super_admin.view_admins"
+            )
+        )
+
+    updated_count = 0
+
+    try:
+
+        for admin in admins:
+
+            old_status = admin.status
+            new_status = allowed_actions[action]
+
+            # Skip if already same status
+            if old_status == new_status:
+                continue
+
+            admin.status = new_status
+            admin.updated_at = datetime.utcnow()
+
+            updated_count += 1
+
+            # Audit Log
+            log_activity(
+                actor_id=session.get("user_id"),
+                target_id=admin.id,
+                action=f"bulk_{action}",
+                role="super_admin",
+                meta={
+                    "old_status": old_status,
+                    "new_status": new_status
+                }
+            )
+
+        db.session.commit()
+
+        # ===============================
+        # SOCKET NOTIFICATIONS
+        # ===============================
+
+        for admin in admins:
+
+            socketio.emit(
+                "notify",
+                {
+                    "message":
+                    f"Your account status changed to {admin.status}"
+                },
+                room=f"user_{admin.id}"
+            )
+
+        flash(
+            f"{updated_count} admin(s) updated successfully",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        current_app.logger.error(
+            f"Bulk admin update failed: {e}"
+        )
+
+        flash(
+            "Database error occurred",
+            "danger"
+        )
+
+    return redirect(
+        url_for(
+            "super_admin.view_admins"
+        )
+    )
 
 # =========================================================
 # LOGS PAGE
@@ -397,24 +707,82 @@ def bulk_admin_action():
 @super_admin_required
 def get_logs():
 
-    admin_ids = get_controlled_admin_ids()
+    try:
 
-    page = request.args.get("page", 1, type=int)
+        admin_ids = get_controlled_admin_ids()
 
-    logs = ActivityLog.query.filter(
-        ActivityLog.target_id.in_(admin_ids)
-    ).order_by(
-        ActivityLog.timestamp.desc()
-    ).paginate(
-        page=page,
-        per_page=30
-    )
+        if not admin_ids:
 
-    return render_template(
-        "super_admin/logs.html",
-        logs=logs
-    )
+            return render_template(
+                "super_admin/logs.html",
+                logs=None
+            )
 
+        page = max(
+            request.args.get(
+                "page",
+                1,
+                type=int
+            ),
+            1
+        )
+
+        search = request.args.get(
+            "search",
+            "",
+            type=str
+        ).strip()
+
+        query = (
+            ActivityLog.query
+            .filter(
+                ActivityLog.target_id.in_(admin_ids)
+            )
+        )
+
+        # Optional Search
+        if search:
+
+            query = query.filter(
+                ActivityLog.action.ilike(
+                    f"%{search}%"
+                )
+            )
+
+        logs = (
+            query
+            .order_by(
+                ActivityLog.timestamp.desc()
+            )
+            .paginate(
+                page=page,
+                per_page=30,
+                error_out=False
+            )
+        )
+
+        return render_template(
+            "super_admin/logs.html",
+            logs=logs,
+            search=search
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"Logs page error: {e}"
+        )
+
+        flash(
+            "Unable to load logs",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "super_admin.dashboard_page"
+            )
+        )
 
 # =========================================================
 # ANALYTICS PAGE
@@ -424,47 +792,71 @@ def get_logs():
 @super_admin_required
 def analytics():
 
-    start = datetime.utcnow() - timedelta(days=30)
+    try:
 
-    admin_ids = get_controlled_admin_ids()
-    user_ids = get_controlled_user_ids()
+        start = datetime.utcnow() - timedelta(days=30)
 
-    total_admins = len(admin_ids)
+        admin_ids = get_controlled_admin_ids()
+        user_ids = get_controlled_user_ids()
 
-    total_users = User.query.filter(
-        User.id.in_(user_ids)
-    ).count()
+        total_admins = len(admin_ids)
 
-    active_users = User.query.filter(
-        User.id.in_(user_ids),
-        User.status == "active"
-    ).count()
+        total_users = User.query.filter(
+            User.id.in_(user_ids),
+            User.is_deleted.is_(False)
+        ).count()
 
-    blocked_users = User.query.filter(
-        User.id.in_(user_ids),
-        User.status == "blocked"
-    ).count()
+        active_users = User.query.filter(
+            User.id.in_(user_ids),
+            User.status == "active",
+            User.is_deleted.is_(False)
+        ).count()
 
-    total_applications = WorkApplication.query.filter(
-        WorkApplication.user_id.in_(user_ids)
-    ).count()
+        blocked_users = User.query.filter(
+            User.id.in_(user_ids),
+            User.status == "blocked",
+            User.is_deleted.is_(False)
+        ).count()
 
-    growth = db.session.query(
-        func.date(User.created_at),
-        func.count(User.id)
-    ).filter(
-        User.id.in_(user_ids),
-        User.created_at >= start
-    ).group_by(
-        func.date(User.created_at)
-    ).all()
+        total_applications = WorkApplication.query.filter(
+            WorkApplication.user_id.in_(user_ids),
+            WorkApplication.is_deleted.is_(False)
+        ).count()
 
-    return render_template(
-        "super_admin/analytics.html",
-        total_admins=total_admins,
-        total_users=total_users,
-        active_users=active_users,
-        blocked_users=blocked_users,
-        total_applications=total_applications,
-        growth=growth
+        growth = db.session.query(
+            func.date(User.created_at),
+            func.count(User.id)
+        ).filter(
+            User.id.in_(user_ids),
+            User.created_at >= start,
+            User.is_deleted.is_(False)
+        ).group_by(
+            func.date(User.created_at)
+        ).all()
+
+        return render_template(
+            "super_admin/analytics.html",
+            total_admins=total_admins,
+            total_users=total_users,
+            active_users=active_users,
+            blocked_users=blocked_users,
+            total_applications=total_applications,
+            growth=growth
+        )
+
+    except Exception as e:
+
+        current_app.logger.error(
+            f"Analytics Error: {str(e)}"
+        )
+
+        flash(
+            "Something went wrong while loading analytics.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "super_admin.dashboard_page"
+            )
         )
