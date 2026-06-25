@@ -33,13 +33,15 @@ def owner_only(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
 
+        if "user_id" not in session:
+            return redirect(url_for("auth.login"))
+
         if session.get("role") != "owner":
             return "Unauthorized", 403
 
         return f(*args, **kwargs)
 
     return wrapper
-
 
 # =================================================
 # 👤 APPROVE ADMIN / SUPER ADMIN
@@ -58,6 +60,14 @@ def approve_user(id):
 
     user.status = "active"
     db.session.commit()
+    send_notification(
+        user_id=user.id,
+        title="Account Approved",
+        message="Your account has been approved.",
+        type="success",
+        icon="check-circle",
+        priority="high"
+    )
     
 
     return redirect('/owner/dashboard')
@@ -1088,7 +1098,7 @@ def owner_dashboard():
         pending_works=pending_works,
         latest_users=latest_users,
         latest_bookings=latest_bookings
-)
+    )
 # =========================================
 # WORKS PARTIAL LOAD (AJAX FILTER)
 # PRODUCTION VERSION
@@ -1142,7 +1152,7 @@ def works_partial():
 )
 @owner_only
 def approve_withdraw(id):
-    ...
+    
     try:
 
         owner_id = session.get("user_id")
@@ -1211,7 +1221,7 @@ def approve_withdraw(id):
 )
 @owner_only
 def reject_withdraw(id):
-    ...
+
     try:
 
         owner_id = session.get("user_id")
