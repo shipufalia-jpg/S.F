@@ -8,7 +8,7 @@ db = SQLAlchemy()
 
 socketio = SocketIO(
     cors_allowed_origins=os.environ.get("CORS_ORIGINS", "*"),
-    async_mode="threading",
+    async_mode="gevent"
     ping_timeout=20,
     ping_interval=25
 )
