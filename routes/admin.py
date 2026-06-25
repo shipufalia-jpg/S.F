@@ -290,8 +290,9 @@ def chambers_control():
 
 
 
-@admin.route("/password-resets")
-@role_required(
+@admin_bp.route("/password-resets")
+def password_resets():
+    ...
     "admin",
     "owner",
     "super_admin"
