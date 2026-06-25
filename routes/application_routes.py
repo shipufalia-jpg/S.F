@@ -197,6 +197,7 @@ def apply_work(work_id):
 # 📋 OWNER - ALL APPLICATIONS
 # =================================================
 @application_bp.route('/owner/applications')
+@owner_required
 def owner_applications():
 
     owner_id = session.get("user_id")
@@ -252,6 +253,7 @@ def owner_applications():
     "/owner/application/seen/<int:id>",
     methods=["POST"]
 )
+@owner_required
 def mark_seen(id):
 
     app = WorkApplication.query.get_or_404(
@@ -274,6 +276,7 @@ def mark_seen(id):
     "/owner/application/approve/<int:id>",
     methods=["POST"]
 )
+@owner_required
 def approve_application(id):
 
     app = WorkApplication.query.get_or_404(
@@ -315,6 +318,7 @@ def approve_application(id):
     "/owner/application/reject/<int:id>",
     methods=["POST"]
 )
+@owner_required
 def reject_application(id):
 
     app = WorkApplication.query.get_or_404(
@@ -354,6 +358,7 @@ def reject_application(id):
     "/owner/application/delete/<int:id>",
     methods=["POST"]
 )
+@owner_required
 def delete_application(id):
     app = WorkApplication.query.get_or_404(
         id
@@ -391,6 +396,7 @@ def delete_application(id):
 # 📄 DETAILS
 # =================================================
 @application_bp.route('/owner/application/<int:id>')
+@owner_required
 def application_details(id):
     
     app = WorkApplication.query.get_or_404(id)
