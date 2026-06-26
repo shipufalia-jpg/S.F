@@ -632,7 +632,6 @@ def delete_booking(id):
 # OWNER FULL BOOKING CONTROL
 # PRODUCTION VERSION + NOTIFICATION SYSTEM
 # =========================================
-
 @booking.route("/owner/bookings")
 def owner_bookings():
 
@@ -652,20 +651,19 @@ def owner_bookings():
     # BASE QUERY
     # =====================================
 
-    recent_bookings = (
-    Booking.query.options(
-        joinedload(Booking.user),
-        joinedload(Booking.work)
+    query = (
+        Booking.query.options(
+            joinedload(Booking.user),
+            joinedload(Booking.work)
+        )
+        .filter(
+            Booking.is_deleted == False
+        )
     )
-    .filter(
-        Booking.is_deleted == False
-    )
-    .order_by(
-        Booking.id.desc()
-    )
-    .limit(5)
-    .all()
-    )
+
+    # =====================================
+    # SEARCH
+    # =====================================
 
     if search:
         query = query.join(User).filter(
@@ -675,93 +673,109 @@ def owner_bookings():
             )
         )
 
-    bookings = query.order_by(
-        Booking.id.desc()
-    ).paginate(
-        page=page,
-        per_page=per_page,
-        error_out=False
+    # =====================================
+    # PAGINATION
+    # =====================================
+
+    bookings = (
+        query.order_by(
+            Booking.id.desc()
+        )
+        .paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
     )
 
     # =====================================
-    # COUNTS
+    # BOOKING STATISTICS
     # =====================================
 
-    
+    stats = db.session.query(
 
-stats = db.session.query(
+        func.count(Booking.id).label("total"),
 
-    func.count(Booking.id).label("total"),
+        func.sum(
+            case(
+                (Booking.status == "pending", 1),
+                else_=0
+            )
+        ).label("pending"),
 
-    func.sum(
-        case(
-            (Booking.status == "pending", 1),
-            else_=0
-        )
-    ).label("pending"),
+        func.sum(
+            case(
+                (Booking.status == "approved", 1),
+                else_=0
+            )
+        ).label("approved"),
 
-    func.sum(
-        case(
-            (Booking.status == "approved", 1),
-            else_=0
-        )
-    ).label("approved"),
+        func.sum(
+            case(
+                (Booking.status == "rejected", 1),
+                else_=0
+            )
+        ).label("rejected"),
 
-    func.sum(
-        case(
-            (Booking.status == "rejected", 1),
-            else_=0
-        )
-    ).label("rejected"),
+        func.sum(
+            case(
+                (Booking.status == "blocked", 1),
+                else_=0
+            )
+        ).label("blocked"),
 
-    func.sum(
-        case(
-            (Booking.status == "blocked", 1),
-            else_=0
-        )
-    ).label("blocked"),
+        func.sum(
+            case(
+                (Booking.is_active == True, 1),
+                else_=0
+            )
+        ).label("active")
 
-    func.sum(
-        case(
-            (Booking.is_active == True, 1),
-            else_=0
-        )
-    ).label("active")
+    ).filter(
+        Booking.is_deleted == False
+    ).one()
 
-).filter(
-    Booking.is_deleted == False
-).one()
-
-total_bookings = stats.total or 0
-pending_bookings = stats.pending or 0
-approved_bookings = stats.approved or 0
-rejected_bookings = stats.rejected or 0
-blocked_bookings = stats.blocked or 0
-active_bookings = stats.active or 0
+    total_bookings = stats.total or 0
+    pending_bookings = stats.pending or 0
+    approved_bookings = stats.approved or 0
+    rejected_bookings = stats.rejected or 0
+    blocked_bookings = stats.blocked or 0
+    active_bookings = stats.active or 0
 
     # =====================================
     # RECENT BOOKINGS
     # =====================================
 
-    recent_bookings = Booking.query.options(
-        joinedload(Booking.user),
-        joinedload(Booking.work)
-    ).filter_by(
-        is_deleted=False
-    ).order_by(
-        Booking.id.desc()
-    ).limit(5).all()
+    recent_bookings = (
+        Booking.query.options(
+            joinedload(Booking.user),
+            joinedload(Booking.work)
+        )
+        .filter(
+            Booking.is_deleted == False
+        )
+        .order_by(
+            Booking.id.desc()
+        )
+        .limit(5)
+        .all()
+    )
 
     # =====================================
     # OWNER NOTIFICATIONS
     # =====================================
 
-    owner_notifications = Notification.query.filter_by(
-        user_id=user_id,
-        is_deleted=False
-    ).order_by(
-        Notification.id.desc()
-    ).limit(10).all()
+    owner_notifications = (
+        Notification.query.filter_by(
+            user_id=user_id,
+            is_deleted=False
+        )
+        .order_by(
+            Notification.id.desc()
+        )
+        .limit(10)
+        .all()
+    )
 
     unread_notifications = Notification.query.filter_by(
         user_id=user_id,
@@ -770,7 +784,7 @@ active_bookings = stats.active or 0
     ).count()
 
     # =====================================
-    # AUTO READ
+    # AUTO MARK AS READ
     # =====================================
 
     try:
@@ -793,6 +807,10 @@ active_bookings = stats.active or 0
         current_app.logger.exception(
             "Failed to mark notifications as read."
         )
+
+    # =====================================
+    # RENDER TEMPLATE
+    # =====================================
 
     return render_template(
 
@@ -823,5 +841,5 @@ active_bookings = stats.active or 0
         owner_notifications=owner_notifications,
 
         unread_notifications=unread_notifications
-        )
-    
+    )
+                
