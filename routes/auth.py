@@ -264,10 +264,10 @@ def login():
         session["role"] = user.role
 
         return redirect(
-            url_for(
-                "auth.change_password"
+            url_for("auth.change_password")
+                
         )
-    )
+    
 
     try:
 
