@@ -172,16 +172,6 @@ def create_booking(work_id):
             request.referrer or url_for("home.index")
         )
 
-    # =====================================
-    # SUCCESS
-    # =====================================
-
-    flash(
-        "Booking created successfully.",
-        "success"
-    )
-
-    return redirect(url_for("booking.my_bookings"))
 
     # =====================================
     # USER NOTIFICATION
