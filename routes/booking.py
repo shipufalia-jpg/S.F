@@ -250,65 +250,106 @@ def admin_bookings():
     if not login_required():
         return redirect("/auth/login")
 
+    user_id = session.get("user_id")
+
+    # =====================================
+    # OWNER
+    # =====================================
+
     if is_owner():
 
-        bookings = Booking.query.filter_by(
-            is_deleted=False
-        ).order_by(
-            desc(Booking.id)
-        ).all()
+        bookings = (
+            Booking.query.options(
+                joinedload(Booking.user),
+                joinedload(Booking.work)
+            )
+            .filter(
+                Booking.is_deleted == False
+            )
+            .order_by(
+                Booking.id.desc()
+            )
+            .all()
+        )
 
         return render_template(
             "bookings.html",
             bookings=bookings
         )
+
+    # =====================================
+    # SUPER ADMIN
+    # =====================================
 
     if is_super_admin():
 
-        admins = User.query.filter_by(
-            role="admin",
-            created_by=session.get("user_id"),
-            is_deleted=False
-        ).all()
+        admin_ids = [
+            admin.id
+            for admin in User.query.with_entities(User.id).filter_by(
+                role="admin",
+                created_by=user_id,
+                is_deleted=False
+            ).all()
+        ]
 
-        admin_ids = [a.id for a in admins]
+        user_ids = [
+            user.id
+            for user in User.query.with_entities(User.id).filter(
+                User.created_by.in_(admin_ids),
+                User.role == "user",
+                User.is_deleted == False
+            ).all()
+        ]
 
-        users = User.query.filter(
-            User.created_by.in_(admin_ids),
-            User.role == "user",
-            User.is_deleted == False
-        ).all()
-
-        user_ids = [u.id for u in users]
-
-        bookings = Booking.query.filter(
-            Booking.user_id.in_(user_ids),
-            Booking.is_deleted == False
-        ).order_by(
-            desc(Booking.id)
-        ).all()
+        bookings = (
+            Booking.query.options(
+                joinedload(Booking.user),
+                joinedload(Booking.work)
+            )
+            .filter(
+                Booking.user_id.in_(user_ids),
+                Booking.is_deleted == False
+            )
+            .order_by(
+                Booking.id.desc()
+            )
+            .all()
+        )
 
         return render_template(
             "bookings.html",
             bookings=bookings
         )
 
+    # =====================================
+    # ADMIN
+    # =====================================
+
     if is_admin():
 
-        users = User.query.filter_by(
-            created_by=session.get("user_id"),
-            role="user",
-            is_deleted=False
-        ).all()
+        user_ids = [
+            user.id
+            for user in User.query.with_entities(User.id).filter_by(
+                created_by=user_id,
+                role="user",
+                is_deleted=False
+            ).all()
+        ]
 
-        user_ids = [u.id for u in users]
-
-        bookings = Booking.query.filter(
-            Booking.user_id.in_(user_ids),
-            Booking.is_deleted == False
-        ).order_by(
-            desc(Booking.id)
-        ).all()
+        bookings = (
+            Booking.query.options(
+                joinedload(Booking.user),
+                joinedload(Booking.work)
+            )
+            .filter(
+                Booking.user_id.in_(user_ids),
+                Booking.is_deleted == False
+            )
+            .order_by(
+                Booking.id.desc()
+            )
+            .all()
+        )
 
         return render_template(
             "bookings.html",
@@ -316,8 +357,6 @@ def admin_bookings():
         )
 
     abort(403)
-
-
 # =========================================
 # APPROVE BOOKING
 # =========================================
