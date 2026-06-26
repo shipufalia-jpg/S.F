@@ -14,7 +14,7 @@ from models.profile import Profile
 
 from extensions import db
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 from werkzeug.security import (
     generate_password_hash,
@@ -272,7 +272,7 @@ def login():
     try:
 
         user.is_online = True
-        user.last_seen = datetime.utcnow()
+        user.last_seen = datetime.now(UTC)
 
         db.session.commit()
 
@@ -540,7 +540,7 @@ def logout():
 
             if user:
                 user.is_online = False
-                user.last_seen = datetime.utcnow()
+                user.last_seen = datetime.now(UTC)
 
                 db.session.commit()
 
