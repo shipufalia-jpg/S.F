@@ -1,5 +1,5 @@
 from extensions import db
-from datetime import datetime
+from datetime import datetime, UTC
 from flask_login import UserMixin
 
 
@@ -91,8 +91,8 @@ class User(UserMixin, db.Model):
     )
 
     last_seen = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(UTC)
     )
 
     socket_id = db.Column(
@@ -175,15 +175,15 @@ class User(UserMixin, db.Model):
     # ======================
 
     created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
         index=True
     )
 
     updated_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         index=True
     )
 
