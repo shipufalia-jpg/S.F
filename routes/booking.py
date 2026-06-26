@@ -80,8 +80,7 @@ def my_bookings():
 # =========================================
 # CREATE BOOKING
 # =========================================
-
-@booking.route('/create/<int:work_id>', methods=['POST'])
+@booking.route("/create/<int:work_id>", methods=["POST"])
 def create_booking(work_id):
 
     if not login_required():
@@ -108,7 +107,9 @@ def create_booking(work_id):
             "warning"
         )
 
-        return redirect(request.referrer or "/")
+        return redirect(
+            request.referrer or url_for("home.index")
+        )
 
     # =====================================
     # CHECK EXISTING BOOKING
@@ -116,18 +117,20 @@ def create_booking(work_id):
 
     existing = Booking.query.filter_by(
         user_id=user_id,
-        owner_id=owner_id,
+        work_id=work.id,
         is_deleted=False
     ).first()
 
     if existing:
 
         flash(
-            "Already booked",
+            "You have already booked this work.",
             "info"
         )
 
-        return redirect(request.referrer or "/")
+        return redirect(
+            request.referrer or url_for("home.index")
+        )
 
     # =====================================
     # CREATE BOOKING
@@ -146,9 +149,39 @@ def create_booking(work_id):
         is_active=False
     )
 
-    db.session.add(booking_data)
+    try:
 
-    db.session.commit()
+        db.session.add(booking_data)
+
+        db.session.commit()
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Booking creation failed."
+        )
+
+        flash(
+            "Unable to create booking. Please try again.",
+            "danger"
+        )
+
+        return redirect(
+            request.referrer or url_for("home.index")
+        )
+
+    # =====================================
+    # SUCCESS
+    # =====================================
+
+    flash(
+        "Booking created successfully.",
+        "success"
+    )
+
+    return redirect(url_for("booking.my_bookings"))
 
     # =====================================
     # USER NOTIFICATION
