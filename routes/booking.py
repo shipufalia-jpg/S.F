@@ -17,7 +17,11 @@ from flask import (
 from sqlalchemy import desc
 
 from extensions import db
+from sqlalchemy import desc, or_
+from sqlalchemy.orm import joinedload
+from flask import current_app
 
+from sqlalchemy import func, case
 from models.booking import Booking
 from models.user import User
 from models.work_model import Work
@@ -632,61 +636,47 @@ def delete_booking(id):
 @booking.route("/owner/bookings")
 def owner_bookings():
 
-    # =====================================
-    # LOGIN CHECK
-    # =====================================
-
     if not login_required():
         return redirect("/auth/login")
-
-    # =====================================
-    # ONLY OWNER ACCESS
-    # =====================================
 
     if not is_owner():
         abort(403)
 
-    # =====================================
-    # PAGINATION
-    # =====================================
+    user_id = session.get("user_id")
 
     page = request.args.get("page", 1, type=int)
-
     per_page = 20
-
-    # =====================================
-    # SEARCH
-    # =====================================
-
-    search = request.args.get(
-        "search",
-        ""
-    ).strip()
+    search = request.args.get("search", "").strip()
 
     # =====================================
     # BASE QUERY
     # =====================================
 
-    query = Booking.query.filter_by(
-        is_deleted=False
+    recent_bookings = (
+    Booking.query.options(
+        joinedload(Booking.user),
+        joinedload(Booking.work)
+    )
+    .filter(
+        Booking.is_deleted == False
+    )
+    .order_by(
+        Booking.id.desc()
+    )
+    .limit(5)
+    .all()
     )
 
-    # =====================================
-    # SEARCH FILTER
-    # =====================================
-
     if search:
-
         query = query.join(User).filter(
-            User.name.ilike(f"%{search}%")
+            or_(
+                User.name.ilike(f"%{search}%"),
+                User.email.ilike(f"%{search}%")
+            )
         )
 
-    # =====================================
-    # BOOKINGS
-    # =====================================
-
     bookings = query.order_by(
-        desc(Booking.id)
+        Booking.id.desc()
     ).paginate(
         page=page,
         per_page=per_page,
@@ -694,46 +684,72 @@ def owner_bookings():
     )
 
     # =====================================
-    # TOTAL COUNTS
+    # COUNTS
     # =====================================
 
-    total_bookings = Booking.query.filter_by(
-        is_deleted=False
-    ).count()
+    
 
-    pending_bookings = Booking.query.filter_by(
-        status="pending",
-        is_deleted=False
-    ).count()
+stats = db.session.query(
 
-    approved_bookings = Booking.query.filter_by(
-        status="approved",
-        is_deleted=False
-    ).count()
+    func.count(Booking.id).label("total"),
 
-    rejected_bookings = Booking.query.filter_by(
-        status="rejected",
-        is_deleted=False
-    ).count()
+    func.sum(
+        case(
+            (Booking.status == "pending", 1),
+            else_=0
+        )
+    ).label("pending"),
 
-    blocked_bookings = Booking.query.filter_by(
-        status="blocked",
-        is_deleted=False
-    ).count()
+    func.sum(
+        case(
+            (Booking.status == "approved", 1),
+            else_=0
+        )
+    ).label("approved"),
 
-    active_bookings = Booking.query.filter_by(
-        is_active=True,
-        is_deleted=False
-    ).count()
+    func.sum(
+        case(
+            (Booking.status == "rejected", 1),
+            else_=0
+        )
+    ).label("rejected"),
+
+    func.sum(
+        case(
+            (Booking.status == "blocked", 1),
+            else_=0
+        )
+    ).label("blocked"),
+
+    func.sum(
+        case(
+            (Booking.is_active == True, 1),
+            else_=0
+        )
+    ).label("active")
+
+).filter(
+    Booking.is_deleted == False
+).one()
+
+total_bookings = stats.total or 0
+pending_bookings = stats.pending or 0
+approved_bookings = stats.approved or 0
+rejected_bookings = stats.rejected or 0
+blocked_bookings = stats.blocked or 0
+active_bookings = stats.active or 0
 
     # =====================================
     # RECENT BOOKINGS
     # =====================================
 
-    recent_bookings = Booking.query.filter_by(
+    recent_bookings = Booking.query.options(
+        joinedload(Booking.user),
+        joinedload(Booking.work)
+    ).filter_by(
         is_deleted=False
     ).order_by(
-        desc(Booking.id)
+        Booking.id.desc()
     ).limit(5).all()
 
     # =====================================
@@ -741,52 +757,42 @@ def owner_bookings():
     # =====================================
 
     owner_notifications = Notification.query.filter_by(
-
-        user_id=session.get("user_id"),
-
+        user_id=user_id,
         is_deleted=False
-
     ).order_by(
-
-        desc(Notification.id)
-
+        Notification.id.desc()
     ).limit(10).all()
 
-    # =====================================
-    # UNREAD COUNT
-    # =====================================
-
     unread_notifications = Notification.query.filter_by(
-
-        user_id=session.get("user_id"),
-
-        is_read=False,
-
-        is_deleted=False
-
+        user_id=user_id,
+        is_deleted=False,
+        is_read=False
     ).count()
 
     # =====================================
-    # AUTO MARK AS READ
+    # AUTO READ
     # =====================================
 
-    Notification.query.filter_by(
+    try:
 
-        user_id=session.get("user_id"),
+        Notification.query.filter_by(
+            user_id=user_id,
+            is_deleted=False,
+            is_read=False
+        ).update(
+            {"is_read": True},
+            synchronize_session=False
+        )
 
-        is_read=False
+        db.session.commit()
 
-    ).update({
+    except Exception:
 
-        "is_read": True
+        db.session.rollback()
 
-    })
-
-    db.session.commit()
-
-    # =====================================
-    # RENDER TEMPLATE
-    # =====================================
+        current_app.logger.exception(
+            "Failed to mark notifications as read."
+        )
 
     return render_template(
 
@@ -817,4 +823,5 @@ def owner_bookings():
         owner_notifications=owner_notifications,
 
         unread_notifications=unread_notifications
-    )
+        )
+    
