@@ -7,7 +7,7 @@ from flask import (
 )
 from sqlalchemy import or_, and_, func
 from sqlalchemy.orm import joinedload
-from datetime import datetime
+from datetime import datetime, UTC
 from models.user import User
 from models.profile import Profile
 from models.chat import Chat
@@ -48,7 +48,7 @@ def login_required(f):
 def user_live_tv():
 
     role = session.get("role", "user")
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     page = request.args.get(
         "page",
