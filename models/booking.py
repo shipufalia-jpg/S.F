@@ -69,6 +69,38 @@ class Booking(db.Model):
         nullable=False
     )
     # unpaid / paid
+    # =========================================
+    # ACTION BY
+    # =========================================
+
+    approved_by = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+
+    rejected_by = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+
+    blocked_by = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+
+    deleted_by = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+    
 
     # =========================================
     # SOFT DELETE SYSTEM (SAFE)
@@ -123,6 +155,33 @@ class Booking(db.Model):
         "User",
         foreign_keys=[owner_id],
         backref="owner_bookings",
+        lazy=True
+    )
+    approved_user = db.relationship(
+        "User",
+        foreign_keys=[approved_by],
+        backref="approved_bookings",
+        lazy=True
+    )
+
+    rejected_user = db.relationship(
+        "User",
+        foreign_keys=[rejected_by],
+        backref="rejected_bookings",
+        lazy=True
+    )
+
+    blocked_user = db.relationship(
+        "User",
+        foreign_keys=[blocked_by],
+        backref="blocked_bookings",
+        lazy=True
+    )
+
+    deleted_user = db.relationship(
+        "User",
+        foreign_keys=[deleted_by],
+        backref="deleted_bookings",
         lazy=True
     )
 
