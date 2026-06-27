@@ -14,6 +14,7 @@ from models.chamber import Chamber
 from models.doctor.doctor import Doctor
 from models.appointment import Appointment
 from models.doctor import DoctorRating
+from models.chamber_rating import ChamberRating
 from models.chamber_profile import ChamberProfile
 
 
@@ -443,31 +444,40 @@ def delete_doctor(doctor_id):
 # ==========================================
 @chamber_panel.route("/appointments")
 def appointments():
-    
+
     chamber_id = session.get("chamber_id")
 
-    appointments = Appointment.query.filter_by(
-        chamber_id=chamber_id
-    ).order_by(Appointment.id.desc()).all()
+    if not chamber_id:
+        return redirect(url_for("chamber.login"))
 
-    pending_count = Appointment.query.filter_by(
-        chamber_id=chamber_id, status="pending"
-    ).count()
+    appointments = (
+        Appointment.query
+        .filter_by(chamber_id=chamber_id)
+        .order_by(Appointment.id.desc())
+        .all()
+    )
 
-    confirmed_count = Appointment.query.filter_by(
-        chamber_id=chamber_id, status="confirmed"
-    ).count()
+    counts = (
+        db.session.query(
+            Appointment.status,
+            db.func.count(Appointment.id)
+        )
+        .filter(Appointment.chamber_id == chamber_id)
+        .group_by(Appointment.status)
+        .all()
+    )
 
-    completed_count = Appointment.query.filter_by(
-        chamber_id=chamber_id, status="completed"
-    ).count()
+    count_map = {
+        status: count
+        for status, count in counts
+    }
 
     return render_template(
         "chamber/appointments.html",
         appointments=appointments,
-        pending_count=pending_count,
-        confirmed_count=confirmed_count,
-        completed_count=completed_count
+        pending_count=count_map.get("pending", 0),
+        confirmed_count=count_map.get("confirmed", 0),
+        completed_count=count_map.get("completed", 0)
     )
 
 
@@ -599,41 +609,54 @@ def save_appointment():
     )
 
 
-@chamber_panel.route("/confirm/<int:id>")
-def confirm_page(id):
-
-    appointment = Appointment.query.get_or_404(id)
-
-    return render_template("chamber/confirm.html", a=appointment)
-
-from flask import request, redirect
-from datetime import datetime
-
 @chamber_panel.route("/confirm/submit/<int:id>", methods=["POST"])
 def confirm_submit(id):
 
-    appointment = Appointment.query.get_or_404(id)
+    chamber_id = session.get("chamber_id")
+
+    if not chamber_id:
+        return redirect(url_for("chamber.login"))
+
+    appointment = Appointment.query.filter_by(
+        id=id,
+        chamber_id=chamber_id
+    ).first_or_404()
 
     confirmed_date = request.form.get("confirmed_date")
     confirmed_time = request.form.get("confirmed_time")
     confirmation_note = request.form.get("confirmation_note")
 
-    # DATE convert (important)
-    if confirmed_date:
-        appointment.confirmed_date = datetime.strptime(
-            confirmed_date, "%Y-%m-%d"
-        ).date()
+    try:
 
-    appointment.confirmed_time = confirmed_time
-    appointment.confirmation_note = confirmation_note
+        if confirmed_date:
+            appointment.confirmed_date = datetime.strptime(
+                confirmed_date,
+                "%Y-%m-%d"
+            ).date()
 
-    appointment.status = "confirmed"
+        appointment.confirmed_time = confirmed_time
+        appointment.confirmation_note = confirmation_note
+        appointment.status = "confirmed"
 
-    db.session.commit()
-    flash("Appointment confirmed successfully", "success")
+        db.session.commit()
 
-    return redirect("/chamber/appointments")
+        flash(
+            "Appointment confirmed successfully.",
+            "success"
+        )
 
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Failed to confirm appointment.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("chamber_panel.appointments")
+        )
 
 @chamber_panel.route(
     "/rate/<int:chamber_id>",
