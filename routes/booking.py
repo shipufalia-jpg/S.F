@@ -14,7 +14,7 @@ from flask import (
     url_for
 )
 
-from sqlalchemy import desc
+
 
 from extensions import db
 from sqlalchemy import desc, or_
@@ -63,18 +63,20 @@ def my_bookings():
 
     if not login_required():
         return redirect("/auth/login")
-
-    bookings = Booking.query.filter_by(
+bookings = (
+    Booking.query.options(
+        joinedload(Booking.work)
+    )
+    .filter_by(
         user_id=session.get("user_id"),
         is_deleted=False
-    ).order_by(
-        desc(Booking.id)
-    ).all()
-
-    return render_template(
-        "my_bookings.html",
-        bookings=bookings
     )
+    .order_by(
+        Booking.id.desc()
+    )
+    .all()
+)
+    
 
 
 # =========================================
